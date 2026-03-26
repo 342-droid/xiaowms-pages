@@ -614,14 +614,17 @@
                 content.hidden = isLoading;
             }
             
-            // 为所有入库单号链接添加点击事件
-            document.querySelectorAll('.order-number-link').forEach(link => {
-                link.addEventListener('click', (e) => {
+            // 使用事件委托，避免分页重绘后丢失点击事件
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const orderLink = e.target.closest('.order-number-link');
+                    if (!orderLink) return;
                     e.preventDefault();
-                    const orderId = link.getAttribute('data-order-id');
+                    const orderId = orderLink.getAttribute('data-order-id');
                     showOrderDetail(orderId);
                 });
-            });
+            }
             
             // 显示入库单详情
             function showOrderDetail(orderId) {
@@ -767,14 +770,17 @@
                 initCustomSelect('searchReceiptStatus', 'searchReceiptStatusDropdown');
             }
             
-            // 为所有收货记录按钮添加点击事件
-            document.querySelectorAll('.receipt-record-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            // 使用事件委托，避免分页重绘后丢失点击事件
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const recordBtn = e.target.closest('.receipt-record-btn');
+                    if (!recordBtn) return;
                     e.preventDefault();
-                    const orderId = btn.getAttribute('data-order-id');
+                    const orderId = recordBtn.getAttribute('data-order-id');
                     showReceiptRecord(orderId);
                 });
-            });
+            }
             
             // 搜索按钮点击事件
             searchBtn.addEventListener('click', () => {
