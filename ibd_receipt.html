@@ -568,6 +568,45 @@
     <script src="js/page-manager.js"></script>
     <script src="js/date-picker.js"></script>
     <script>
+        function createSafeModalController(modalId, closeButtonIds = []) {
+            if (window.WMSUI && typeof window.WMSUI.createModalController === 'function') {
+                return window.WMSUI.createModalController({
+                    modalId,
+                    closeButtonIds
+                });
+            }
+
+            // 兼容降级：生产环境若公共脚本未更新，仍保证弹窗可用
+            const modal = document.getElementById(modalId);
+            const close = () => {
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            };
+            const open = () => {
+                if (modal) {
+                    modal.style.display = 'block';
+                }
+            };
+
+            closeButtonIds.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', close);
+                }
+            });
+
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        close();
+                    }
+                });
+            }
+
+            return { open, close };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const page = new PageManager({
                 entityName: '入库单',
@@ -604,10 +643,7 @@
         function initOrderDetailModal() {
             const loading = document.getElementById('orderDetailLoading');
             const content = document.getElementById('orderDetailContent');
-            const detailModalController = window.WMSUI.createModalController({
-                modalId: 'orderDetailModal',
-                closeButtonIds: ['closeDetailModal', 'detailCloseBtn']
-            });
+            const detailModalController = createSafeModalController('orderDetailModal', ['closeDetailModal', 'detailCloseBtn']);
 
             function setOrderDetailLoading(isLoading) {
                 loading.hidden = !isLoading;
@@ -762,10 +798,7 @@
         function initReceiptRecordModal() {
             const searchBtn = document.getElementById('searchReceiptBtn');
             const statusInput = document.getElementById('searchReceiptStatus');
-            const receiptModalController = window.WMSUI.createModalController({
-                modalId: 'receiptRecordModal',
-                closeButtonIds: ['closeReceiptRecordModal', 'receiptRecordCloseBtn']
-            });
+            const receiptModalController = createSafeModalController('receiptRecordModal', ['closeReceiptRecordModal', 'receiptRecordCloseBtn']);
             if (typeof initCustomSelect === 'function') {
                 initCustomSelect('searchReceiptStatus', 'searchReceiptStatusDropdown');
             }
@@ -783,12 +816,14 @@
             }
             
             // 搜索按钮点击事件
-            searchBtn.addEventListener('click', () => {
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => {
                 const status = statusInput.value;
                 const product = document.getElementById('searchReceiptProduct').value;
                 const container = document.getElementById('searchReceiptContainer').value;
                 searchReceiptRecords(status, product, container);
-            });
+                });
+            }
             
             // 显示收货记录
             function showReceiptRecord(orderId) {
