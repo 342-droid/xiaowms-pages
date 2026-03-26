@@ -284,6 +284,8 @@
                 ],
                 
                 fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true, options: CommonOptions.warehouse },
                     { id: 'company', label: '委托方', type: 'select', required: true, editDisabled: true, options: CommonOptions.company },
                     { id: 'templateCode', label: '上架策略编码', type: 'text', required: true, editDisabled: true },
@@ -343,8 +345,9 @@
                     saveBtnId: 'saveProfileBtn',
                     cancelBtnId: 'cancelProfileBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用' },
+                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'warehouse', message: '请选择仓库', required: true },
                         { id: 'company', message: '请选择委托方', required: true },
                         { id: 'templateCode', message: '请输入上架策略编码', required: true },
@@ -391,6 +394,7 @@
                     saveBtnId: 'editSaveProfileBtn',
                     cancelBtnId: 'editCancelProfileBtn',
                     validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editTemplateDesc', message: '请输入上架策略描述', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
@@ -409,6 +413,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
+                            editTenant: 'XX集团',
                             editWarehouse: cells[3].textContent,
                             editCompany: cells[4].textContent,
                             editTemplateCode: cells[1].textContent,
@@ -423,13 +428,24 @@
             });
             
             page.init();
+
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (tenantInput) {
+                    tenantInput.value = 'XX集团';
+                    tenantInput.dataset.value = 'XX集团';
+                }
+            });
             
-            const detailModal = document.getElementById('detailModal');
-            const detailCloseBtn = document.getElementById('detailCloseBtn');
-            const detailEditModal = document.getElementById('detailEditModal');
-            const detailEditCloseBtn = document.getElementById('detailEditCloseBtn');
-            const detailEditCancelBtn = document.getElementById('detailEditCancelBtn');
             const detailEditSaveBtn = document.getElementById('detailEditSaveBtn');
+            const detailModalController = window.WMSUI.createModalController({
+                modalId: 'detailModal',
+                closeButtonIds: ['detailCloseBtn']
+            });
+            const detailEditModalController = window.WMSUI.createModalController({
+                modalId: 'detailEditModal',
+                closeButtonIds: ['detailEditCloseBtn', 'detailEditCancelBtn']
+            });
             
             function openDetailModal(rowData) {
                 const detailContent = document.getElementById('detailContent');
@@ -452,11 +468,11 @@
                         </div>
                     </div>
                 `;
-                detailModal.style.display = 'flex';
+                detailModalController.open();
             }
             
             function closeDetailModal() {
-                detailModal.style.display = 'none';
+                detailModalController.close();
             }
 
             function openDetailEditModal() {
@@ -474,11 +490,11 @@
                 document.getElementById('detailLimitCategoryZone').value = '';
                 document.getElementById('detailLimitCategoryZone').dataset.value = '';
                 
-                detailEditModal.style.display = 'block';
+                detailEditModalController.open();
             }
 
             function closeDetailEditModal() {
-                detailEditModal.style.display = 'none';
+                detailEditModalController.close();
             }
             
             document.addEventListener('click', (e) => {
@@ -493,17 +509,6 @@
                     });
                 }
             });
-            
-            if (detailCloseBtn) {
-                detailCloseBtn.addEventListener('click', closeDetailModal);
-            }
-            
-            if (detailEditCloseBtn) {
-                detailEditCloseBtn.addEventListener('click', closeDetailEditModal);
-            }
-            if (detailEditCancelBtn) {
-                detailEditCancelBtn.addEventListener('click', closeDetailEditModal);
-            }
             
             document.addEventListener('click', (e) => {
                 if (e.target.id === 'editAddDetailBtn') {

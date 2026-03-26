@@ -30,6 +30,37 @@ const WMSConfig = {
     toastDuration: 3000
 };
 
+const SELECTED_WAREHOUSE_KEY = 'selectedWarehouse';
+
+/**
+ * 持久化保存选中的仓库
+ */
+function saveSelectedWarehouse(warehouse) {
+    if (!warehouse || !warehouse.code || !warehouse.name) return;
+    const value = JSON.stringify({
+        code: warehouse.code,
+        name: warehouse.name
+    });
+    localStorage.setItem(SELECTED_WAREHOUSE_KEY, value);
+    // 兼容历史逻辑，保留 sessionStorage 写入
+    sessionStorage.setItem(SELECTED_WAREHOUSE_KEY, value);
+}
+
+/**
+ * 读取持久化仓库（优先 localStorage，兼容 sessionStorage）
+ */
+function getStoredWarehouse() {
+    const warehouseStr = localStorage.getItem(SELECTED_WAREHOUSE_KEY) || sessionStorage.getItem(SELECTED_WAREHOUSE_KEY);
+    if (!warehouseStr) return null;
+    try {
+        const warehouse = JSON.parse(warehouseStr);
+        if (!warehouse || !warehouse.code || !warehouse.name) return null;
+        return warehouse;
+    } catch (e) {
+        return null;
+    }
+}
+
 // 加载 header 组件
 function loadHeader() {
     const headerContainer = document.getElementById('header-container');
@@ -262,13 +293,20 @@ function initWarehouseSelector() {
     const warehouseList = document.getElementById('warehouseList');
     
     if (!warehouseSelectBtn || !warehouseSelectModal) return;
+
+    // 页面切换后恢复仓库选择
+    const storedWarehouse = getStoredWarehouse();
+    if (storedWarehouse) {
+        warehouseSelectBtn.textContent = `${storedWarehouse.code}-${storedWarehouse.name}`;
+    }
     
     // 渲染仓库列表
     function renderWarehouseList() {
         if (!warehouseList) return;
+        const currentWarehouse = getStoredWarehouse();
         
         warehouseList.innerHTML = WMSConfig.warehouses.map(wh => `
-            <div class="warehouse-item" data-code="${wh.code}" data-name="${wh.name}">
+            <div class="warehouse-item ${currentWarehouse && currentWarehouse.code === wh.code ? 'selected' : ''}" data-code="${wh.code}" data-name="${wh.name}">
                 <span class="warehouse-item-code">${wh.code}</span>
                 <span class="warehouse-item-name">${wh.name}</span>
             </div>
@@ -282,6 +320,7 @@ function initWarehouseSelector() {
                 
                 warehouseSelectBtn.textContent = `${code}-${name}`;
                 warehouseSelectModal.style.display = 'none';
+                saveSelectedWarehouse({ code, name });
                 
                 // 更新选中状态
                 warehouseList.querySelectorAll('.warehouse-item').forEach(i => {
@@ -321,7 +360,9 @@ function initWarehouseSelector() {
  */
 function getCurrentWarehouse() {
     const btn = document.getElementById('warehouseSelectBtn');
-    if (!btn || btn.textContent === '请选择仓库') return null;
+    if (!btn || btn.textContent === '请选择仓库') {
+        return getStoredWarehouse();
+    }
     
     const text = btn.textContent;
     const [code, ...nameParts] = text.split('-');
@@ -519,6 +560,8 @@ function logout() {
     sessionStorage.removeItem('isLoggedIn');
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('showWarehouseSelector');
+    sessionStorage.removeItem(SELECTED_WAREHOUSE_KEY);
+    localStorage.removeItem(SELECTED_WAREHOUSE_KEY);
     window.location.href = 'login.html';
 }
 
@@ -563,7 +606,7 @@ function showWarehouseSelectorAfterLogin() {
                         item.classList.add('selected');
                         
                         // 保存选中的仓库
-                        sessionStorage.setItem('selectedWarehouse', JSON.stringify({ code, name }));
+                        saveSelectedWarehouse({ code, name });
                         
                         // 触发仓库变更事件
                         document.dispatchEvent(new CustomEvent('warehouseChange', {
@@ -657,6 +700,188 @@ function injectSharedComponents() {
     }
 }
 
+/**
+ * 通用模态框控制器，统一处理打开/关闭与遮罩关闭
+ * @param {Object} config
+ * @param {string} config.modalId - 模态框ID
+ * @param {string[]} [config.closeButtonIds] - 关闭按钮ID列表
+ * @param {boolean} [config.closeOnMask=true] - 是否点击遮罩关闭
+ * @returns {{open: Function, close: Function}}
+ */
+function createModalController(config) {
+    const {
+        modalId,
+        closeButtonIds = [],
+        closeOnMask = true
+    } = config || {};
+    const modal = document.getElementById(modalId);
+    if (!modal) {
+        return {
+            open: () => {},
+            close: () => {}
+        };
+    }
+
+    const close = () => {
+        modal.style.display = 'none';
+    };
+    const open = () => {
+        modal.style.display = 'block';
+    };
+
+    closeButtonIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', close);
+        }
+    });
+
+    if (closeOnMask) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                close();
+            }
+        });
+    }
+
+    return { open, close };
+}
+
+window.WMSUI = window.WMSUI || {};
+window.WMSUI.createModalController = createModalController;
+
+/**
+ * 统一表格查询能力
+ * 自动读取 search-form 条件并按表头映射到表格列执行筛选
+ */
+function initTableSearch() {
+    const searchForm = document.querySelector('.search-section .search-form');
+    const tableBody = document.getElementById('tableBody');
+    if (!searchForm || !tableBody) return;
+
+    const queryBtn = searchForm.querySelector('.form-actions .btn.btn-primary');
+    if (!queryBtn) return;
+
+    const groups = Array.from(searchForm.querySelectorAll('.form-group'));
+    if (groups.length === 0) return;
+
+    const tableHeaders = Array.from(document.querySelectorAll('.table thead th')).map((th, index) => ({
+        index,
+        text: (th.textContent || '').replace(/[:：\s]/g, '')
+    }));
+
+    const normalizeEnabledValue = (value) => {
+        const text = (value || '').trim().toLowerCase();
+        if (!text) return '';
+        if (text === 'yes' || text === '启用') return '启用';
+        if (text === 'no' || text === '禁用') return '禁用';
+        return (value || '').trim();
+    };
+
+    const resolveMatchMode = (labelText) => {
+        if (labelText.includes('是否启用') || labelText.includes('状态')) {
+            return 'exact';
+        }
+        if (labelText.includes('编码') || labelText.endsWith('code')) {
+            return 'exact';
+        }
+        return 'contains';
+    };
+
+    const matchColumnIndex = (labelText) => {
+        const exact = tableHeaders.find((header) => header.text === labelText);
+        if (exact) return exact.index;
+
+        const fuzzy = tableHeaders.find((header) =>
+            header.text.includes(labelText) || labelText.includes(header.text)
+        );
+        return fuzzy ? fuzzy.index : -1;
+    };
+
+    const filters = groups
+        .map((group) => {
+            const labelEl = group.querySelector('label');
+            const inputEl = group.querySelector('input');
+            if (!labelEl || !inputEl) return null;
+
+            const labelText = (labelEl.textContent || '').replace(/[:：\s]/g, '');
+            const columnIndex = matchColumnIndex(labelText);
+            if (columnIndex < 0) return null;
+
+            const isStatus = labelText.includes('是否启用') || labelText.includes('状态');
+            return {
+                inputEl,
+                columnIndex,
+                labelText,
+                matchMode: resolveMatchMode(labelText),
+                isStatus
+            };
+        })
+        .filter(Boolean);
+
+    if (filters.length === 0) return;
+
+    const filterTableData = () => {
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach((row) => {
+            const cells = row.querySelectorAll('td');
+
+            const isMatch = filters.every((filter) => {
+                const rawKeyword = filter.isStatus
+                    ? (filter.inputEl.dataset.value || filter.inputEl.value || '')
+                    : (filter.inputEl.value || '');
+
+                const keywordBase = filter.isStatus
+                    ? normalizeEnabledValue(rawKeyword)
+                    : rawKeyword.trim();
+
+                if (!keywordBase) return true;
+
+                const cell = cells[filter.columnIndex];
+                if (!cell) return false;
+
+                const cellRawValue = filter.isStatus
+                    ? ((cell.querySelector('.status') && cell.querySelector('.status').textContent) || '')
+                    : (cell.textContent || '');
+
+                const cellValue = filter.isStatus
+                    ? normalizeEnabledValue(cellRawValue)
+                    : cellRawValue.trim().toLowerCase();
+
+                const keyword = filter.isStatus
+                    ? keywordBase
+                    : keywordBase.toLowerCase();
+
+                if (filter.matchMode === 'exact') {
+                    return cellValue === keyword;
+                }
+                return cellValue.includes(keyword);
+            });
+
+            row.style.display = isMatch ? '' : 'none';
+        });
+    };
+
+    if (queryBtn.getAttribute('onclick')) {
+        queryBtn.removeAttribute('onclick');
+    }
+    queryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        filterTableData();
+    });
+
+    filters.forEach((filter) => {
+        filter.inputEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                filterTableData();
+            }
+        });
+        filter.inputEl.addEventListener('change', filterTableData);
+    });
+}
+window.WMSUI.initTableSearch = initTableSearch;
+
 // 页面初始化
 function initPage() {
     // 检查登录状态
@@ -678,6 +903,7 @@ function initPage() {
     initWarehouseSelector();
     initUserMenu();
     updateUserDisplay();
+    initTableSearch();
     
     // 登录后显示仓库选择器
     showWarehouseSelectorAfterLogin();

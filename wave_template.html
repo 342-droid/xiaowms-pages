@@ -197,16 +197,7 @@
     <script src="js/page-manager.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const isEnabledOptions = [
-                { value: '启用', text: '启用' },
-                { value: '禁用', text: '禁用' }
-            ];
-            
-            const warehouseOptions = [
-                { value: 'W001-南京仓', text: 'W001-南京仓' },
-                { value: 'W002-嘉兴仓', text: 'W002-嘉兴仓' },
-                { value: 'W003-上海仓', text: 'W003-上海仓' }
-            ];
+            const warehouseOptions = CommonOptions.warehouse;
             
             const flowTypeOptions = [
                 { value: 'picking', text: '拣货波次' },
@@ -241,10 +232,7 @@
                 { value: 'CA002', text: '圆通' }
             ];
             
-            const yesNoOptions = [
-                { value: 'yes', text: '是' },
-                { value: 'no', text: '否' }
-            ];
+            const yesNoOptions = CommonOptions.yesNo;
             
             const dividerHtml = `<div class="section-divider"></div>`;
             const basicSectionTitleHtml = `<div class="section-title">基本信息</div>`;
@@ -267,13 +255,15 @@
                 
                 fields: [
                     { id: 'dividerBasic', label: '', type: 'raw', html: basicSectionTitleHtml, editHtml: basicSectionTitleHtml },
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true, options: warehouseOptions },
                     { id: 'templateCode', label: '波次模板编码', type: 'text', required: true, editDisabled: true },
                     { id: 'templateName', label: '波次模板名称', type: 'text', required: true, editDisabled: true },
                     { id: 'flowType', label: '流程类型', type: 'select', required: true, editDisabled: true, options: flowTypeOptions },
                     { id: 'outboundType', label: '出库类型', type: 'select', required: true, editDisabled: true, options: outboundTypeOptions },
                     { id: 'outboundBizType', label: '出库业务类型', type: 'select', required: true, editDisabled: true, options: outboundBizTypeOptions },
-                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: isEnabledOptions },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, optionSet: 'enabledStatus' },
                     { id: 'divider1', label: '', type: 'raw', html: dividerHtml, editHtml: dividerHtml },
                     { id: 'dividerTimer', label: '', type: 'raw', html: timerSectionTitleHtml, editHtml: timerSectionTitleHtml },
                     { id: 'timerExpression', label: '定时器表达式', type: 'text', required: false },
@@ -299,8 +289,9 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用' },
+                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'templateCode', message: '请输入波次模板编码', required: true },
                         { id: 'templateName', message: '请输入波次模板名称', required: true },
                         { id: 'warehouse', message: '请选择仓库', required: true },
@@ -340,6 +331,7 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editTemplateName', message: '请输入波次模板名称', required: true },
                         { id: 'editWarehouse', message: '请选择仓库', required: true },
                         { id: 'editFlowType', message: '请选择流程类型', required: true },
@@ -366,6 +358,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
+                            editTenant: 'XX集团',
                             editTemplateCode: cells[1].textContent,
                             editTemplateName: cells[2].textContent,
                             editWarehouse: cells[3].textContent,
@@ -389,6 +382,11 @@
             
             // 新增时设置当前仓库
             document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (tenantInput) {
+                    tenantInput.value = 'XX集团';
+                    tenantInput.dataset.value = 'XX集团';
+                }
                 const currentWarehouse = getCurrentWarehouse();
                 if (currentWarehouse) {
                     const warehouseInput = document.getElementById('warehouse');

@@ -138,7 +138,7 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
                       options: [
@@ -151,7 +151,7 @@
                     { id: 'areaCode', label: '作业区域编码', type: 'text', required: true, editDisabled: true },
                     { id: 'areaName', label: '作业区域名称', type: 'text', required: true, editDisabled: true },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' }
                 ],
                 
@@ -230,7 +230,6 @@
             });
             
             page.init();
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
             
             // 新增时设置当前仓库
             document.getElementById('addBtn').addEventListener('click', () => {

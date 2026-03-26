@@ -252,21 +252,18 @@
         </div>
     </div>
 
+    <script src="js/mobile-page-utils.js"></script>
     <script>
         const warehouseInput = document.getElementById('warehouseInput');
-        const warehouseModal = document.getElementById('warehouseModal');
         const warehouseItems = document.querySelectorAll('.warehouse-item');
+        const warehouseModalController = MobilePageUtils.createClassModalController({
+            modalId: 'warehouseModal',
+            visibleClass: 'show'
+        });
 
         // 点击仓库输入框打开弹窗
         warehouseInput.addEventListener('click', () => {
-            warehouseModal.classList.add('show');
-        });
-
-        // 点击弹窗背景关闭弹窗
-        warehouseModal.addEventListener('click', (e) => {
-            if (e.target === warehouseModal) {
-                warehouseModal.classList.remove('show');
-            }
+            warehouseModalController.open();
         });
 
         // 点击仓库选项
@@ -279,7 +276,7 @@
                 // 更新输入框值
                 warehouseInput.value = item.dataset.value;
                 // 关闭弹窗
-                warehouseModal.classList.remove('show');
+                warehouseModalController.close();
             });
         });
     </script>

@@ -161,6 +161,8 @@
                 ],
                 
                 fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, editDisabled: true, options: CommonOptions.warehouse },
                     { id: 'company', label: '货主', type: 'select', required: true, editDisabled: true, options: CommonOptions.company },
                     { id: 'companyDetail', label: '公司', type: 'select', options: CommonOptions.company },
@@ -173,7 +175,9 @@
                     saveBtnId: 'saveWarehouseCompanyBtn',
                     cancelBtnId: 'cancelWarehouseCompanyBtn',
                     triggerBtnId: 'addBtn',
+                    defaults: { tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'warehouse', message: '请选择仓库', required: true },
                         { id: 'company', message: '请选择货主', required: true },
                         { id: 'location', message: '请选择地点', required: true }
@@ -203,9 +207,10 @@
                     saveBtnId: 'editSaveWarehouseCompanyBtn',
                     cancelBtnId: 'editCancelWarehouseCompanyBtn',
                     validations: [
-                        { id: 'warehouse', message: '请选择仓库', required: true },
-                        { id: 'company', message: '请选择货主', required: true },
-                        { id: 'location', message: '请选择地点', required: true }
+                        { id: 'editTenant', message: '请选择租户', required: true },
+                        { id: 'editWarehouse', message: '请选择仓库', required: true },
+                        { id: 'editCompany', message: '请选择货主', required: true },
+                        { id: 'editLocation', message: '请选择地点', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
@@ -224,6 +229,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
+                            editTenant: 'XX集团',
                             editWarehouse: cells[1].textContent,
                             editCompany: cells[2].textContent,
                             editCompanyDetail: cells[3].textContent,
@@ -236,6 +242,14 @@
             });
             
             page.init();
+
+            // 新增时自动填充租户（参考 lpn 页面行为）
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (!tenantInput) return;
+                tenantInput.value = 'XX集团';
+                tenantInput.dataset.value = 'XX集团';
+            });
         });
     </script>
 </body>

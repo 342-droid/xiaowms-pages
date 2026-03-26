@@ -636,6 +636,8 @@
                 length: '30', width: '25', height: '25', volume: '0.01875', grossWeight: '13', netWeight: '12'
             }
         };
+        let skuDetailModalController = null;
+        let skuSpecEditModalController = null;
 
         // 打开详情弹窗
         function openDetailModal(skuCode) {
@@ -667,7 +669,9 @@
                 document.getElementById('detailVolume').textContent = detail.volume;
                 document.getElementById('detailGrossWeight').textContent = detail.grossWeight;
                 document.getElementById('detailNetWeight').textContent = detail.netWeight;
-                document.getElementById('skuDetailModal').style.display = 'block';
+                if (skuDetailModalController) {
+                    skuDetailModalController.open();
+                }
             }
         }
 
@@ -684,7 +688,7 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true,
                       options: [
                           { value: 'T001-南京租户', text: 'T001-南京租户' },
                           { value: 'T002-北京租户', text: 'T002-北京租户' },
@@ -693,7 +697,7 @@
                           { value: 'T005-深圳租户', text: 'T005-深圳租户' }
                       ]
                     },
-                    { id: 'warehouse', label: '仓库', type: 'select', required: true,
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
                       options: [
                           { value: 'W001-南京仓', text: 'W001-南京仓' },
                           { value: 'W002-嘉兴仓', text: 'W002-嘉兴仓' },
@@ -726,19 +730,19 @@
                     { id: 'categoryS', label: '商品小类', type: 'text', required: true },
                     { id: 'shelfLife', label: '保质期（天）', type: 'number', required: true },
                     { id: 'isStandard', label: '是否标品', type: 'select', required: true,
-                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                      optionSet: 'yesNoText'
                     },
                     { id: 'isBonded', label: '是否保税', type: 'select', required: true,
-                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                      optionSet: 'yesNoText'
                     },
                     { id: 'isExpiry', label: '是否效期管理', type: 'select', required: true,
-                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                      optionSet: 'yesNoText'
                     },
                     { id: 'isBatch', label: '是否批次管理', type: 'select', required: true,
-                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                      optionSet: 'yesNoText'
                     },
                     { id: 'isSerial', label: '是否序列号管理', type: 'select', required: true,
-                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                      optionSet: 'yesNoText'
                     },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
                 ],
@@ -749,6 +753,8 @@
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
                     defaults: { 
+                        tenant: 'T001-南京租户',
+                        warehouse: 'W001-南京仓',
                         isStandard: '是', 
                         isBonded: '否', 
                         isExpiry: '是',
@@ -815,6 +821,37 @@
             });
             
             page.init();
+
+            // 新增时自动填充租户、仓库（参考 lpn 页面行为）
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (tenantInput) {
+                    tenantInput.value = 'T001-南京租户';
+                    tenantInput.dataset.value = 'T001-南京租户';
+                }
+
+                const currentWarehouse = getCurrentWarehouse();
+                const warehouseInput = document.getElementById('warehouse');
+                if (!warehouseInput) return;
+
+                if (currentWarehouse) {
+                    const warehouseText = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                    warehouseInput.value = warehouseText;
+                    warehouseInput.dataset.value = warehouseText;
+                } else {
+                    warehouseInput.value = 'W001-南京仓';
+                    warehouseInput.dataset.value = 'W001-南京仓';
+                }
+            });
+
+            skuDetailModalController = window.WMSUI.createModalController({
+                modalId: 'skuDetailModal',
+                closeButtonIds: ['detailCloseBtn', 'detailCancelBtn']
+            });
+            skuSpecEditModalController = window.WMSUI.createModalController({
+                modalId: 'skuSpecEditModal',
+                closeButtonIds: ['skuSpecEditCloseBtn', 'skuSpecEditCancelBtn']
+            });
             
             // 编辑按钮事件 - 打开详情弹窗
             document.querySelector('.table').addEventListener('click', (e) => {
@@ -828,19 +865,11 @@
             });
             
             // 商品详情弹窗关闭事件
-            const skuDetailModal = document.getElementById('skuDetailModal');
-            const detailCloseBtn = document.getElementById('detailCloseBtn');
-            const detailCancelBtn = document.getElementById('detailCancelBtn');
-            
             function closeDetailModal() {
-                skuDetailModal.style.display = 'none';
+                if (skuDetailModalController) {
+                    skuDetailModalController.close();
+                }
             }
-            
-            detailCloseBtn.addEventListener('click', closeDetailModal);
-            detailCancelBtn.addEventListener('click', closeDetailModal);
-            skuDetailModal.addEventListener('click', (e) => {
-                if (e.target === skuDetailModal) closeDetailModal();
-            });
             
             // 商品规格新增模态框
             const skuSpecAddModal = document.getElementById('skuSpecAddModal');
@@ -848,6 +877,11 @@
             const skuSpecAddCancelBtn = document.getElementById('skuSpecAddCancelBtn');
             const skuSpecAddSaveBtn = document.getElementById('skuSpecAddSaveBtn');
             const addSpecBtn = document.getElementById('addSpecBtn');
+            const skuSpecAddModalController = window.WMSUI.createModalController({
+                modalId: 'skuSpecAddModal',
+                closeButtonIds: [],
+                closeOnMask: false
+            });
             
             let currentSkuDetail = null;
             
@@ -858,12 +892,12 @@
                     document.getElementById('specAddBarcode').value = currentSkuDetail.barcode;
                     document.getElementById('specAddSkuName').value = currentSkuDetail.skuName;
                 }
-                skuSpecAddModal.style.display = 'block';
+                skuSpecAddModalController.open();
             }
             
             // 关闭商品规格新增模态框
             function closeSkuSpecAddModal() {
-                skuSpecAddModal.style.display = 'none';
+                skuSpecAddModalController.close();
                 // 清空表单
                 document.getElementById('specAddPackUnit').value = '';
                 document.getElementById('specAddPackQty').value = '';
@@ -884,45 +918,6 @@
             // 初始化商品规格编辑模态框的下拉框
             function initSkuSpecEditSelects() {
                 initCustomSelect('specEditIsBaseUnit', 'specEditIsBaseUnitDropdown');
-            }
-            
-            // 通用自定义下拉框初始化函数
-            function initCustomSelect(inputId, dropdownId) {
-                const input = document.getElementById(inputId);
-                const dropdown = document.getElementById(dropdownId);
-                const customSelect = input.parentElement;
-                
-                const selectArrow = customSelect.querySelector('.select-arrow');
-                const clearBtn = customSelect.querySelector('.clear-btn');
-                
-                // 点击整个自定义选择框区域（除了输入框和清除按钮）打开/关闭下拉框
-                customSelect.addEventListener('click', (e) => {
-                    if (e.target !== clearBtn) {
-                        dropdown.classList.toggle('show');
-                    }
-                });
-                
-                // 点击选项
-                dropdown.querySelectorAll('.select-option').forEach(option => {
-                    option.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        input.value = option.textContent;
-                        dropdown.classList.remove('show');
-                    });
-                });
-                
-                // 清空按钮
-                clearBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    input.value = '';
-                });
-                
-                // 点击外部关闭下拉框
-                document.addEventListener('click', (e) => {
-                    if (!customSelect.contains(e.target)) {
-                        dropdown.classList.remove('show');
-                    }
-                });
             }
             
             // 事件绑定
@@ -990,18 +985,8 @@
             initSkuSpecEditSelects();
             
             // 商品规格编辑模态框事件
-            const skuSpecEditModal = document.getElementById('skuSpecEditModal');
-            const skuSpecEditCloseBtn = document.getElementById('skuSpecEditCloseBtn');
-            const skuSpecEditCancelBtn = document.getElementById('skuSpecEditCancelBtn');
             const skuSpecEditSaveBtn = document.getElementById('skuSpecEditSaveBtn');
-            
-            skuSpecEditCloseBtn.addEventListener('click', closeSpecEditModal);
-            skuSpecEditCancelBtn.addEventListener('click', closeSpecEditModal);
             skuSpecEditSaveBtn.addEventListener('click', saveSpecEdit);
-            
-            skuSpecEditModal.addEventListener('click', (e) => {
-                if (e.target === skuSpecEditModal) closeSpecEditModal();
-            });
             
             // 规格表格编辑和删除按钮事件
             document.getElementById('specTableBody').addEventListener('click', (e) => {
@@ -1050,11 +1035,15 @@
             document.getElementById('specEditGrossWeight').value = cells[7].textContent === '-' ? '' : cells[7].textContent;
             document.getElementById('specEditNetWeight').value = cells[8].textContent === '-' ? '' : cells[8].textContent;
             
-            document.getElementById('skuSpecEditModal').style.display = 'block';
+            if (skuSpecEditModalController) {
+                skuSpecEditModalController.open();
+            }
         }
         
         function closeSpecEditModal() {
-            document.getElementById('skuSpecEditModal').style.display = 'none';
+            if (skuSpecEditModalController) {
+                skuSpecEditModalController.close();
+            }
             currentEditSpecRow = null;
         }
         

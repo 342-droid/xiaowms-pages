@@ -206,7 +206,7 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
                     { id: 'userName', label: '用户姓名', type: 'text', required: true },
@@ -216,7 +216,7 @@
                     { id: 'email', label: '邮箱', type: 'text' },
                     { id: 'address', label: '地址', type: 'text' },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
                 ],
                 
@@ -313,24 +313,39 @@
             });
             
             page.init();
+
+            // 等DOM完全就绪后再初始化“添加角色”弹窗控制器
+            addRoleModalController = window.WMSUI.createModalController({
+                modalId: 'addRoleModal'
+            });
+
+            // 新增时自动填充租户（参考 lpn 页面行为）
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (!tenantInput) return;
+                tenantInput.value = 'XX集团';
+                tenantInput.dataset.value = 'XX集团';
+            });
             
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
         });
 
         let currentUserCode = '';
         let currentUserName = '';
+        let addRoleModalController = null;
 
         function openAddRoleModal(userCode, userName) {
             currentUserCode = userCode;
             currentUserName = userName;
             document.getElementById('addRoleUserCode').textContent = userCode;
             document.getElementById('addRoleUserName').textContent = userName;
-            document.getElementById('addRoleModal').style.display = 'block';
+            if (!addRoleModalController) return;
+            addRoleModalController.open();
             initRoleSelector();
         }
 
         function closeAddRoleModal() {
-            document.getElementById('addRoleModal').style.display = 'none';
+            if (!addRoleModalController) return;
+            addRoleModalController.close();
         }
 
         function initRoleSelector() {

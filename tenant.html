@@ -27,14 +27,14 @@
                     <div class="form-group">
                         <label>租户编码:</label>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="请输入">
+                            <input type="text" id="searchTenantCode" placeholder="请输入">
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>租户名称:</label>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="请输入">
+                            <input type="text" id="searchTenantName" placeholder="请输入">
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-primary" id="searchBtn">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
                     </div>
                 </form>
@@ -140,7 +140,7 @@
                     { id: 'contactPerson', label: '联系人', type: 'text' },
                     { id: 'phone', label: '电话', type: 'text' },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
                 ],
                 
@@ -222,8 +222,6 @@
             });
             
             page.init();
-            
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
         });
     </script>
 </body>

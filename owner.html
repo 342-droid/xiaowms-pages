@@ -247,7 +247,7 @@
                     { id: 'contactPerson', label: '联系人', type: 'text' },
                     { id: 'phone', label: '电话', type: 'text' },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '100px' }
                 ],
                 
@@ -341,7 +341,6 @@
             });
             
             page.init();
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
         });
     </script>
 </body>

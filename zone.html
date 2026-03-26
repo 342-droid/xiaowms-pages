@@ -231,6 +231,27 @@
 
         // 使用PageManager简化页面逻辑
         document.addEventListener('DOMContentLoaded', () => {
+            const ZONE_TYPE_TEXT_MAP = {
+                storage: '存储区',
+                picking: '拣货区',
+                receiving: '收货区',
+                shipping: '发货区'
+            };
+
+            const getZoneTypeText = (value) => {
+                if (!value) return ZONE_TYPE_TEXT_MAP.storage;
+                if (ZONE_TYPE_TEXT_MAP[value]) return ZONE_TYPE_TEXT_MAP[value];
+                if (Object.values(ZONE_TYPE_TEXT_MAP).includes(value)) return value;
+                return ZONE_TYPE_TEXT_MAP.storage;
+            };
+
+            const getZoneTypeValue = (textOrValue) => {
+                if (!textOrValue) return 'storage';
+                if (ZONE_TYPE_TEXT_MAP[textOrValue]) return textOrValue;
+                const matched = Object.entries(ZONE_TYPE_TEXT_MAP).find(([, text]) => text === textOrValue);
+                return matched ? matched[0] : 'storage';
+            };
+
             // 初始化仓间下拉框数据
             initRoomDropdowns('W001');
             
@@ -251,9 +272,9 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
-                    { id: 'warehouseCode', label: '仓库编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'warehouseCode', label: '仓库编码', type: 'text', required: true, disabled: true, editDisabled: true },
                     { id: 'roomCode', label: '仓间编码', type: 'text', required: true, editDisabled: true },
                     { id: 'zoneCode', label: '库区编码', type: 'text', required: true, editDisabled: true },
                     { id: 'zoneName', label: '库区名称', type: 'text', required: true, editDisabled: true },
@@ -261,7 +282,7 @@
                       options: [{ value: 'storage', text: '存储区' }, { value: 'picking', text: '拣货区' }, { value: 'receiving', text: '收货区' }, { value: 'shipping', text: '发货区' }] },
                     { type: 'raw', html: storageSelectHtml, editHtml: editStorageSelectHtml },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea' }
                 ],
                 
@@ -283,14 +304,12 @@
                     onSave: () => {
                         const code = document.getElementById('zoneCode').value.trim();
                         const name = document.getElementById('zoneName').value.trim();
-                        const zoneType = document.getElementById('zoneType').value.trim();
+                        const zoneTypeInput = document.getElementById('zoneType');
+                        const zoneType = zoneTypeInput.dataset.value || zoneTypeInput.value.trim();
                         const roomCode = document.getElementById('roomCode').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
                         
-                        let zoneTypeText = '存储区';
-                        if (zoneType === 'picking') zoneTypeText = '拣货区';
-                        if (zoneType === 'receiving') zoneTypeText = '收货区';
-                        if (zoneType === 'shipping') zoneTypeText = '发货区';
+                        const zoneTypeText = getZoneTypeText(zoneType);
                         
                         const roomInfo = roomData.find(r => r.code === roomCode);
                         const roomDisplay = roomInfo ? `${roomInfo.code}-${roomInfo.name}` : roomCode;
@@ -323,11 +342,9 @@
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         
-                        let zoneTypeText = '存储区';
-                        const zoneType = document.getElementById('editZoneType').value.trim();
-                        if (zoneType === 'picking') zoneTypeText = '拣货区';
-                        if (zoneType === 'receiving') zoneTypeText = '收货区';
-                        if (zoneType === 'shipping') zoneTypeText = '发货区';
+                        const editZoneTypeInput = document.getElementById('editZoneType');
+                        const zoneType = editZoneTypeInput.dataset.value || editZoneTypeInput.value.trim();
+                        const zoneTypeText = getZoneTypeText(zoneType);
                         
                         page.updateTableRow(page.currentEditRow, {
                             3: zoneTypeText,
@@ -342,11 +359,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         
-                        let zoneTypeValue = 'storage';
                         const zoneTypeText = cells[3].textContent;
-                        if (zoneTypeText === '拣货区') zoneTypeValue = 'picking';
-                        if (zoneTypeText === '收货区') zoneTypeValue = 'receiving';
-                        if (zoneTypeText === '发货区') zoneTypeValue = 'shipping';
                         
                         return {
                             editTenant: 'XX集团',
@@ -354,7 +367,7 @@
                             editRoomCode: 'R001',
                             editZoneCode: cells[1].textContent,
                             editZoneName: cells[2].textContent,
-                            editZoneType: zoneTypeValue,
+                            editZoneType: getZoneTypeText(getZoneTypeValue(zoneTypeText)),
                             editIsEnabled: cells[5].querySelector('.status').textContent
                         };
                     }
@@ -371,7 +384,6 @@
             page.init();
             
             // 绑定编辑模态框关闭按钮
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
             
             // 新增时设置当前仓库
             document.getElementById('addBtn').addEventListener('click', () => {

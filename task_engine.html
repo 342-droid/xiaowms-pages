@@ -243,24 +243,7 @@
                 { value: 'warehouseTransfer', text: '仓库调拨' }
             ];
             
-            const locationTypeOptions = [
-                { value: 'picking', text: '拣选位' },
-                { value: 'storage', text: '存储位' },
-                { value: 'staging', text: '暂存位' },
-                { value: 'receiving', text: '收货位' },
-                { value: 'shipping', text: '发货位' },
-                { value: 'crossdock', text: '越库位' },
-                { value: 'distribution', text: '集散位' },
-                { value: 'packing', text: '打包位' },
-                { value: 'exception', text: '异常位' },
-                { value: 'pending', text: '待处理位' },
-                { value: 'return', text: '退货位' }
-            ];
-            
-            const isEnabledOptions = [
-                { value: '启用', text: '启用' },
-                { value: '禁用', text: '禁用' }
-            ];
+            const locationTypeOptions = CommonOptions.locationType;
             
             const warehouseOptions = [
                 { value: 'W001', text: '南京仓' },
@@ -294,10 +277,7 @@
                 { value: 'targetLocation', text: '目的储位' }
             ];
             
-            const yesNoOptions = [
-                { value: 'yes', text: '是' },
-                { value: 'no', text: '否' }
-            ];
+            const yesNoOptions = CommonOptions.yesNo;
             
             const targetLocationRuleOptions = [
                 { value: 'source', text: '来源储位' },
@@ -326,9 +306,11 @@
                 ],
                 
                 fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'engineCode', label: '任务引擎编码', type: 'text', required: true, editDisabled: true },
                     { id: 'engineName', label: '任务引擎名称', type: 'text', required: true },
-                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: isEnabledOptions },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, optionSet: 'enabledStatus' },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, options: warehouseOptions, editDisabled: true },
                     { id: 'company', label: '委托方', type: 'select', required: true, options: companyOptions, editDisabled: true },
                     { id: 'priority', label: '优先级', type: 'select', required: true, options: priorityOptions },
@@ -367,8 +349,9 @@
                     saveBtnId: 'saveTaskEngineBtn',
                     cancelBtnId: 'cancelTaskEngineBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用' },
+                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'engineCode', message: '请输入任务引擎编码', required: true },
                         { id: 'engineName', message: '请输入任务引擎名称', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true },
@@ -424,6 +407,7 @@
                     saveBtnId: 'editSaveTaskEngineBtn',
                     cancelBtnId: 'editCancelTaskEngineBtn',
                     validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editEngineName', message: '请输入任务引擎名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true },
                         { id: 'editWarehouse', message: '请选择仓库', required: true },
@@ -462,6 +446,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
+                            editTenant: 'XX集团',
                             editEngineCode: cells[1].textContent,
                             editEngineName: cells[2].textContent,
                             editWarehouse: cells[3].textContent,
@@ -480,6 +465,13 @@
             });
             
             page.init();
+
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (!tenantInput) return;
+                tenantInput.value = 'XX集团';
+                tenantInput.dataset.value = 'XX集团';
+            });
         });
     </script>
 </body>

@@ -467,6 +467,9 @@
         let currentCategoryDetail = null;
         let currentParentNode = null;
         let currentEditNode = null;
+        let categoryDetailModalController = null;
+        let categoryItemAddModalController = null;
+        let categoryItemEditModalController = null;
 
         // 打开详情弹窗
         function openDetailModal(categoryCode) {
@@ -501,13 +504,17 @@
                 categoryTree.expandedNodes.clear();
                 categoryTree.setData(detail.items || []);
                 
-                document.getElementById('categoryDetailModal').style.display = 'block';
+                if (categoryDetailModalController) {
+                    categoryDetailModalController.open();
+                }
             }
         }
 
         // 关闭详情弹窗
         function closeDetailModal() {
-            document.getElementById('categoryDetailModal').style.display = 'none';
+            if (categoryDetailModalController) {
+                categoryDetailModalController.close();
+            }
             currentCategoryDetail = null;
         }
 
@@ -523,7 +530,9 @@
                 document.getElementById('itemAddParentCode').disabled = false;
                 document.getElementById('itemAddLevel').disabled = false;
             }
-            document.getElementById('categoryItemAddModal').style.display = 'block';
+            if (categoryItemAddModalController) {
+                categoryItemAddModalController.open();
+            }
         }
 
         // 打开品类新增模态框（带父节点）
@@ -546,7 +555,9 @@
                     document.getElementById('itemAddParentCode').disabled = true;
                     document.getElementById('itemAddLevel').disabled = true;
                 }
-                document.getElementById('categoryItemAddModal').style.display = 'block';
+                if (categoryItemAddModalController) {
+                    categoryItemAddModalController.open();
+                }
             }
         }
 
@@ -568,7 +579,9 @@
 
         // 关闭品类新增模态框
         function closeCategoryItemAddModal() {
-            document.getElementById('categoryItemAddModal').style.display = 'none';
+            if (categoryItemAddModalController) {
+                categoryItemAddModalController.close();
+            }
             currentParentNode = null;
             document.getElementById('itemAddTenant').value = '';
             document.getElementById('itemAddCategoryCode').value = '';
@@ -610,7 +623,9 @@
             document.getElementById('itemEditParentCode').disabled = true;
             document.getElementById('itemEditLevel').disabled = true;
             
-            document.getElementById('categoryItemEditModal').style.display = 'block';
+            if (categoryItemEditModalController) {
+                categoryItemEditModalController.open();
+            }
         }
 
         // 在树状结构中查找父节点
@@ -632,7 +647,9 @@
 
         // 关闭品类编辑模态框
         function closeCategoryItemEditModal() {
-            document.getElementById('categoryItemEditModal').style.display = 'none';
+            if (categoryItemEditModalController) {
+                categoryItemEditModalController.close();
+            }
             currentEditNode = null;
             document.getElementById('itemEditTenant').value = '';
             document.getElementById('itemEditCategoryCode').value = '';
@@ -703,7 +720,7 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true,
                       options: [
                           { value: 'T001-南京租户', text: 'T001-南京租户' },
                           { value: 'T002-北京租户', text: 'T002-北京租户' },
@@ -722,6 +739,9 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
+                    defaults: {
+                        tenant: 'T001-南京租户'
+                    },
                     validations: [
                         { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'categoryCode', message: '请输入品类单头编码', required: true },
@@ -752,6 +772,27 @@
             });
             
             page.init();
+
+            // 新增时自动填充租户（参考 lpn 页面行为）
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (!tenantInput) return;
+                tenantInput.value = 'T001-南京租户';
+                tenantInput.dataset.value = 'T001-南京租户';
+            });
+
+            categoryDetailModalController = window.WMSUI.createModalController({
+                modalId: 'categoryDetailModal',
+                closeButtonIds: ['categoryDetailCloseBtn', 'categoryDetailCancelBtn']
+            });
+            categoryItemAddModalController = window.WMSUI.createModalController({
+                modalId: 'categoryItemAddModal',
+                closeButtonIds: ['categoryItemAddCloseBtn', 'categoryItemAddCancelBtn']
+            });
+            categoryItemEditModalController = window.WMSUI.createModalController({
+                modalId: 'categoryItemEditModal',
+                closeButtonIds: ['categoryItemEditCloseBtn', 'categoryItemEditCancelBtn']
+            });
             
             // 编辑按钮事件 - 打开详情弹窗
             document.querySelector('.table').addEventListener('click', (e) => {
@@ -764,21 +805,7 @@
                 }
             });
             
-            // 商品品类详情弹窗关闭事件
-            const categoryDetailModal = document.getElementById('categoryDetailModal');
-            const categoryDetailCloseBtn = document.getElementById('categoryDetailCloseBtn');
-            const categoryDetailCancelBtn = document.getElementById('categoryDetailCancelBtn');
-            
-            categoryDetailCloseBtn.addEventListener('click', closeDetailModal);
-            categoryDetailCancelBtn.addEventListener('click', closeDetailModal);
-            categoryDetailModal.addEventListener('click', (e) => {
-                if (e.target === categoryDetailModal) closeDetailModal();
-            });
-            
             // 品类新增模态框
-            const categoryItemAddModal = document.getElementById('categoryItemAddModal');
-            const categoryItemAddCloseBtn = document.getElementById('categoryItemAddCloseBtn');
-            const categoryItemAddCancelBtn = document.getElementById('categoryItemAddCancelBtn');
             const categoryItemAddSaveBtn = document.getElementById('categoryItemAddSaveBtn');
             const addCategoryItemBtn = document.getElementById('addCategoryItemBtn');
             
@@ -790,13 +817,6 @@
             // 事件绑定
             addCategoryItemBtn.addEventListener('click', () => {
                 openCategoryItemAddModal();
-            });
-            
-            categoryItemAddCloseBtn.addEventListener('click', closeCategoryItemAddModal);
-            categoryItemAddCancelBtn.addEventListener('click', closeCategoryItemAddModal);
-            
-            categoryItemAddModal.addEventListener('click', (e) => {
-                if (e.target === categoryItemAddModal) closeCategoryItemAddModal();
             });
             
             // 保存品类
@@ -873,18 +893,7 @@
             initCustomSelect('itemEditLevel', 'itemEditLevelDropdown');
             
             // 品类编辑模态框
-            const categoryItemEditModal = document.getElementById('categoryItemEditModal');
-            const categoryItemEditCloseBtn = document.getElementById('categoryItemEditCloseBtn');
-            const categoryItemEditCancelBtn = document.getElementById('categoryItemEditCancelBtn');
             const categoryItemEditSaveBtn = document.getElementById('categoryItemEditSaveBtn');
-            
-            // 事件绑定
-            categoryItemEditCloseBtn.addEventListener('click', closeCategoryItemEditModal);
-            categoryItemEditCancelBtn.addEventListener('click', closeCategoryItemEditModal);
-            
-            categoryItemEditModal.addEventListener('click', (e) => {
-                if (e.target === categoryItemEditModal) closeCategoryItemEditModal();
-            });
             
             // 保存品类编辑
             categoryItemEditSaveBtn.addEventListener('click', () => {

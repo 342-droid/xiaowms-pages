@@ -260,7 +260,7 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [
                           { value: 'XX集团', text: 'XX集团' },
                           { value: '测试租户', text: '测试租户' }
@@ -297,11 +297,7 @@
                           { value: 'light', text: '轻型货架' }
                       ] },
                     { id: 'temperatureLayer', label: '温层', type: 'select', required: true,
-                      options: [
-                          { value: 'normal', text: '常温' },
-                          { value: 'cold', text: '冷藏' },
-                          { value: 'frozen', text: '冷冻' }
-                      ] },
+                      optionSet: 'temperatureLayer' },
                     { id: 'rowColumnLayer', label: '排-列-层', type: 'triple-input',
                       inputs: [
                           { id: 'row', placeholder: '排' },
@@ -335,22 +331,22 @@
                           { value: 'none', text: '不校验' }
                       ] },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { type: 'raw', html: '<hr style="width: 100%; border: none; border-top: 1px solid #e0e0e0; margin: 10px 0;">' },
                     { id: 'allowMixedCompany', label: '是否混放委托方', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'allowMixedProducts', label: '是否混放商品', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'allowMixedBatch', label: '是否混放生产日期', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'allowMixedOwner', label: '是否混放货主', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'releaseContainer', label: '是否释放容器', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'releaseSourceNumber', label: '是否释放来源单号', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] },
+                      optionSet: 'yesNo' },
                     { id: 'isBonded', label: '是否保税', type: 'radio', required: true,
-                      options: [{ value: 'yes', text: '是' }, { value: 'no', text: '否' }] }
+                      optionSet: 'yesNo' }
                 ],
                 
                 addModal: {
@@ -507,7 +503,6 @@
                 });
             });
             
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
             
             // 监听仓库选择变化事件
             document.addEventListener('warehouseChange', (e) => {

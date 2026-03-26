@@ -172,9 +172,17 @@ const CommonOptions = {
         { value: 'yes', text: '启用' },
         { value: 'no', text: '禁用' }
     ],
+    enabledStatus: [
+        { value: '启用', text: '启用' },
+        { value: '禁用', text: '禁用' }
+    ],
     yesNo: [
         { value: 'yes', text: '是' },
         { value: 'no', text: '否' }
+    ],
+    yesNoText: [
+        { value: '是', text: '是' },
+        { value: '否', text: '否' }
     ],
     warehouseType: [
         { value: 'warehouse', text: '仓库' },
@@ -266,6 +274,11 @@ const CommonOptions = {
         { value: 'L003-上海地点', text: 'L003-上海地点' },
         { value: 'L004-广州地点', text: 'L004-广州地点' },
         { value: 'L005-深圳地点', text: 'L005-深圳地点' }
+    ],
+    // 周转策略选项
+    turnStrategy: [
+        { value: 'TS001', text: 'TS001-标准出库周转策略' },
+        { value: 'TS002', text: 'TS002-标准入库周转策略' }
     ]
 };
 

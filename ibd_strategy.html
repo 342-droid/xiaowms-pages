@@ -211,6 +211,8 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
                       options: [
                           { value: 'W001-南京仓', text: 'W001-南京仓' },
@@ -240,27 +242,15 @@
                           { value: '退货入库', text: '退货入库' }
                       ] },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [
-                          { value: '启用', text: '启用' },
-                          { value: '禁用', text: '禁用' }
-                      ] },
+                      optionSet: 'enabledStatus' },
                     { id: 'divider1', label: '', type: 'raw', content: '<hr class="modal-divider">' },
                     { id: 'defaultLocation', label: '默认收货储位', type: 'text', width: '100%', labelWidth: '160px', required: true },
                     { id: 'locationEditable', label: '收货储位可修改', type: 'select', width: '100%', labelWidth: '160px', required: true,
-                      options: [
-                          { value: '是', text: '是' },
-                          { value: '否', text: '否' }
-                      ] },
+                      optionSet: 'yesNoText' },
                     { id: 'autoIssueIbd', label: '自动下发入库单', type: 'select', width: '100%', labelWidth: '160px', required: true,
-                      options: [
-                          { value: '是', text: '是' },
-                          { value: '否', text: '否' }
-                      ] },
+                      optionSet: 'yesNoText' },
                     { id: 'autoCloseIbd', label: '自动关闭入库单', type: 'select', width: '100%', labelWidth: '160px', required: true,
-                      options: [
-                          { value: '是', text: '是' },
-                          { value: '否', text: '否' }
-                      ] }
+                      optionSet: 'yesNoText' }
                 ],
                 
                 addModal: {
@@ -268,7 +258,9 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
+                    defaults: { tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'warehouse', message: '请选择仓库', required: true },
                         { id: 'company', message: '请选择委托方', required: true },
                         { id: 'strategyCode', message: '请输入入库策略编码', required: true },
@@ -320,6 +312,7 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editStrategyName', message: '请输入入库策略名称', required: true },
                         { id: 'editInboundType', message: '请选择入库类型', required: true },
                         { id: 'editBusinessType', message: '请选择入库业务类型', required: true },
@@ -350,6 +343,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
+                            editTenant: 'XX集团',
                             editWarehouse: cells[3].textContent,
                             editCompany: cells[4].textContent,
                             editStrategyCode: cells[1].textContent,
@@ -374,10 +368,15 @@
             });
             
             page.init();
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
             
             // 新增时设置当前仓库
             document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (tenantInput) {
+                    tenantInput.value = 'XX集团';
+                    tenantInput.dataset.value = 'XX集团';
+                }
+
                 const currentWarehouse = getCurrentWarehouse();
                 if (currentWarehouse) {
                     const warehouseInput = document.getElementById('warehouse');

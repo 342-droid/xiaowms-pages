@@ -143,9 +143,9 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
-                    { id: 'warehouse', label: '仓库', type: 'select', required: true, editDisabled: true,
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [
                           { value: 'W001', text: '南京仓' },
                           { value: 'W002', text: '嘉兴仓' },
@@ -160,7 +160,7 @@
                           { value: 'crossdock', text: '越库月台' }
                       ] },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
                 ],
                 
@@ -250,7 +250,6 @@
             
             page.init();
             
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
         });
     </script>
 </body>

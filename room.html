@@ -146,6 +146,26 @@
     <script>
         // 使用PageManager简化页面逻辑
         document.addEventListener('DOMContentLoaded', () => {
+            const ROOM_TYPE_TEXT_MAP = {
+                normal: '普通仓间',
+                processing: '加工仓间',
+                cold: '冷藏仓间'
+            };
+
+            const getRoomTypeText = (value) => {
+                if (!value) return ROOM_TYPE_TEXT_MAP.normal;
+                if (ROOM_TYPE_TEXT_MAP[value]) return ROOM_TYPE_TEXT_MAP[value];
+                if (Object.values(ROOM_TYPE_TEXT_MAP).includes(value)) return value;
+                return ROOM_TYPE_TEXT_MAP.normal;
+            };
+
+            const getRoomTypeValue = (textOrValue) => {
+                if (!textOrValue) return 'normal';
+                if (ROOM_TYPE_TEXT_MAP[textOrValue]) return textOrValue;
+                const matched = Object.entries(ROOM_TYPE_TEXT_MAP).find(([, text]) => text === textOrValue);
+                return matched ? matched[0] : 'normal';
+            };
+
             const page = new PageManager({
                 entityName: '仓间',
                 statusColumnIndex: 8,
@@ -158,7 +178,7 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
                       options: [
@@ -176,7 +196,7 @@
                     { id: 'contact', label: '联系人', type: 'text' },
                     { id: 'phone', label: '电话', type: 'text' },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'remark', label: '备注', type: 'textarea' }
                 ],
                 
@@ -198,16 +218,15 @@
                         const tenant = document.getElementById('tenant').value.trim();
                         const code = document.getElementById('roomCode').value.trim();
                         const name = document.getElementById('roomName').value.trim();
-                        const roomType = document.getElementById('roomType').value.trim();
+                        const roomTypeInput = document.getElementById('roomType');
+                        const roomType = roomTypeInput.dataset.value || roomTypeInput.value.trim();
                         const warehouse = document.getElementById('warehouse').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
                         const address = document.getElementById('address')?.value.trim() || '-';
                         const contact = document.getElementById('contact')?.value.trim() || '-';
                         const phone = document.getElementById('phone')?.value.trim() || '-';
                         
-                        let roomTypeText = '普通仓间';
-                        if (roomType === 'processing') roomTypeText = '加工仓间';
-                        if (roomType === 'cold') roomTypeText = '冷藏仓间';
+                        const roomTypeText = getRoomTypeText(roomType);
                         
                         page.addTableRow({
                             cells: [
@@ -240,10 +259,9 @@
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         
-                        let roomTypeText = '普通仓间';
-                        const roomType = document.getElementById('editRoomType').value.trim();
-                        if (roomType === 'processing') roomTypeText = '加工仓间';
-                        if (roomType === 'cold') roomTypeText = '冷藏仓间';
+                        const editRoomTypeInput = document.getElementById('editRoomType');
+                        const roomType = editRoomTypeInput.dataset.value || editRoomTypeInput.value.trim();
+                        const roomTypeText = getRoomTypeText(roomType);
                         
                         page.updateTableRow(page.currentEditRow, {
                             3: roomTypeText,
@@ -261,16 +279,13 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         
-                        let roomTypeValue = 'normal';
                         const roomTypeText = cells[3].textContent;
-                        if (roomTypeText === '加工仓间') roomTypeValue = 'processing';
-                        if (roomTypeText === '冷藏仓间') roomTypeValue = 'cold';
                         
                         return {
                             editTenant: 'XX集团',
                             editRoomCode: cells[1].textContent,
                             editRoomName: cells[2].textContent,
-                            editRoomType: roomTypeValue,
+                            editRoomType: getRoomTypeText(getRoomTypeValue(roomTypeText)),
                             editWarehouse: cells[4].textContent,
                             editIsEnabled: cells[8].querySelector('.status').textContent,
                             editAddress: cells[5].textContent === '-' ? '' : cells[5].textContent,
@@ -289,7 +304,6 @@
             });
             
             page.init();
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
             
             // 新增时设置当前仓库
             document.getElementById('addBtn').addEventListener('click', () => {

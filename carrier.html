@@ -120,13 +120,13 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'text', editDisabled: true },
-                    { id: 'organization', label: '机构', type: 'text', editDisabled: true },
+                    { id: 'tenant', label: '租户', type: 'text', required: true, disabled: true, editDisabled: true },
+                    { id: 'organization', label: '机构', type: 'text', required: true, editDisabled: true },
                     { id: 'externalCode', label: '对外编码', type: 'text', editDisabled: true },
                     { id: 'carrierCode', label: '承运商编码', type: 'text', required: true, editDisabled: true },
                     { id: 'carrierName', label: '承运商名称', type: 'text', required: true, editDisabled: true },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'companyName', label: '公司名称', type: 'text' },
                     { id: 'address', label: '地址', type: 'text' },
                     { id: 'contactPerson', label: '联系人', type: 'text' },
@@ -139,8 +139,10 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用' },
+                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
                     validations: [
+                        { id: 'tenant', message: '请输入租户', required: true },
+                        { id: 'organization', message: '请输入机构', required: true },
                         { id: 'carrierCode', message: '请输入承运商编码', required: true },
                         { id: 'carrierName', message: '请输入承运商名称', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
@@ -174,6 +176,8 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
+                        { id: 'editTenant', message: '请输入租户', required: true },
+                        { id: 'editOrganization', message: '请输入机构', required: true },
                         { id: 'editCarrierName', message: '请输入承运商名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
@@ -222,7 +226,13 @@
             });
             
             page.init();
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+
+            // 新增时自动填充租户（参考 lpn 页面行为）
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const tenantInput = document.getElementById('tenant');
+                if (!tenantInput) return;
+                tenantInput.value = 'XX集团';
+            });
         });
     </script>
 </body>

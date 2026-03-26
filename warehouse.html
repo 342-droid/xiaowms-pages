@@ -189,7 +189,7 @@
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'organization', label: '机构', type: 'text', required: true, editDisabled: true },
                     { id: 'warehouseCode', label: '仓库编码', type: 'text', required: true, editDisabled: true },
@@ -199,7 +199,7 @@
                     { id: 'warehouseVolume', label: '仓库容积', type: 'number', step: '0.01' },
                     { id: 'warehouseArea', label: '仓库面积', type: 'number', step: '0.01' },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
-                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                      optionSet: 'isEnabled' },
                     { id: 'address', label: '地址', type: 'text' },
                     { id: 'contactPerson', label: '联系人', type: 'text' },
                     { id: 'phone', label: '电话', type: 'text' },
@@ -297,7 +297,6 @@
             page.init();
             
             // 绑定编辑模态框关闭按钮
-            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
         });
     </script>
 </body>

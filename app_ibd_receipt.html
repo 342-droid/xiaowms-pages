@@ -1470,13 +1470,22 @@
         </div>
     </div>
 
+    <script src="js/mobile-page-utils.js"></script>
     <script>
         const scanInput = document.getElementById('scanInput');
-        const scanPage = document.getElementById('scanPage');
-        const typeQueryPage = document.getElementById('typeQueryPage');
-        const listPage = document.getElementById('listPage');
         const headerTitle = document.querySelector('.header-title');
         const backBtn = document.querySelector('.back-btn');
+        const pageIds = [
+            'scanPage',
+            'typeQueryPage',
+            'listPage',
+            'scanContainerPage',
+            'receiptDetailsPage',
+            'receiptRecordsPage',
+            'receiptRecordDetailPage'
+        ];
+        const setDisplay = (target, value, root) => MobilePageUtils.setDisplay(target, value, root);
+        const setDisplays = (displayMap, root) => MobilePageUtils.setDisplays(displayMap, root);
 
         let currentPage = 'scan';
 
@@ -1489,9 +1498,7 @@
         // 显示按类型查询页面
         function showTypeQueryPage() {
             currentPage = 'type';
-            scanPage.classList.remove('active');
-            listPage.classList.remove('active');
-            typeQueryPage.classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'typeQueryPage');
             headerTitle.textContent = '按类型查询';
             backBtn.setAttribute('onclick', 'showScanPage()');
         }
@@ -1499,12 +1506,7 @@
         // 显示扫码查询页面
         function showScanPage() {
             currentPage = 'scan';
-            typeQueryPage.classList.remove('active');
-            listPage.classList.remove('active');
-            document.getElementById('scanContainerPage').classList.remove('active');
-            document.getElementById('receiptDetailsPage').classList.remove('active');
-            document.getElementById('receiptRecordsPage').classList.remove('active');
-            scanPage.classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'scanPage');
             headerTitle.textContent = '查询入库单';
             backBtn.setAttribute('onclick', "window.location.href='app_list.html'");
         }
@@ -1512,8 +1514,7 @@
         // 显示列表页面
         function showListPage(type) {
             currentPage = 'list';
-            typeQueryPage.classList.remove('active');
-            listPage.classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'listPage');
             headerTitle.textContent = '查询入库单-列表';
             backBtn.setAttribute('onclick', 'showTypeQueryPage()');
             
@@ -1551,9 +1552,7 @@
                 if (value) {
                     // 跳转到列表页面
                     currentPage = 'list';
-                    scanPage.classList.remove('active');
-                    typeQueryPage.classList.remove('active');
-                    listPage.classList.add('active');
+                    MobilePageUtils.showOnlyPages(pageIds, 'listPage');
                     headerTitle.textContent = '查询入库单-列表';
                     backBtn.setAttribute('onclick', 'showScanPage(1)');
                 }
@@ -1563,8 +1562,7 @@
         // 显示入库单录入页面
         function showScanContainerPage(type, receiptId) {
             currentPage = 'scanContainer';
-            listPage.classList.remove('active');
-            document.getElementById('scanContainerPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'scanContainerPage');
             headerTitle.textContent = '入库单录入';
             backBtn.setAttribute('onclick', 'showListPageFromContainer()');
 
@@ -1576,18 +1574,18 @@
             document.getElementById('containerValue').textContent = '';
             document.getElementById('productValue').textContent = '';
             document.getElementById('scanTitle').textContent = '扫描容器';
-            document.getElementById('scanTitle').style.display = 'block';
+            setDisplay('scanTitle', 'block');
             document.getElementById('containerInput').placeholder = '请扫描/输入容器';
             document.getElementById('scanHint').textContent = '';
-            document.getElementById('scanHint').style.display = 'block';
-            document.getElementById('productInfoCard').style.display = 'none';
+            setDisplay('scanHint', 'block');
+            setDisplay('productInfoCard', 'none');
             document.getElementById('containerInput').value = '';
             
             // 显示入库单录入页面的输入框和扫描按钮的父容器
             const scanContainerPage = document.getElementById('scanContainerPage');
             const inputWrapper = scanContainerPage.querySelector('.input-wrapper');
             if (inputWrapper) {
-                inputWrapper.style.display = 'flex';
+                setDisplay(inputWrapper, 'flex');
             }
             
             // 重置统计信息
@@ -1597,15 +1595,14 @@
             // 隐藏封板按钮
             const sealButton = document.getElementById('sealButton');
             if (sealButton) {
-                sealButton.style.display = 'none';
+                setDisplay(sealButton, 'none');
             }
         }
 
         // 从入库单录入页面返回列表页面
         function showListPageFromContainer() {
             currentPage = 'list';
-            document.getElementById('scanContainerPage').classList.remove('active');
-            listPage.classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'listPage');
             headerTitle.textContent = '查询入库单-列表';
             backBtn.setAttribute('onclick', 'showTypeQueryPage()');
         }
@@ -1627,31 +1624,31 @@
                     
                     // 更改标题为扫描商品
                     scanTitle.textContent = '扫描商品';
-                    scanTitle.style.display = 'block';
+                    setDisplay(scanTitle, 'block');
                     
                     // 更改输入框占位符
                     containerInput.placeholder = '请扫描/输入商品';
                     
                     // 显示支持商品编码、商品条码的提示
                     scanHint.textContent = '支持商品编码、商品条码';
-                    scanHint.style.display = 'block';
+                    setDisplay(scanHint, 'block');
                     
                     // 显示入库单录入页面的输入框和扫描按钮的父容器
                     const scanContainerPage = document.getElementById('scanContainerPage');
                     const inputWrapper = scanContainerPage.querySelector('.input-wrapper');
                     if (inputWrapper) {
-                        inputWrapper.style.display = 'flex';
+                        setDisplay(inputWrapper, 'flex');
                     }
                     
                     // 显示封板按钮
                     const sealButton = document.getElementById('sealButton');
                     if (sealButton) {
-                        sealButton.style.display = 'flex';
+                        setDisplay(sealButton, 'flex');
                     }
                     
                     // 清空商品相关显示
                     productValue.textContent = '';
-                    document.getElementById('productInfoCard').style.display = 'none';
+                    setDisplay('productInfoCard', 'none');
                     
 
                 } else if (scanTitle.textContent === '扫描商品') {
@@ -1680,7 +1677,7 @@
             
             // 显示商品信息卡片
             const productInfoCard = document.getElementById('productInfoCard');
-            productInfoCard.style.display = 'block';
+            setDisplay(productInfoCard, 'block');
             
             // 隐藏入库单录入页面的扫描商品标题、输入框和提示
             const scanContainerPage = document.getElementById('scanContainerPage');
@@ -1688,25 +1685,25 @@
             // 隐藏扫描标题
             const scanTitle = scanContainerPage.querySelector('#scanTitle');
             if (scanTitle) {
-                scanTitle.style.display = 'none';
+                setDisplay(scanTitle, 'none');
             }
             
             // 隐藏输入框和扫描按钮的父容器
             const inputWrapper = scanContainerPage.querySelector('.input-wrapper');
             if (inputWrapper) {
-                inputWrapper.style.display = 'none';
+                setDisplay(inputWrapper, 'none');
             }
             
             // 隐藏扫描提示
             const scanHint = scanContainerPage.querySelector('#scanHint');
             if (scanHint) {
-                scanHint.style.display = 'none';
+                setDisplay(scanHint, 'none');
             }
             
             // 隐藏封板按钮
             const sealButton = document.getElementById('sealButton');
             if (sealButton) {
-                sealButton.style.display = 'none';
+                setDisplay(sealButton, 'none');
             }
             
             // 填充商品信息
@@ -1738,8 +1735,7 @@
         // 显示收货记录
         function showReceiptRecords() {
             currentPage = 'receiptRecords';
-            document.getElementById('scanContainerPage').classList.remove('active');
-            document.getElementById('receiptRecordsPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'receiptRecordsPage');
             headerTitle.textContent = '收货记录';
             backBtn.setAttribute('onclick', 'showScanContainerPageFromRecords()');
 
@@ -1762,8 +1758,7 @@
         // 从收货记录页面返回入库单录入页面
         function showScanContainerPageFromRecords() {
             currentPage = 'scanContainer';
-            document.getElementById('receiptRecordsPage').classList.remove('active');
-            document.getElementById('scanContainerPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'scanContainerPage');
             headerTitle.textContent = '入库单录入';
             backBtn.setAttribute('onclick', 'showListPageFromContainer()');
         }
@@ -1772,8 +1767,7 @@
         // 显示收货记录详情页面
         function showRecordDetail(container, time, product, barcode, receiver, quantity, status, putawayQuantity) {
             currentPage = 'recordDetail';
-            document.getElementById('receiptRecordsPage').classList.remove('active');
-            document.getElementById('receiptRecordDetailPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'receiptRecordDetailPage');
             headerTitle.textContent = '收货记录详情';
             backBtn.setAttribute('onclick', 'showReceiptRecordsFromDetail()');
 
@@ -1805,8 +1799,7 @@
         // 从收货记录详情页面返回收货记录页面
         function showReceiptRecordsFromDetail() {
             currentPage = 'receiptRecords';
-            document.getElementById('receiptRecordDetailPage').classList.remove('active');
-            document.getElementById('receiptRecordsPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'receiptRecordsPage');
             headerTitle.textContent = '收货记录';
             backBtn.setAttribute('onclick', 'showScanContainerPageFromRecords()');
         }
@@ -1833,14 +1826,11 @@
             const unsealBtn = document.getElementById('unsealBtn');
             
             if (tabName === 'initial') {
-                sealBtn.style.display = 'block';
-                unsealBtn.style.display = 'none';
+                setDisplays({ sealBtn: 'block', unsealBtn: 'none' });
             } else if (tabName === 'pending') {
-                sealBtn.style.display = 'none';
-                unsealBtn.style.display = 'block';
+                setDisplays({ sealBtn: 'none', unsealBtn: 'block' });
             } else {
-                sealBtn.style.display = 'none';
-                unsealBtn.style.display = 'none';
+                setDisplays({ sealBtn: 'none', unsealBtn: 'none' });
             }
         }
 
@@ -1883,8 +1873,7 @@
             const sealBtn = document.getElementById('sealBtn');
             const unsealBtn = document.getElementById('unsealBtn');
             if (sealBtn && unsealBtn) {
-                sealBtn.style.display = 'block';
-                unsealBtn.style.display = 'none';
+                setDisplays({ sealBtn: 'block', unsealBtn: 'none' });
             }
 
             // 模拟收货记录数据 - 初始状态
@@ -2097,8 +2086,7 @@
         // 显示入库明细
         function showReceiptDetails() {
             currentPage = 'receiptDetails';
-            document.getElementById('scanContainerPage').classList.remove('active');
-            document.getElementById('receiptDetailsPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'receiptDetailsPage');
             headerTitle.textContent = '入库单明细';
             backBtn.setAttribute('onclick', 'showScanContainerPageFromDetails()');
 
@@ -2118,8 +2106,7 @@
         // 从入库明细页面返回入库单录入页面
         function showScanContainerPageFromDetails() {
             currentPage = 'scanContainer';
-            document.getElementById('receiptDetailsPage').classList.remove('active');
-            document.getElementById('scanContainerPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'scanContainerPage');
             headerTitle.textContent = '入库单录入';
             backBtn.setAttribute('onclick', 'showListPageFromContainer()');
         }
@@ -2154,8 +2141,7 @@
         // 从入库明细页面进入入库单录入页面
         function goToScanContainerPage() {
             currentPage = 'scanContainer';
-            document.getElementById('receiptDetailsPage').classList.remove('active');
-            document.getElementById('scanContainerPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'scanContainerPage');
             headerTitle.textContent = '入库单录入';
             backBtn.setAttribute('onclick', 'showReceiptDetailsFromScanContainer()');
         }
@@ -2163,8 +2149,7 @@
         // 从入库单录入页面返回入库明细页面
         function showReceiptDetailsFromScanContainer() {
             currentPage = 'receiptDetails';
-            document.getElementById('scanContainerPage').classList.remove('active');
-            document.getElementById('receiptDetailsPage').classList.add('active');
+            MobilePageUtils.showOnlyPages(pageIds, 'receiptDetailsPage');
             headerTitle.textContent = '入库单明细';
             backBtn.setAttribute('onclick', 'showScanContainerPageFromDetails()');
         }
@@ -2189,7 +2174,7 @@
             const scanTitle = document.getElementById('scanTitle');
             if (scanTitle) {
                 scanTitle.textContent = '扫描容器';
-                scanTitle.style.display = 'block';
+                setDisplay(scanTitle, 'block');
             }
             
             const containerInput = document.getElementById('containerInput');
@@ -2198,22 +2183,22 @@
             const scanHint = document.getElementById('scanHint');
             if (scanHint) {
                 scanHint.textContent = '';
-                scanHint.style.display = 'block';
+                setDisplay(scanHint, 'block');
             }
             
-            document.getElementById('productInfoCard').style.display = 'none';
+            setDisplay('productInfoCard', 'none');
             containerInput.value = '';
             
             // 显示输入框和扫描按钮的父容器
             const inputWrapper = document.querySelector('.input-wrapper');
             if (inputWrapper) {
-                inputWrapper.style.display = 'flex';
+                setDisplay(inputWrapper, 'flex');
             }
             
             // 隐藏封板按钮
             const sealButton = document.getElementById('sealButton');
             if (sealButton) {
-                sealButton.style.display = 'none';
+                setDisplay(sealButton, 'none');
             }
         }
 
@@ -2235,7 +2220,7 @@
                 const scanTitle = scanContainerPage.querySelector('#scanTitle');
                 if (scanTitle) {
                     scanTitle.textContent = '扫描商品';
-                    scanTitle.style.display = 'block';
+                    setDisplay(scanTitle, 'block');
                 }
                 
                 const containerInput = document.getElementById('containerInput');
@@ -2244,22 +2229,22 @@
                 const scanHint = scanContainerPage.querySelector('#scanHint');
                 if (scanHint) {
                     scanHint.textContent = '支持商品编码、商品条码';
-                    scanHint.style.display = 'block';
+                    setDisplay(scanHint, 'block');
                 }
                 
-                document.getElementById('productInfoCard').style.display = 'none';
+                setDisplay('productInfoCard', 'none');
                 containerInput.value = '';
                 
                 // 显示输入框和扫描按钮的父容器
                 const inputWrapper = scanContainerPage.querySelector('.input-wrapper');
                 if (inputWrapper) {
-                    inputWrapper.style.display = 'flex';
+                    setDisplay(inputWrapper, 'flex');
                 }
                 
                 // 显示封板按钮
                 const sealButton = document.getElementById('sealButton');
                 if (sealButton) {
-                    sealButton.style.display = 'flex';
+                    setDisplay(sealButton, 'flex');
                 }
             }
         });

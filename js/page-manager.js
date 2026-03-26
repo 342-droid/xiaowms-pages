@@ -20,9 +20,83 @@ class PageManager {
             ...config
         };
         
+        this.normalizeConfig();
+        
         this.modals = {};
         this.currentEditRow = null;
         this.deleteTargetRow = null;
+    }
+
+    /**
+     * 标准化配置，统一处理可复用选项和默认值
+     */
+    normalizeConfig() {
+        const resolveOptions = (item) => {
+            if (!item) return [];
+            const optionSet = item.optionSet || item.optionsKey;
+            if (Array.isArray(item.options)) return item.options;
+            if (typeof item.options === 'string') {
+                return this.getOptionSet(item.options);
+            }
+            if (optionSet) {
+                return this.getOptionSet(optionSet);
+            }
+            return [];
+        };
+
+        if (Array.isArray(this.config.fields)) {
+            this.config.fields = this.config.fields.map(field => {
+                if (!field || (field.type !== 'select' && field.type !== 'radio')) return field;
+                return {
+                    ...field,
+                    options: resolveOptions(field)
+                };
+            });
+        }
+
+        if (Array.isArray(this.config.customSelects)) {
+            this.config.customSelects = this.config.customSelects.map(select => {
+                if (!select) return select;
+                return {
+                    ...select,
+                    options: resolveOptions(select)
+                };
+            });
+        }
+
+        if (this.config.deleteModal && typeof this.config.deleteModal === 'object') {
+            this.config.deleteModal = {
+                modalId: 'confirmDeleteModal',
+                closeBtnId: 'confirmDeleteCloseBtn',
+                cancelBtnId: 'cancelDeleteBtn',
+                confirmBtnId: 'confirmDeleteBtn',
+                ...this.config.deleteModal
+            };
+        }
+    }
+
+    /**
+     * 获取公共选项集
+     */
+    getOptionSet(optionSetName) {
+        if (!optionSetName) return [];
+        if (window.CommonOptions && Array.isArray(window.CommonOptions[optionSetName])) {
+            return window.CommonOptions[optionSetName];
+        }
+        return [];
+    }
+
+    /**
+     * 渲染下拉选项
+     */
+    renderDropdownOptions(dropdownId, options = [], overwrite = false) {
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown || !Array.isArray(options) || options.length === 0) return;
+        if (!overwrite && dropdown.querySelector('.select-option')) return;
+
+        dropdown.innerHTML = options.map(opt =>
+            `<div class="select-option" data-value="${opt.value}">${opt.text}</div>`
+        ).join('');
     }
     
     /**
@@ -152,7 +226,10 @@ class PageManager {
      * @param {Array} selects - 下拉框配置数组 [{inputId, dropdownId}]
      */
     initCustomSelects(selects = this.config.customSelects || []) {
-        selects.forEach(({ inputId, dropdownId }) => {
+        selects.forEach(({ inputId, dropdownId, options, overwriteOptions = false }) => {
+            if (Array.isArray(options) && options.length > 0) {
+                this.renderDropdownOptions(dropdownId, options, overwriteOptions);
+            }
             if (typeof initCustomSelect === 'function') {
                 initCustomSelect(inputId, dropdownId);
             }
@@ -329,7 +406,7 @@ class PageManager {
                         <div class="modal-content" style="width: ${modalWidth};">
                             <div class="modal-header">
                                 <h2 class="modal-title">${entityName}-新增</h2>
-                                <span class="close">&times;</span>
+                                <span class="close" id="${this.config.addModal.closeBtnId || 'addCloseBtn'}">&times;</span>
                             </div>
                             <form class="modal-form">
                                 ${addFieldsHtml}
@@ -356,7 +433,7 @@ class PageManager {
                         <div class="modal-content" style="width: ${modalWidth};">
                             <div class="modal-header">
                                 <h2 class="modal-title">${entityName}-编辑</h2>
-                                <span class="close">&times;</span>
+                                <span class="close" id="${this.config.editModal.closeBtnId || 'editCloseBtn'}">&times;</span>
                             </div>
                             <form class="modal-form">
                                 ${editFieldsHtml}

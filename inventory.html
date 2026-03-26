@@ -239,27 +239,6 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
             try {
-                // 初始化下拉框数据
-                const warehouseDropdown = document.getElementById('searchWarehouseDropdown');
-                const warehouses = ['W001-南京仓', 'W002-上海仓', 'W003-北京仓'];
-                warehouses.forEach(warehouse => {
-                    const option = document.createElement('div');
-                    option.className = 'select-option';
-                    option.setAttribute('data-value', warehouse);
-                    option.textContent = warehouse;
-                    warehouseDropdown.appendChild(option);
-                });
-
-                const companyDropdown = document.getElementById('searchCompanyDropdown');
-                const companies = ['货主1', '货主2', '货主3', '货主4', '货主5'];
-                companies.forEach(company => {
-                    const option = document.createElement('div');
-                    option.className = 'select-option';
-                    option.setAttribute('data-value', company);
-                    option.textContent = company;
-                    companyDropdown.appendChild(option);
-                });
-
                 // 加载库存数据
                 function loadInventoryData() {
                     const tbody = document.querySelector('#tableBody');
@@ -345,8 +324,26 @@
                     
                     // 搜索区域下拉框
                     customSelects: [
-                        { inputId: 'searchWarehouse', dropdownId: 'searchWarehouseDropdown' },
-                        { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                        {
+                            inputId: 'searchWarehouse',
+                            dropdownId: 'searchWarehouseDropdown',
+                            options: [
+                                { value: 'W001-南京仓', text: 'W001-南京仓' },
+                                { value: 'W002-上海仓', text: 'W002-上海仓' },
+                                { value: 'W003-北京仓', text: 'W003-北京仓' }
+                            ]
+                        },
+                        {
+                            inputId: 'searchCompany',
+                            dropdownId: 'searchCompanyDropdown',
+                            options: [
+                                { value: '货主1', text: '货主1' },
+                                { value: '货主2', text: '货主2' },
+                                { value: '货主3', text: '货主3' },
+                                { value: '货主4', text: '货主4' },
+                                { value: '货主5', text: '货主5' }
+                            ]
+                        },
                         { inputId: 'searchInventoryStatus', dropdownId: 'searchInventoryStatusDropdown' },
                         { inputId: 'searchSourceType', dropdownId: 'searchSourceTypeDropdown' },
                         { inputId: 'searchIsFrozen', dropdownId: 'searchIsFrozenDropdown' }

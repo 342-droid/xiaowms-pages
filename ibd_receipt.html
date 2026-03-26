@@ -361,7 +361,7 @@
             </div>
             <div class="modal-body">
                 <div id="orderDetailLoading" class="loading">加载中...</div>
-                <div id="orderDetailContent" style="display: none;">
+                <div id="orderDetailContent" hidden>
                     <!-- 基础信息 -->
                     <form class="modal-form" style="gap: 15px;">
                         <div class="modal-form-group">
@@ -602,11 +602,17 @@
         });
         
         function initOrderDetailModal() {
-            const modal = document.getElementById('orderDetailModal');
-            const closeBtn = document.getElementById('closeDetailModal');
-            const detailCloseBtn = document.getElementById('detailCloseBtn');
             const loading = document.getElementById('orderDetailLoading');
             const content = document.getElementById('orderDetailContent');
+            const detailModalController = window.WMSUI.createModalController({
+                modalId: 'orderDetailModal',
+                closeButtonIds: ['closeDetailModal', 'detailCloseBtn']
+            });
+
+            function setOrderDetailLoading(isLoading) {
+                loading.hidden = !isLoading;
+                content.hidden = isLoading;
+            }
             
             // 为所有入库单号链接添加点击事件
             document.querySelectorAll('.order-number-link').forEach(link => {
@@ -617,35 +623,16 @@
                 });
             });
             
-            // 关闭按钮点击事件
-            closeBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            // 模态框关闭按钮点击事件
-            detailCloseBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            // 点击模态框外部关闭
-            window.addEventListener('click', (e) => {
-                if (e.target == modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
             // 显示入库单详情
             function showOrderDetail(orderId) {
                 // 显示加载状态
-                loading.style.display = 'block';
-                content.style.display = 'none';
-                modal.style.display = 'block';
+                setOrderDetailLoading(true);
+                detailModalController.open();
                 
                 // 模拟数据加载
                 setTimeout(() => {
                     // 隐藏加载状态
-                    loading.style.display = 'none';
-                    content.style.display = 'block';
+                    setOrderDetailLoading(false);
                     
                     // 填充基础信息
                     fillOrderDetail(orderId);
@@ -770,12 +757,15 @@
         }
         
         function initReceiptRecordModal() {
-            const modal = document.getElementById('receiptRecordModal');
-            const closeBtn = document.getElementById('closeReceiptRecordModal');
-            const receiptRecordCloseBtn = document.getElementById('receiptRecordCloseBtn');
             const searchBtn = document.getElementById('searchReceiptBtn');
             const statusInput = document.getElementById('searchReceiptStatus');
-            const statusDropdown = document.getElementById('searchReceiptStatusDropdown');
+            const receiptModalController = window.WMSUI.createModalController({
+                modalId: 'receiptRecordModal',
+                closeButtonIds: ['closeReceiptRecordModal', 'receiptRecordCloseBtn']
+            });
+            if (typeof initCustomSelect === 'function') {
+                initCustomSelect('searchReceiptStatus', 'searchReceiptStatusDropdown');
+            }
             
             // 为所有收货记录按钮添加点击事件
             document.querySelectorAll('.receipt-record-btn').forEach(btn => {
@@ -784,44 +774,6 @@
                     const orderId = btn.getAttribute('data-order-id');
                     showReceiptRecord(orderId);
                 });
-            });
-            
-            // 关闭按钮点击事件
-            closeBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            // 模态框关闭按钮点击事件
-            receiptRecordCloseBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            // 点击模态框外部关闭
-            window.addEventListener('click', (e) => {
-                if (e.target == modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
-            // 状态下拉框点击事件
-            statusInput.addEventListener('click', (e) => {
-                e.stopPropagation();
-                statusDropdown.style.display = statusDropdown.style.display === 'block' ? 'none' : 'block';
-            });
-            
-            // 选择状态选项
-            statusDropdown.querySelectorAll('.select-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const value = option.getAttribute('data-value');
-                    statusInput.value = option.textContent;
-                    statusDropdown.style.display = 'none';
-                });
-            });
-            
-            // 点击其他地方关闭下拉框
-            window.addEventListener('click', () => {
-                statusDropdown.style.display = 'none';
             });
             
             // 搜索按钮点击事件
@@ -834,7 +786,7 @@
             
             // 显示收货记录
             function showReceiptRecord(orderId) {
-                modal.style.display = 'block';
+                receiptModalController.open();
                 
                 // 更新模态框标题
                 const orderNoElement = document.getElementById('receiptRecordOrderNo');
