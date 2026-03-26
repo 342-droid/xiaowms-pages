@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 出库策略</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">出库策略</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">策略管理 / 出库策略</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>出库策略编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>出库策略名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">仓库:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchWarehouse" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchWarehouseDropdown">
+                                <div class="select-option" data-value="W001-南京仓">W001-南京仓</div>
+                                <div class="select-option" data-value="W002-嘉兴仓">W002-嘉兴仓</div>
+                                <div class="select-option" data-value="W003-上海仓">W003-上海仓</div>
+                                <div class="select-option" data-value="W004-北京仓">W004-北京仓</div>
+                                <div class="select-option" data-value="W005-广州仓">W005-广州仓</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown">
+                                <div class="select-option" data-value="C001-食品">C001-食品</div>
+                                <div class="select-option" data-value="C002-鲜食优选">C002-鲜食优选</div>
+                                <div class="select-option" data-value="C003-绿源农业">C003-绿源农业</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 100px;">出库类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchOutboundType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchOutboundTypeDropdown">
+                                <div class="select-option" data-value="销售出库">销售出库</div>
+                                <div class="select-option" data-value="调拨出库">调拨出库</div>
+                                <div class="select-option" data-value="退货出库">退货出库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>出库业务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchBusinessType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchBusinessTypeDropdown">
+                                <div class="select-option" data-value="销售出库">销售出库</div>
+                                <div class="select-option" data-value="调拨出库">调拨出库</div>
+                                <div class="select-option" data-value="退货出库">退货出库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="启用">启用</div>
+                                <div class="select-option" data-value="禁用">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>出库策略编码</th>
+                                <th>出库策略名称</th>
+                                <th>仓库</th>
+                                <th>委托方</th>
+                                <th>出库类型</th>
+                                <th>出库业务类型</th>
+                                <th>默认发货储位</th>
+                                <th>缺量出库</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>OS001</td>
+                                <td>南京仓销售出库策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C001-食品</td>
+                                <td>销售出库</td>
+                                <td>销售出库</td>
+                                <td>B-01-01</td>
+                                <td>是</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>OS002</td>
+                                <td>南京仓调拨出库策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C001-食品</td>
+                                <td>调拨出库</td>
+                                <td>调拨出库</td>
+                                <td>B-02-01</td>
+                                <td>否</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '出库策略',
+                statusColumnIndex: 9,
+                
+                customSelects: [
+                    { inputId: 'searchWarehouse', dropdownId: 'searchWarehouseDropdown' },
+                    { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                    { inputId: 'searchOutboundType', dropdownId: 'searchOutboundTypeDropdown' },
+                    { inputId: 'searchBusinessType', dropdownId: 'searchBusinessTypeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
+                      options: [
+                          { value: 'W001-南京仓', text: 'W001-南京仓' },
+                          { value: 'W002-嘉兴仓', text: 'W002-嘉兴仓' },
+                          { value: 'W003-上海仓', text: 'W003-上海仓' },
+                          { value: 'W004-北京仓', text: 'W004-北京仓' },
+                          { value: 'W005-广州仓', text: 'W005-广州仓' }
+                      ] },
+                    { id: 'company', label: '委托方', type: 'select', required: true, editDisabled: true,
+                      options: [
+                          { value: 'C001-食品', text: 'C001-食品' },
+                          { value: 'C002-鲜食优选', text: 'C002-鲜食优选' },
+                          { value: 'C003-绿源农业', text: 'C003-绿源农业' }
+                      ] },
+                    { id: 'strategyCode', label: '出库策略编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'strategyName', label: '出库策略名称', type: 'text', required: true, editDisabled: true },
+                    { id: 'outboundType', label: '出库类型', type: 'select', required: true,
+                      options: [
+                          { value: '销售出库', text: '销售出库' },
+                          { value: '调拨出库', text: '调拨出库' },
+                          { value: '退货出库', text: '退货出库' }
+                      ] },
+                    { id: 'businessType', label: '出库业务类型', type: 'select', required: true,
+                      options: [
+                          { value: '销售出库', text: '销售出库' },
+                          { value: '调拨出库', text: '调拨出库' },
+                          { value: '退货出库', text: '退货出库' }
+                      ] },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [
+                          { value: '启用', text: '启用' },
+                          { value: '禁用', text: '禁用' }
+                      ] },
+                    { id: 'divider1', label: '', type: 'raw', content: '<hr class="modal-divider">' },
+                    { id: 'defaultLocation', label: '默认发货储位', type: 'text', width: '100%', labelWidth: '160px', required: true },
+                    { id: 'allowShortage', label: '是否缺量出库', type: 'select', width: '100%', labelWidth: '160px', required: true,
+                      options: [
+                          { value: '是', text: '是' },
+                          { value: '否', text: '否' }
+                      ] }
+                ],
+                
+                addModal: {
+                    modalId: 'obdStrategyModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    validations: [
+                        { id: 'warehouse', message: '请选择仓库', required: true },
+                        { id: 'company', message: '请选择委托方', required: true },
+                        { id: 'strategyCode', message: '请输入出库策略编码', required: true },
+                        { id: 'strategyName', message: '请输入出库策略名称', required: true },
+                        { id: 'outboundType', message: '请选择出库类型', required: true },
+                        { id: 'businessType', message: '请选择出库业务类型', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true },
+                        { id: 'defaultLocation', message: '请输入默认发货储位', required: true },
+                        { id: 'allowShortage', message: '请选择是否缺量出库', required: true }
+                    ],
+                    onSave: () => {
+                        const warehouse = document.getElementById('warehouse').value.trim();
+                        const company = document.getElementById('company').value.trim();
+                        const code = document.getElementById('strategyCode').value.trim();
+                        const name = document.getElementById('strategyName').value.trim();
+                        const outboundType = document.getElementById('outboundType').value.trim();
+                        const businessType = document.getElementById('businessType').value.trim();
+                        const isEnabled = document.getElementById('isEnabled').value.trim();
+                        const defaultLocation = document.getElementById('defaultLocation').value.trim() || '-';
+                        const allowShortage = document.getElementById('allowShortage').value.trim() || '-';
+                        
+                        page.addTableRow({
+                            cells: [
+                                code,
+                                name,
+                                warehouse,
+                                company,
+                                outboundType,
+                                businessType,
+                                defaultLocation,
+                                allowShortage,
+                                { value: isEnabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+                        showToast('出库策略已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'obdStrategyEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editStrategyName', message: '请输入出库策略名称', required: true },
+                        { id: 'editOutboundType', message: '请选择出库类型', required: true },
+                        { id: 'editBusinessType', message: '请选择出库业务类型', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true },
+                        { id: 'editDefaultLocation', message: '请输入默认发货储位', required: true },
+                        { id: 'editAllowShortage', message: '请选择是否缺量出库', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editStrategyName').value.trim(),
+                            5: document.getElementById('editOutboundType').value.trim(),
+                            6: document.getElementById('editBusinessType').value.trim(),
+                            7: document.getElementById('editDefaultLocation').value.trim() || '-',
+                            8: document.getElementById('editAllowShortage').value.trim() || '-',
+                            9: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            10: page.getCurrentTimeStr(),
+                            11: '当前用户'
+                        });
+                        showToast('出库策略已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editWarehouse: cells[3].textContent,
+                            editCompany: cells[4].textContent,
+                            editStrategyCode: cells[1].textContent,
+                            editStrategyName: cells[2].textContent,
+                            editOutboundType: cells[5].textContent,
+                            editBusinessType: cells[6].textContent,
+                            editDefaultLocation: cells[7].textContent === '-' ? '' : cells[7].textContent,
+                            editAllowShortage: cells[8].textContent === '-' ? '' : cells[8].textContent,
+                            editIsEnabled: cells[9].querySelector('.status').textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+            
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const currentWarehouse = getCurrentWarehouse();
+                if (currentWarehouse) {
+                    const warehouseInput = document.getElementById('warehouse');
+                    warehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                    warehouseInput.dataset.value = currentWarehouse.code;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

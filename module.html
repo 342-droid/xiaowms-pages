@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 系统功能模块</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">系统功能模块</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">权限管理 / 系统功能模块</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <div class="tree-container" id="moduleTree" role="tree" aria-label="系统功能模块树"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 新增/编辑模态框 -->
+    <div id="moduleModal" class="modal">
+        <div class="modal-content" style="width: 60%;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="moduleModalTitle">系统功能模块-新增</h2>
+                <span class="close" id="moduleModalCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form">
+                <div class="modal-form-group">
+                    <label>功能模块编码<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="moduleCode" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>功能模块名称<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="moduleName" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>父模块编码</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="parentModuleCode" placeholder="请输入" disabled>
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>是否启用<span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="isEnabled" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="isEnabledDropdown">
+                            <div class="select-option" data-value="yes">启用</div>
+                            <div class="select-option" data-value="no">禁用</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label style="width: 80px;">备注</label>
+                    <textarea id="remark" placeholder="请输入" rows="4" style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="moduleSaveBtn">保存</button>
+                <button type="button" class="btn btn-secondary" id="moduleCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script src="js/tree-component.js"></script>
+    <script>
+        const moduleData = [
+            {
+                id: 'node-1',
+                code: 'M001',
+                name: '基础信息',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: false,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-1-1',
+                        code: 'M001-01',
+                        name: '仓库管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: false,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-1-1-1',
+                                code: 'M001-01-01',
+                                name: '仓库查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: false,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-1-2',
+                                code: 'M001-01-02',
+                                name: '仓库新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: false,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-1-2',
+                        code: 'M001-02',
+                        name: '商品管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: false,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 'node-2',
+                code: 'M002',
+                name: '权限管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: false,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-2-1',
+                        code: 'M002-01',
+                        name: '用户管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: false,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            }
+        ];
+
+        let moduleTree = null;
+        let currentParentNode = null;
+        let currentEditNode = null;
+        let isEditMode = false;
+
+        function getLevelLabel(node) {
+            if (node.level === '一级') return node.name;
+            if (node.level === '二级') {
+                const parent = findParentNode(node.id);
+                return parent ? parent.name : '';
+            }
+            if (node.level === '三级') {
+                const grandparent = findGrandparentNode(node.id);
+                return grandparent ? grandparent.name : '';
+            }
+            return '';
+        }
+
+        function getSecondLevelLabel(node) {
+            if (node.level === '二级') return node.name;
+            if (node.level === '三级') {
+                const parent = findParentNode(node.id);
+                return parent ? parent.name : '';
+            }
+            return '';
+        }
+
+        function getThirdLevelLabel(node) {
+            if (node.level === '三级') return node.name;
+            return '';
+        }
+
+        function findNodeById(nodeId, nodes = moduleData) {
+            for (const node of nodes) {
+                if (node.id === nodeId) return node;
+                if (node.children && node.children.length > 0) {
+                    const found = findNodeById(nodeId, node.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        function findNodeByCode(code, nodes = moduleData) {
+            for (const node of nodes) {
+                if (node.code === code) return node;
+                if (node.children && node.children.length > 0) {
+                    const found = findNodeByCode(code, node.children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        function findParentNode(nodeId, nodes = moduleData, parent = null) {
+            for (const node of nodes) {
+                if (node.id === nodeId) return parent;
+                if (node.children && node.children.length > 0) {
+                    const found = findParentNode(nodeId, node.children, node);
+                    if (found !== undefined) return found;
+                }
+            }
+            return undefined;
+        }
+
+        function findGrandparentNode(nodeId) {
+            const parent = findParentNode(nodeId);
+            if (parent) {
+                return findParentNode(parent.id);
+            }
+            return null;
+        }
+
+        function openModuleModal(isEdit, nodeId = null) {
+            isEditMode = isEdit;
+            document.getElementById('moduleModalTitle').textContent = isEdit ? '系统功能模块-编辑' : '系统功能模块-新增';
+            
+            if (isEdit && nodeId) {
+                currentEditNode = findNodeById(nodeId);
+                if (currentEditNode) {
+                    const parent = findParentNode(nodeId);
+                    document.getElementById('moduleCode').value = currentEditNode.code || '';
+                    document.getElementById('moduleName').value = currentEditNode.name || '';
+                    document.getElementById('parentModuleCode').value = parent ? parent.code : '';
+                    document.getElementById('isEnabled').value = currentEditNode.isEnabled || '启用';
+                    document.getElementById('remark').value = currentEditNode.remark || '';
+                    document.getElementById('moduleCode').disabled = true;
+                    document.getElementById('parentModuleCode').disabled = true;
+                }
+            } else {
+                currentEditNode = null;
+                document.getElementById('moduleCode').value = '';
+                document.getElementById('moduleName').value = '';
+                document.getElementById('parentModuleCode').value = currentParentNode ? currentParentNode.code : '';
+                document.getElementById('isEnabled').value = '启用';
+                document.getElementById('remark').value = '';
+                document.getElementById('moduleCode').disabled = false;
+                document.getElementById('parentModuleCode').disabled = currentParentNode ? true : false;
+            }
+            
+            document.getElementById('moduleModal').style.display = 'block';
+        }
+
+        function closeModuleModal() {
+            document.getElementById('moduleModal').style.display = 'none';
+            currentParentNode = null;
+            currentEditNode = null;
+        }
+
+        function saveModule() {
+            const code = document.getElementById('moduleCode').value.trim();
+            const name = document.getElementById('moduleName').value.trim();
+            const parentCodeInput = document.getElementById('parentModuleCode').value.trim();
+            const isEnabled = document.getElementById('isEnabled').value.trim();
+            const remark = document.getElementById('remark').value.trim();
+
+            if (!code) {
+                showToast('请输入功能模块编码', 'error');
+                return;
+            }
+            if (!name) {
+                showToast('请输入功能模块名称', 'error');
+                return;
+            }
+            if (!isEnabled) {
+                showToast('请选择是否启用', 'error');
+                return;
+            }
+
+            if (isEditMode && currentEditNode) {
+                currentEditNode.code = code;
+                currentEditNode.name = name;
+                currentEditNode.isEnabled = isEnabled;
+                currentEditNode.remark = remark;
+                showToast('系统功能模块已更新', 'success');
+            } else {
+                let level = '一级';
+                let targetParent = currentParentNode;
+
+                if (!targetParent && parentCodeInput) {
+                    targetParent = findNodeByCode(parentCodeInput);
+                    if (!targetParent) {
+                        showToast('父模块编码不存在', 'error');
+                        return;
+                    }
+                }
+
+                if (targetParent) {
+                    const levelMap = { '一级': '二级', '二级': '三级' };
+                    level = levelMap[targetParent.level] || '一级';
+                }
+
+                if (level === '一级' && !currentParentNode && parentCodeInput && !targetParent) {
+                    showToast('父模块编码无效', 'error');
+                    return;
+                }
+
+                const newNode = {
+                    id: 'node-' + Date.now(),
+                    code: code,
+                    name: name,
+                    level: level,
+                    isEnabled: isEnabled,
+                    remark: remark,
+                    hasChildren: false,
+                    lazyLoaded: true,
+                    expanded: false,
+                    children: []
+                };
+
+                if (targetParent) {
+                    if (!targetParent.children) {
+                        targetParent.children = [];
+                    }
+                    targetParent.children.push(newNode);
+                    targetParent.hasChildren = true;
+                    if (moduleTree) {
+                        moduleTree.expandNode(targetParent.id);
+                    }
+                } else {
+                    moduleData.push(newNode);
+                }
+
+                showToast('系统功能模块已保存', 'success');
+            }
+
+            if (moduleTree) {
+                moduleTree.setData(moduleData);
+            }
+
+            closeModuleModal();
+        }
+
+        function deleteModule(nodeId) {
+            const nodeToDelete = findNodeById(nodeId);
+            if (!nodeToDelete) return;
+
+            if (nodeToDelete.hasChildren && nodeToDelete.children && nodeToDelete.children.length > 0) {
+                showToast('节点下存在数据，不允许删除', 'error');
+                return;
+            }
+
+            const removeNode = (nodes, id) => {
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].id === id) {
+                        nodes.splice(i, 1);
+                        return true;
+                    }
+                    if (nodes[i].children && nodes[i].children.length > 0) {
+                        if (removeNode(nodes[i].children, id)) {
+                            if (nodes[i].children.length === 0) {
+                                nodes[i].hasChildren = false;
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            removeNode(moduleData, nodeId);
+
+            if (moduleTree) {
+                moduleTree.setData(moduleData);
+            }
+
+            showToast('系统功能模块已删除', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            moduleTree = new TreeComponent({
+                container: document.getElementById('moduleTree'),
+                columns: [
+                    { key: 'name', label: '名称' }
+                ],
+                onAdd: (nodeId) => {
+                    currentParentNode = findNodeById(nodeId);
+                    openModuleModal(false);
+                },
+                onEdit: (nodeId) => {
+                    currentParentNode = null;
+                    openModuleModal(true, nodeId);
+                },
+                onDelete: (nodeId) => {
+                    deleteModule(nodeId);
+                }
+            });
+            moduleTree.expandedNodes.clear();
+            moduleTree.saveState = function() {};
+            moduleTree.setData(moduleData);
+
+            document.getElementById('addBtn').addEventListener('click', () => {
+                currentParentNode = null;
+                openModuleModal(false);
+            });
+
+            document.getElementById('moduleModalCloseBtn').addEventListener('click', closeModuleModal);
+            document.getElementById('moduleCancelBtn').addEventListener('click', closeModuleModal);
+            document.getElementById('moduleModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('moduleModal')) closeModuleModal();
+            });
+
+            document.getElementById('moduleSaveBtn').addEventListener('click', saveModule);
+
+            initCustomSelect('isEnabled', 'isEnabledDropdown');
+        });
+    </script>
+</body>
+</html>

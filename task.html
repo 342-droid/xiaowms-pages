@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 任务管理</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">任务管理</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">任务管理 / 任务管理</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 100px;">仓库:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchWarehouse" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchWarehouseDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 130px;">委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchClient" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchClientDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">货主:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 70px;">任务号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchTaskNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">任务组号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchTaskGroupNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 130px;">任务状态:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskStatus" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskStatusDropdown">
+                                <div class="select-option" data-value="initial">初始</div>
+                                <div class="select-option" data-value="released">已释放</div>
+                                <div class="select-option" data-value="assigned">已指派</div>
+                                <div class="select-option" data-value="in_progress">执行中</div>
+                                <div class="select-option" data-value="completed">已完成</div>
+                                <div class="select-option" data-value="cancelled">已取消</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskTypeDropdown">
+                                <div class="select-option" data-value="putaway">上架任务</div>
+                                <div class="select-option" data-value="picking">拣货任务</div>
+                                <div class="select-option" data-value="replenish">补货任务</div>
+                                <div class="select-option" data-value="count">盘点任务</div>
+                                <div class="select-option" data-value="move">移动任务</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSource" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceDropdown">
+                                <div class="select-option" data-value="inbound">入库</div>
+                                <div class="select-option" data-value="outbound">出库</div>
+                                <div class="select-option" data-value="replenish">补货</div>
+                                <div class="select-option" data-value="count">盘点</div>
+                                <div class="select-option" data-value="move">移动</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSourceType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceTypeDropdown">
+                                <div class="select-option" data-value="purchase_inbound">采购入库</div>
+                                <div class="select-option" data-value="return_inbound">退货入库</div>
+                                <div class="select-option" data-value="transfer_inbound">调拨入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源业务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSourceBizType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceBizTypeDropdown">
+                                <div class="select-option" data-value="purchase_inbound">采购入库</div>
+                                <div class="select-option" data-value="return_inbound">退货入库</div>
+                                <div class="select-option" data-value="transfer_inbound">调拨入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>调用单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCallNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>来源单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">关联单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchRelatedNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 130px;">商品:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSku" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>来源储位:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceLocation" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>目的储位:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchDestLocation" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">来源容器:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceLpn" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 130px;">目的容器:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchDestLpn" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>来源库区:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceZone" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>目的库区:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchDestZone" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">创建时间:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCreateTime" placeholder="请选择" class="date-range-input">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="searchTask()">查询</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>任务号</th>
+                                <th>任务组号</th>
+                                <th>仓库</th>
+                                <th>委托方</th>
+                                <th>货主</th>
+                                <th>任务状态</th>
+                                <th>任务类型</th>
+                                <th>任务来源</th>
+                                <th>任务来源类型</th>
+                                <th>任务来源业务类型</th>
+                                <th>调用单号</th>
+                                <th>来源单号</th>
+                                <th>关联单号</th>
+                                <th>商品编码</th>
+                                <th>商品名称</th>
+                                <th>单位</th>
+                                <th>计划数量</th>
+                                <th>完成数量</th>
+                                <th>执行人</th>
+                                <th>来源储位</th>
+                                <th>目的储位</th>
+                                <th>来源容器</th>
+                                <th>目的容器</th>
+                                <th>来源库区</th>
+                                <th>目的库区</th>
+                                <th>创建时间</th>
+                                <th>创建人</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 任务详情模态框 -->
+    <div id="taskDetailModal" class="modal" style="display: none; align-items: flex-start; padding-top: 5%; z-index: 3001;">
+        <div class="modal-content" style="width: 900px; max-height: 90vh; overflow-y: auto; margin: 0 auto;">
+            <div class="modal-header" style="margin-bottom: 15px;">
+                <h2 class="modal-title">任务详情</h2>
+                <span class="close" id="taskDetailCloseBtn">&times;</span>
+            </div>
+            <div id="taskDetailContent">
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        const taskData = [
+            {
+                taskNo: 'T20260307001',
+                taskGroupNo: 'TG20260307001',
+                warehouse: 'W001-南京仓',
+                client: '委托方A',
+                company: '货主1',
+                taskStatus: '初始',
+                taskType: '上架任务',
+                taskSource: '入库',
+                taskSourceType: '采购入库',
+                taskSourceBizType: '采购入库',
+                callNo: 'CALL001',
+                sourceNo: 'PO001',
+                relatedNo: 'REL001',
+                skuCode: 'SKU001',
+                skuName: '商品A',
+                unit: '个',
+                plannedQty: 100,
+                completedQty: 0,
+                executor: '',
+                sourceLocation: '',
+                destLocation: 'A-01-01',
+                sourceLpn: '',
+                destLpn: 'LPN001',
+                sourceZone: '',
+                destZone: 'A区',
+                createTime: '2026-03-07 08:00:00',
+                createUser: 'admin',
+                updateTime: '2026-03-07 08:00:00',
+                updateUser: 'admin'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const warehouseDropdown = document.getElementById('searchWarehouseDropdown');
+                const warehouses = ['W001-南京仓', 'W002-上海仓', 'W003-北京仓'];
+                warehouses.forEach(warehouse => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', warehouse);
+                    option.textContent = warehouse;
+                    warehouseDropdown.appendChild(option);
+                });
+
+                const companyDropdown = document.getElementById('searchCompanyDropdown');
+                const companies = ['货主1', '货主2', '货主3', '货主4', '货主5'];
+                companies.forEach(company => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', company);
+                    option.textContent = company;
+                    companyDropdown.appendChild(option);
+                });
+
+                const clientDropdown = document.getElementById('searchClientDropdown');
+                const clients = ['委托方A', '委托方B', '委托方C', '委托方D'];
+                clients.forEach(client => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', client);
+                    option.textContent = client;
+                    clientDropdown.appendChild(option);
+                });
+
+                function loadTaskData() {
+                    const tbody = document.querySelector('#tableBody');
+                    tbody.innerHTML = '';
+                    
+                    taskData.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                            <td><a href="#" class="task-detail-link" data-task-no="${item.taskNo}">${item.taskNo}</a></td>
+                            <td>${item.taskGroupNo}</td>
+                            <td>${item.warehouse}</td>
+                            <td>${item.client}</td>
+                            <td>${item.company}</td>
+                            <td><span class="status active">${item.taskStatus}</span></td>
+                            <td>${item.taskType}</td>
+                            <td>${item.taskSource}</td>
+                            <td>${item.taskSourceType}</td>
+                            <td>${item.taskSourceBizType}</td>
+                            <td>${item.callNo}</td>
+                            <td>${item.sourceNo}</td>
+                            <td>${item.relatedNo}</td>
+                            <td>${item.skuCode}</td>
+                            <td>${item.skuName}</td>
+                            <td>${item.unit}</td>
+                            <td>${item.plannedQty}</td>
+                            <td>${item.completedQty}</td>
+                            <td>${item.executor}</td>
+                            <td>${item.sourceLocation}</td>
+                            <td>${item.destLocation}</td>
+                            <td>${item.sourceLpn}</td>
+                            <td>${item.destLpn}</td>
+                            <td>${item.sourceZone}</td>
+                            <td>${item.destZone}</td>
+                            <td>${item.createTime}</td>
+                            <td>${item.createUser}</td>
+                            <td>${item.updateTime}</td>
+                            <td>${item.updateUser}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                function searchTask() {
+                    const warehouse = document.getElementById('searchWarehouse').value.trim();
+                    const client = document.getElementById('searchClient').value.trim();
+                    const company = document.getElementById('searchCompany').value.trim();
+                    const taskNo = document.getElementById('searchTaskNo').value.trim();
+                    const taskGroupNo = document.getElementById('searchTaskGroupNo').value.trim();
+                    const taskStatus = document.getElementById('searchTaskStatus').value.trim();
+                    const taskType = document.getElementById('searchTaskType').value.trim();
+                    const taskSource = document.getElementById('searchTaskSource').value.trim();
+                    const taskSourceType = document.getElementById('searchTaskSourceType').value.trim();
+                    const taskSourceBizType = document.getElementById('searchTaskSourceBizType').value.trim();
+                    const callNo = document.getElementById('searchCallNo').value.trim();
+                    const sourceNo = document.getElementById('searchSourceNo').value.trim();
+                    const relatedNo = document.getElementById('searchRelatedNo').value.trim();
+                    const sku = document.getElementById('searchSku').value.trim();
+                    const sourceLocation = document.getElementById('searchSourceLocation').value.trim();
+                    const destLocation = document.getElementById('searchDestLocation').value.trim();
+                    const sourceLpn = document.getElementById('searchSourceLpn').value.trim();
+                    const destLpn = document.getElementById('searchDestLpn').value.trim();
+                    const sourceZone = document.getElementById('searchSourceZone').value.trim();
+                    const destZone = document.getElementById('searchDestZone').value.trim();
+                    const createTime = document.getElementById('searchCreateTime').value.trim();
+                    
+                    console.log('搜索条件:', {
+                        warehouse,
+                        client,
+                        company,
+                        taskNo,
+                        taskGroupNo,
+                        taskStatus,
+                        taskType,
+                        taskSource,
+                        taskSourceType,
+                        taskSourceBizType,
+                        callNo,
+                        sourceNo,
+                        relatedNo,
+                        sku,
+                        sourceLocation,
+                        destLocation,
+                        sourceLpn,
+                        destLpn,
+                        sourceZone,
+                        destZone,
+                        createTime
+                    });
+                    
+                    loadTaskData();
+                }
+
+                const page = new PageManager({
+                    entityName: '任务',
+                    statusColumnIndex: 6,
+                    
+                    customSelects: [
+                        { inputId: 'searchWarehouse', dropdownId: 'searchWarehouseDropdown' },
+                        { inputId: 'searchClient', dropdownId: 'searchClientDropdown' },
+                        { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                        { inputId: 'searchTaskStatus', dropdownId: 'searchTaskStatusDropdown' },
+                        { inputId: 'searchTaskType', dropdownId: 'searchTaskTypeDropdown' },
+                        { inputId: 'searchTaskSource', dropdownId: 'searchTaskSourceDropdown' },
+                        { inputId: 'searchTaskSourceType', dropdownId: 'searchTaskSourceTypeDropdown' },
+                        { inputId: 'searchTaskSourceBizType', dropdownId: 'searchTaskSourceBizTypeDropdown' }
+                    ],
+                    
+                    deleteModal: {
+                        modalId: 'confirmDeleteModal',
+                        closeBtnId: 'confirmDeleteCloseBtn',
+                        cancelBtnId: 'cancelDeleteBtn',
+                        confirmBtnId: 'confirmDeleteBtn'
+                    }
+                });
+                
+                page.init();
+                loadTaskData();
+
+                const taskDetailModal = document.getElementById('taskDetailModal');
+                const taskDetailCloseBtn = document.getElementById('taskDetailCloseBtn');
+
+                function openTaskDetailModal(taskNo) {
+                    const task = taskData.find(t => t.taskNo === taskNo);
+                    if (!task) {
+                        showToast('未找到任务信息', 'error');
+                        return;
+                    }
+                    
+                    const detailContent = document.getElementById('taskDetailContent');
+                    detailContent.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px;">基本信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>仓库:</strong> ${task.warehouse}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>委托方:</strong> ${task.client}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>货主:</strong> ${task.company}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>委托方:</strong> ${task.client}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>任务号:</strong> ${task.taskNo}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>任务组号:</strong> ${task.taskGroupNo}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>任务状态:</strong> <span class="status active">${task.taskStatus}</span></div>
+                                <div style="flex: 1; min-width: 200px;"><strong>任务类型:</strong> ${task.taskType}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>任务来源:</strong> ${task.taskSource}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>任务来源类型:</strong> ${task.taskSourceType}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>任务来源业务类型:</strong> ${task.taskSourceBizType}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>调用单号:</strong> ${task.callNo}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>调用明细ID:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>来源单号:</strong> ${task.sourceNo}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>关联单号:</strong> ${task.relatedNo}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>自动释放:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>优先级:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">商品信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>商品编码:</strong> ${task.skuCode}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>商品名称:</strong> ${task.skuName}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>单位:</strong> ${task.unit}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>计划数量:</strong> ${task.plannedQty}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>完成数量:</strong> ${task.completedQty}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>执行人:</strong> ${task.executor}</div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">时间信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>计划开始时间:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>计划完成时间:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>开始时间:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>完成时间:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">储位与容器信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源储位:</strong> ${task.sourceLocation}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的储位:</strong> ${task.destLocation}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源容器:</strong> ${task.sourceLpn}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的容器:</strong> ${task.destLpn}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源库区:</strong> ${task.sourceZone}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的库区:</strong> ${task.destZone}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源作业区域:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的作业区域:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">批号与序列号</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源商品批号:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的商品批号:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源生产日期:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的生产日期:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源系列号:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的序列号:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">其他信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源储位拣货顺序:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>目的储位上架顺序:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>来源储位盘点顺序:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>前置任务ID:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>前置任务组ID:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">分组信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>分组名1:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>分组值1:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>分组名2:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>分组值2:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>分组名3:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>分组值3:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>分组名4:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>分组值4:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>分组名5:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>分组值5:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">取用信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>取用名1:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>取用值1:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>取用名2:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>取用值2:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>取用名3:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>取用值3:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>取用名4:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>取用值4:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>取用名5:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>取用值5:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">合并入参</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>合并入参1:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>合并入参2:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>合并入参3:</strong> </div>
+                                <div style="flex: 1; min-width: 200px;"><strong>合并入参4:</strong> </div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>合并入参5:</strong> </div>
+                            </div>
+                            
+                            <div class="section-divider" style="width: 100%; height: 1px; background-color: #e0e0e0; margin: 20px 0;"></div>
+                            
+                            <div class="section-title" style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px">系统信息</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>创建时间:</strong> ${task.createTime}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>创建人:</strong> ${task.createUser}</div>
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;"><strong>更新时间:</strong> ${task.updateTime}</div>
+                                <div style="flex: 1; min-width: 200px;"><strong>更新人:</strong> ${task.updateUser}</div>
+                            </div>
+                        </div>
+                    `;
+                    taskDetailModal.style.display = 'flex';
+                }
+
+                function closeTaskDetailModal() {
+                    taskDetailModal.style.display = 'none';
+                }
+
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('task-detail-link')) {
+                        e.preventDefault();
+                        const taskNo = e.target.getAttribute('data-task-no');
+                        openTaskDetailModal(taskNo);
+                    }
+                });
+
+                if (taskDetailCloseBtn) {
+                    taskDetailCloseBtn.addEventListener('click', closeTaskDetailModal);
+                }
+
+                taskDetailModal.addEventListener('click', (e) => {
+                    if (e.target === taskDetailModal) {
+                        closeTaskDetailModal();
+                    }
+                });
+            } catch (error) {
+                console.error('初始化错误:', error);
+                if (typeof showToast === 'function') {
+                    showToast('页面初始化失败，请刷新重试', 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

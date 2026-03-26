@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 行政区</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">行政区</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">基础信息 / 行政区</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>行政区编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>行政区全称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>行政区简称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>行政区编码</th>
+                                <th>行政区全称</th>
+                                <th>行政区简称</th>
+                                <th>父节点编码</th>
+                                <th>层级</th>
+                                <th>同级显示顺序</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>110000</td>
+                                <td>北京市</td>
+                                <td>北京</td>
+                                <td>-</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>110100</td>
+                                <td>北京市市辖区</td>
+                                <td>北京</td>
+                                <td>110000</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>310000</td><td>上海市</td><td>上海</td><td>-</td><td>1</td><td>2</td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>320000</td><td>江苏省</td><td>江苏</td><td>-</td><td>1</td><td>3</td><td>2025-01-05 12:31:43</td><td>孙八</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>320100</td><td>南京市</td><td>南京</td><td>320000</td><td>2</td><td>1</td><td>2025-01-05 12:31:43</td><td>吴十</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '行政区',
+                
+                customSelects: [],
+                
+                fields: [
+                    { id: 'areaCode', label: '行政区编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'areaFullName', label: '行政区全称', type: 'text', required: true },
+                    { id: 'areaShortName', label: '行政区简称', type: 'text', required: true },
+                    { id: 'parentCode', label: '父节点编码', type: 'text' },
+                    { id: 'level', label: '层级', type: 'number', required: true },
+                    { id: 'displayOrder', label: '同级显示顺序', type: 'number', required: true }
+                ],
+                
+                addModal: {
+                    modalId: 'adminAreaModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { level: '1', displayOrder: '1' },
+                    validations: [
+                        { id: 'areaCode', message: '请输入行政区编码', required: true },
+                        { id: 'areaFullName', message: '请输入行政区全称', required: true },
+                        { id: 'areaShortName', message: '请输入行政区简称', required: true },
+                        { id: 'level', message: '请输入层级', required: true },
+                        { id: 'displayOrder', message: '请输入同级显示顺序', required: true }
+                    ],
+                    onSave: () => {
+                        const code = document.getElementById('areaCode').value.trim();
+                        const fullName = document.getElementById('areaFullName').value.trim();
+                        const shortName = document.getElementById('areaShortName').value.trim();
+                        const parentCode = document.getElementById('parentCode').value.trim() || '-';
+                        const level = document.getElementById('level').value.trim();
+                        const displayOrder = document.getElementById('displayOrder').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                code, fullName, shortName,
+                                parentCode, level, displayOrder,
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('行政区信息已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'adminAreaEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editAreaFullName', message: '请输入行政区全称', required: true },
+                        { id: 'editAreaShortName', message: '请输入行政区简称', required: true },
+                        { id: 'editLevel', message: '请输入层级', required: true },
+                        { id: 'editDisplayOrder', message: '请输入同级显示顺序', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editAreaFullName').value.trim(),
+                            3: document.getElementById('editAreaShortName').value.trim(),
+                            4: document.getElementById('editParentCode').value.trim() || '-',
+                            5: document.getElementById('editLevel').value.trim(),
+                            6: document.getElementById('editDisplayOrder').value.trim(),
+                            7: page.getCurrentTimeStr(),
+                            8: '当前用户'
+                        });
+                        showToast('行政区信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editAreaCode: cells[1].textContent,
+                            editAreaFullName: cells[2].textContent,
+                            editAreaShortName: cells[3].textContent,
+                            editParentCode: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editLevel: cells[5].textContent,
+                            editDisplayOrder: cells[6].textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {}
+            });
+            
+            page.init();
+            
+            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+        });
+    </script>
+</body>
+</html>

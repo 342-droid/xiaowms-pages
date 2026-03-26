@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 库存规则</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* 页面特定样式 - 库存规则模态框label宽度 */
+        .modal-form-group label {
+            width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">库存规则</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">策略管理 / 库存规则</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label style="width: 85px;">规则编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>来源触发:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchSourceTrigger" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchSourceTriggerDropdown">
+                                <div class="select-option" data-value="receive_confirm">收货确认</div>
+                                <div class="select-option" data-value="receive_cancel">收货取消</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>来源单类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchSourceOrderType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchSourceOrderTypeDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>来源单业务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchSourceBizType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchSourceBizTypeDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>关联单类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchRelatedOrderType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchRelatedOrderTypeDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>规则编码</th>
+                                <th>来源触发</th>
+                                <th>来源单类型</th>
+                                <th>来源单业务类型</th>
+                                <th>关联单类型</th>
+                                <th>备注</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>INV001</td>
+                                <td>收货确认</td>
+                                <td>采购单</td>
+                                <td>标准采购</td>
+                                <td>入库单</td>
+                                <td>标准入库规则</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>INV002</td>
+                                <td>收货取消</td>
+                                <td>采购单</td>
+                                <td>标准采购</td>
+                                <td>入库单</td>
+                                <td>标准出库规则</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 分页组件容器 -->
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 添加明细模态框 -->
+    <div id="detailModal" class="modal" style="display: none; align-items: flex-start; padding-top: 10%; z-index: 9999;">
+        <div class="modal-content" style="width: 400px; max-height: none; margin: 0 auto;">
+            <div class="modal-header" style="margin-bottom: 15px;">
+                <h2 class="modal-title">库存规则明细</h2>
+                <span class="close" id="detailCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form" style="gap: 15px;">
+                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
+                    <label>规则类型 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailRuleType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailRuleTypeDropdown">
+                            <div class="select-option" data-value="source">来源库存</div>
+                            <div class="select-option" data-value="target">目的库存</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
+                    <label>变更类型 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailChangeType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailChangeTypeDropdown">
+                            <div class="select-option" data-value="stock">库存量</div>
+                            <div class="select-option" data-value="occupied">占用量</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
+                    <label>变更方向 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailChangeDirection" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailChangeDirectionDropdown">
+                            <div class="select-option" data-value="increase">增加</div>
+                            <div class="select-option" data-value="decrease">减少</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" style="margin-top: 15px;">
+                <button type="button" class="btn btn-secondary" id="detailCancelBtn">取消</button>
+                <button type="button" class="btn btn-primary" id="detailSaveBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 库存规则编辑/详情模态框 -->
+    <div id="inventoryRuleDetailModal" class="modal">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">库存规则 - 编辑</div>
+                <span class="close" id="inventoryRuleDetailCloseBtn">&times;</span>
+            </div>
+            <!-- 库存规则基本信息 -->
+            <form class="modal-form" style="gap: 15px;">
+                <div class="modal-form-group">
+                    <label>规则编码</label>
+                    <input type="text" id="editRuleCode" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>来源触发</label>
+                    <input type="text" id="editSourceTrigger" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>来源单类型</label>
+                    <input type="text" id="editSourceOrderType" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>来源单业务类型</label>
+                    <input type="text" id="editSourceBizType" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>关联单类型</label>
+                    <input type="text" id="editRelatedOrderType" disabled>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>是否启用</label>
+                    <div class="custom-select">
+                        <input type="text" id="editIsEnabled" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="editIsEnabledDropdown">
+                            <div class="select-option" data-value="启用">启用</div>
+                            <div class="select-option" data-value="禁用">禁用</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label style="width: 80px;">备注</label>
+                    <textarea id="editRemark" placeholder="请输入" style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </form>
+            
+            <!-- 库存规则明细 - 列表形式 -->
+            <div class="detail-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="detail-title" style="font-weight: bold; color: #333;">库存规则明细</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-primary" id="addInventoryRuleDetailBtn" style="font-size: 12px; padding: 5px 12px;">新增明细</button>
+                        <button type="button" class="btn btn-primary" id="inventoryRuleDetailSaveBtn" style="font-size: 12px; padding: 5px 12px;">保存</button>
+                        <button type="button" class="btn btn-secondary" id="inventoryRuleDetailCancelBtn" style="font-size: 12px; padding: 5px 12px;">取消</button>
+                    </div>
+                </div>
+                <table class="table" id="inventoryRuleDetailTable">
+                    <thead>
+                        <tr>
+                            <th>规则类型</th>
+                            <th>变更类型</th>
+                            <th>变更方向</th>
+                            <th>更新时间</th>
+                            <th>更新人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryRuleDetailTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入公共脚本 -->
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        // 使用PageManager简化页面逻辑
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '库存规则',
+                statusColumnIndex: 7,
+                
+                customSelects: [
+                    { inputId: 'searchSourceTrigger', dropdownId: 'searchSourceTriggerDropdown' },
+                    { inputId: 'searchSourceOrderType', dropdownId: 'searchSourceOrderTypeDropdown' },
+                    { inputId: 'searchSourceBizType', dropdownId: 'searchSourceBizTypeDropdown' },
+                    { inputId: 'searchRelatedOrderType', dropdownId: 'searchRelatedOrderTypeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'ruleCode', label: '规则编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'sourceTrigger', label: '来源触发', type: 'select', required: true, options: CommonOptions.sourceTrigger },
+                    { id: 'sourceOrderType', label: '来源单类型', type: 'select', required: false },
+                    { id: 'sourceBizType', label: '来源单业务类型', type: 'select', required: false },
+                    { id: 'relatedOrderType', label: '关联单类型', type: 'select', required: false },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
+                    { id: 'remark', label: '备注', type: 'textarea', labelWidth: '120px' }
+                ],
+                
+                addModal: {
+                    modalId: 'addInventoryRuleModal',
+                    saveBtnId: 'saveInventoryRuleBtn',
+                    cancelBtnId: 'cancelInventoryRuleBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'ruleCode', message: '请输入规则编码', required: true },
+                        { id: 'sourceTrigger', message: '请选择来源触发', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const code = document.getElementById('ruleCode').value.trim();
+                        const sourceTrigger = document.getElementById('sourceTrigger').value.trim();
+                        const sourceOrderType = document.getElementById('sourceOrderType')?.value.trim() || '';
+                        const sourceBizType = document.getElementById('sourceBizType')?.value.trim() || '';
+                        const relatedOrderType = document.getElementById('relatedOrderType')?.value.trim() || '';
+                        const remark = document.getElementById('remark').value.trim();
+                        const enabled = document.getElementById('isEnabled').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                code,
+                                sourceTrigger,
+                                sourceOrderType,
+                                sourceBizType,
+                                relatedOrderType,
+                                remark,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+                        showToast('库存规则信息已保存', 'success');
+                    }
+                },
+                
+                deleteModal: {}
+            });
+            
+            page.init();
+            
+            let currentEditingRow = null; // 保存当前正在编辑的行引用
+            
+            // 模拟库存规则明细数据
+            const inventoryRuleDetails = {
+                'INV001': [
+                    { ruleType: '来源库存', changeType: '库存量', changeDirection: '增加', updateTime: '2025-01-05 12:31:43', updateUser: '李四' },
+                    { ruleType: '目的库存', changeType: '占用量', changeDirection: '减少', updateTime: '2025-01-05 12:31:43', updateUser: '李四' }
+                ],
+                'INV002': [
+                    { ruleType: '来源库存', changeType: '库存量', changeDirection: '减少', updateTime: '2025-01-05 12:31:43', updateUser: '李四' }
+                ]
+            };
+            
+            // 打开库存规则详情模态框
+            function openInventoryRuleDetailModal(ruleCode, row) {
+                currentEditingRow = row; // 保存当前编辑行的引用
+                const cells = row.querySelectorAll('td');
+                
+                document.getElementById('editRuleCode').value = cells[1].textContent;
+                document.getElementById('editSourceTrigger').value = cells[2].textContent;
+                document.getElementById('editSourceOrderType').value = cells[3].textContent;
+                document.getElementById('editSourceBizType').value = cells[4].textContent;
+                document.getElementById('editRelatedOrderType').value = cells[5].textContent;
+                document.getElementById('editRemark').value = cells[6].textContent;
+                document.getElementById('editIsEnabled').value = cells[7].querySelector('.status').textContent;
+                
+                // 加载明细数据
+                const detailTableBody = document.getElementById('inventoryRuleDetailTableBody');
+                detailTableBody.innerHTML = '';
+                
+                const details = inventoryRuleDetails[cells[1].textContent] || [];
+                details.forEach(detail => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${detail.ruleType}</td>
+                        <td>${detail.changeType}</td>
+                        <td>${detail.changeDirection}</td>
+                        <td>${detail.updateTime}</td>
+                        <td>${detail.updateUser}</td>
+                        <td class="action-links">
+                            <a href="#" class="detail-delete-btn delete-btn">删除</a>
+                        </td>
+                    `;
+                    detailTableBody.appendChild(newRow);
+                });
+                
+                document.getElementById('inventoryRuleDetailModal').style.display = 'block';
+            }
+            
+            // 编辑按钮事件 - 打开自定义详情模态框
+            document.querySelector('.table').addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                if (editBtn) {
+                    e.preventDefault();
+                    const row = editBtn.closest('tr');
+                    const ruleCode = row.querySelectorAll('td')[1].textContent;
+                    openInventoryRuleDetailModal(ruleCode, row);
+                }
+            });
+            
+            // 库存规则详情模态框关闭事件
+            const inventoryRuleDetailModal = document.getElementById('inventoryRuleDetailModal');
+            const inventoryRuleDetailCloseBtn = document.getElementById('inventoryRuleDetailCloseBtn');
+            const inventoryRuleDetailCancelBtn = document.getElementById('inventoryRuleDetailCancelBtn');
+            const inventoryRuleDetailSaveBtn = document.getElementById('inventoryRuleDetailSaveBtn');
+            
+            function closeInventoryRuleDetailModal() {
+                inventoryRuleDetailModal.style.display = 'none';
+                currentEditingRow = null;
+            }
+            
+            // 保存按钮点击事件
+            inventoryRuleDetailSaveBtn.addEventListener('click', () => {
+                if (!currentEditingRow) return;
+                
+                const cells = currentEditingRow.querySelectorAll('td');
+                
+                // 更新备注列
+                cells[6].textContent = document.getElementById('editRemark').value.trim();
+                
+                // 更新是否启用列
+                const isEnabled = document.getElementById('editIsEnabled').value.trim();
+                const statusSpan = document.createElement('span');
+                statusSpan.className = isEnabled === '启用' ? 'status active' : 'status inactive';
+                statusSpan.textContent = isEnabled;
+                cells[7].innerHTML = '';
+                cells[7].appendChild(statusSpan);
+                
+                // 更新更新时间和更新人
+                cells[8].textContent = page.getCurrentTimeStr();
+                cells[9].textContent = '当前用户';
+                
+                showToast('库存规则信息已更新', 'success');
+                closeInventoryRuleDetailModal();
+            });
+            
+            inventoryRuleDetailCloseBtn.addEventListener('click', closeInventoryRuleDetailModal);
+            inventoryRuleDetailCancelBtn.addEventListener('click', closeInventoryRuleDetailModal);
+            inventoryRuleDetailModal.addEventListener('click', (e) => {
+                if (e.target === inventoryRuleDetailModal) closeInventoryRuleDetailModal();
+            });
+            
+            // 明细模态框逻辑
+            const detailModal = document.getElementById('detailModal');
+            const detailCloseBtn = document.getElementById('detailCloseBtn');
+            const detailCancelBtn = document.getElementById('detailCancelBtn');
+            const detailSaveBtn = document.getElementById('detailSaveBtn');
+            const addInventoryRuleDetailBtn = document.getElementById('addInventoryRuleDetailBtn');
+            
+            let currentDetailTarget = null; // 'edit'
+            
+            // 打开明细模态框
+            function openDetailModal(target) {
+                currentDetailTarget = target;
+                detailModal.style.display = 'block';
+                // 清空表单
+                document.getElementById('detailRuleType').value = '';
+                document.getElementById('detailRuleType').dataset.value = '';
+                document.getElementById('detailChangeType').value = '';
+                document.getElementById('detailChangeType').dataset.value = '';
+                document.getElementById('detailChangeDirection').value = '';
+                document.getElementById('detailChangeDirection').dataset.value = '';
+            }
+            
+            // 关闭明细模态框
+            function closeDetailModal() {
+                detailModal.style.display = 'none';
+                currentDetailTarget = null;
+            }
+            
+            if (addInventoryRuleDetailBtn) {
+                addInventoryRuleDetailBtn.addEventListener('click', () => openDetailModal('edit'));
+            }
+            if (detailCloseBtn) {
+                detailCloseBtn.addEventListener('click', closeDetailModal);
+            }
+            if (detailCancelBtn) {
+                detailCancelBtn.addEventListener('click', closeDetailModal);
+            }
+            
+            // 保存明细
+            if (detailSaveBtn) {
+                detailSaveBtn.addEventListener('click', () => {
+                    const ruleType = document.getElementById('detailRuleType').value.trim();
+                    const changeType = document.getElementById('detailChangeType').value.trim();
+                    const changeDirection = document.getElementById('detailChangeDirection').value.trim();
+                    
+                    if (!ruleType) {
+                        showToast('请选择规则类型', 'error');
+                        return;
+                    }
+                    if (!changeType) {
+                        showToast('请选择变更类型', 'error');
+                        return;
+                    }
+                    if (!changeDirection) {
+                        showToast('请选择变更方向', 'error');
+                        return;
+                    }
+                    
+                    // 检查重复数据
+                    const existingRows = document.querySelectorAll('#inventoryRuleDetailTableBody tr');
+                    const existingData = [];
+                    existingRows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length >= 3) {
+                            existingData.push({
+                                ruleType: cells[0].textContent,
+                                changeType: cells[1].textContent,
+                                changeDirection: cells[2].textContent
+                            });
+                        }
+                    });
+                    
+                    // 检查是否有重复
+                    const isDuplicate = existingData.some(item => 
+                        item.ruleType === ruleType && 
+                        item.changeType === changeType && 
+                        item.changeDirection === changeDirection
+                    );
+                    
+                    if (isDuplicate) {
+                        showToast('已存在重复内容，请检查！', 'error');
+                        return;
+                    }
+                    
+                    const now = new Date();
+                    const timeStr = now.getFullYear() + '-' + 
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(now.getDate()).padStart(2, '0') + ' ' +
+                        String(now.getHours()).padStart(2, '0') + ':' +
+                        String(now.getMinutes()).padStart(2, '0') + ':' +
+                        String(now.getSeconds()).padStart(2, '0');
+                    
+                    const newRow = `
+                        <tr>
+                            <td>${ruleType}</td>
+                            <td>${changeType}</td>
+                            <td>${changeDirection}</td>
+                            <td>${timeStr}</td>
+                            <td>当前用户</td>
+                            <td class="action-links">
+                                <a href="#" class="detail-delete-btn delete-btn">删除</a>
+                            </td>
+                        </tr>
+                    `;
+                    const editDetailTableBody = document.getElementById('inventoryRuleDetailTableBody');
+                    if (editDetailTableBody) {
+                        editDetailTableBody.insertAdjacentHTML('beforeend', newRow);
+                    }
+                    
+                    showToast('明细已添加', 'success');
+                    closeDetailModal();
+                });
+            }
+            
+            // 明细删除事件委托
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('detail-delete-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.remove();
+                        showToast('明细已删除', 'success');
+                    }
+                }
+            });
+            
+            // 初始化明细模态框的自定义下拉框
+            function initDetailModalSelects() {
+                initCustomSelect('detailRuleType', 'detailRuleTypeDropdown');
+                initCustomSelect('detailChangeType', 'detailChangeTypeDropdown');
+                initCustomSelect('detailChangeDirection', 'detailChangeDirectionDropdown');
+                initCustomSelect('editIsEnabled', 'editIsEnabledDropdown');
+            }
+            
+            // 通用自定义下拉框初始化函数
+            function initCustomSelect(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                if (!input || !dropdown) return;
+                
+                const customSelect = input.parentElement;
+                const selectArrow = customSelect.querySelector('.select-arrow');
+                const clearBtn = customSelect.querySelector('.clear-btn');
+                
+                // 点击整个自定义选择框区域（除了输入框和清除按钮）打开/关闭下拉框
+                customSelect.addEventListener('click', (e) => {
+                    if (e.target !== clearBtn) {
+                        dropdown.classList.toggle('show');
+                    }
+                });
+                
+                // 点击选项
+                dropdown.querySelectorAll('.select-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        input.value = option.textContent;
+                        dropdown.classList.remove('show');
+                    });
+                });
+                
+                // 清空按钮
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        input.value = '';
+                    });
+                }
+                
+                // 点击外部关闭下拉框
+                document.addEventListener('click', (e) => {
+                    if (!customSelect.contains(e.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            }
+            
+            // 页面加载完成后初始化下拉框
+            initDetailModalSelects();
+        });
+    </script>
+</body>
+</html>

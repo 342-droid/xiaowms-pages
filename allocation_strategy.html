@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 分配策略</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .modal-form-group label {
+            width: 110px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">分配策略</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">策略管理 / 分配策略</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>分配策略编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>分配策略描述:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchDesc" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>仓库:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchWarehouse" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchWarehouseDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 100px;">分配来源:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchSource" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchSourceDropdown">
+                                <div class="select-option" data-value="1">出库单</div>
+                                <div class="select-option" data-value="2">补货需求</div>
+                                <div class="select-option" data-value="3">移动单</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 100px;">是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>分配策略编码</th>
+                                <th>分配策略描述</th>
+                                <th>仓库</th>
+                                <th>委托方</th>
+                                <th>分配来源</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>AS001</td>
+                                <td>标准分配策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C001-南京委托方</td>
+                                <td>出库单</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>AS002</td>
+                                <td>零散分配策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C002-北京委托方</td>
+                                <td>补货需求</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 详情查看模态框 -->
+    <div id="detailModal" class="modal" style="display: none; align-items: flex-start; padding-top: 10%; z-index: 3001;">
+        <div class="modal-content" style="width: 600px; max-height: none; margin: 0 auto;">
+            <div class="modal-header" style="margin-bottom: 15px;">
+                <h2 class="modal-title">分配策略详情</h2>
+                <span class="close" id="detailCloseBtn">&times;</span>
+            </div>
+            <div id="detailContent">
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情编辑模态框 -->
+    <div id="detailEditModal" class="modal" style="z-index: 2500;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">分配策略-详情</h2>
+                <span class="close" id="detailEditCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form">
+                <div class="modal-form-group">
+                    <label>优先级 <span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="detailPriority" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>分配来源类型 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailSourceType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailSourceTypeDropdown">
+                            <div class="select-option" data-value="销售出库">销售出库</div>
+                            <div class="select-option" data-value="退货出库">退货出库</div>
+                            <div class="select-option" data-value="调拨出库">调拨出库</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>分配来源业务类型 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailSourceBizType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailSourceBizTypeDropdown">
+                            <div class="select-option" data-value="销售出库">销售出库</div>
+                            <div class="select-option" data-value="退货出库">退货出库</div>
+                            <div class="select-option" data-value="调拨出库">调拨出库</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>拣货储位类型 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailPickLocationType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailPickLocationTypeDropdown">
+                            <div class="select-option" data-value="拣选位">拣选位</div>
+                            <div class="select-option" data-value="存储位">存储位</div>
+                            <div class="select-option" data-value="暂存位">暂存位</div>
+                            <div class="select-option" data-value="收货位">收货位</div>
+                            <div class="select-option" data-value="发货位">发货位</div>
+                            <div class="select-option" data-value="越库位">越库位</div>
+                            <div class="select-option" data-value="集散位">集散位</div>
+                            <div class="select-option" data-value="打包位">打包位</div>
+                            <div class="select-option" data-value="异常位">异常位</div>
+                            <div class="select-option" data-value="待处理位">待处理位</div>
+                            <div class="select-option" data-value="退货位">退货位</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>是否补货 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailIsReplenish" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailIsReplenishDropdown">
+                            <div class="select-option" data-value="是">是</div>
+                            <div class="select-option" data-value="否">否</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>补货储位类型</label>
+                    <div class="custom-select">
+                        <input type="text" id="detailReplenishLocationType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailReplenishLocationTypeDropdown">
+                            <div class="select-option" data-value="拣选位">拣选位</div>
+                            <div class="select-option" data-value="存储位">存储位</div>
+                            <div class="select-option" data-value="暂存位">暂存位</div>
+                            <div class="select-option" data-value="收货位">收货位</div>
+                            <div class="select-option" data-value="发货位">发货位</div>
+                            <div class="select-option" data-value="越库位">越库位</div>
+                            <div class="select-option" data-value="集散位">集散位</div>
+                            <div class="select-option" data-value="打包位">打包位</div>
+                            <div class="select-option" data-value="异常位">异常位</div>
+                            <div class="select-option" data-value="待处理位">待处理位</div>
+                            <div class="select-option" data-value="退货位">退货位</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>周转策略 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailTurnStrategy" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailTurnStrategyDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>库存状态 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailInventoryStatus" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailInventoryStatusDropdown">
+                            <div class="select-option" data-value="正常">正常</div>
+                            <div class="select-option" data-value="异常">异常</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>冻结标记 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailFreezeFlag" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailFreezeFlagDropdown">
+                            <div class="select-option" data-value="未冻结">未冻结</div>
+                            <div class="select-option" data-value="已冻结">已冻结</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="detailEditCancelBtn">取消</button>
+                <button type="button" class="btn btn-primary" id="detailEditSaveBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入公共脚本 -->
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '分配策略',
+                statusColumnIndex: 6,
+                
+                customSelects: [
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' },
+                    { inputId: 'searchSource', dropdownId: 'searchSourceDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true, options: CommonOptions.warehouse },
+                    { id: 'company', label: '委托方', type: 'select', required: true, editDisabled: true, options: CommonOptions.company },
+                    { id: 'templateCode', label: '分配策略编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'templateDesc', label: '分配策略描述', type: 'text', required: true, editDisabled: true },
+                    { id: 'source', label: '分配来源', type: 'select', required: true, editDisabled: true, 
+                      options: [
+                          { value: '出库单', text: '出库单' },
+                          { value: '补货需求', text: '补货需求' },
+                          { value: '移动单', text: '移动单' }
+                      ]
+                    },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
+                    { 
+                        type: 'raw', 
+                        editHtml: `
+                            <div class="modal-form-group" style="width: 100%; flex-direction: column; align-items: flex-start; gap: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <label style="width: auto;">详情</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button type="button" class="btn btn-primary" id="editAddDetailBtn">添加</button>
+                                        <button type="button" class="btn btn-primary" id="editSaveProfileBtn">保存</button>
+                                        <button type="button" class="btn btn-secondary" id="editCancelProfileBtn">取消</button>
+                                    </div>
+                                </div>
+                                <div class="table-scroll-container" style="width: 100%; max-height: 200px; overflow-y: auto;">
+                                    <table class="table" id="editDetailTable">
+                                        <thead>
+                                            <tr>
+                                                <th>优先级</th>
+                                                <th>分配来源类型</th>
+                                                <th>分配来源业务类型</th>
+                                                <th>拣货储位类型</th>
+                                                <th>是否补货</th>
+                                                <th>补货储位类型</th>
+                                                <th>周转策略</th>
+                                                <th>库存状态</th>
+                                                <th>冻结标记</th>
+                                                <th>更新时间</th>
+                                                <th>更新人</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="editDetailTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <style>
+                                #editProfileModal .modal-footer {
+                                    display: none !important;
+                                }
+                            </style>
+                        `
+                    }
+                ],
+                
+                addModal: {
+                    modalId: 'addProfileModal',
+                    saveBtnId: 'saveProfileBtn',
+                    cancelBtnId: 'cancelProfileBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'warehouse', message: '请选择仓库', required: true },
+                        { id: 'company', message: '请选择委托方', required: true },
+                        { id: 'templateCode', message: '请输入分配策略编码', required: true },
+                        { id: 'templateDesc', message: '请输入分配策略描述', required: true },
+                        { id: 'source', message: '请选择分配来源', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onOpen: () => {
+                        const currentWarehouse = getCurrentWarehouse();
+                        if (currentWarehouse) {
+                            const warehouseInput = document.getElementById('warehouse');
+                            if (warehouseInput) {
+                                warehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                                warehouseInput.dataset.value = currentWarehouse.code;
+                            }
+                        }
+                    },
+                    onSave: () => {
+                        const code = document.getElementById('templateCode').value.trim();
+                        const desc = document.getElementById('templateDesc').value.trim();
+                        const warehouse = document.getElementById('warehouse').value.trim();
+                        const company = document.getElementById('company').value.trim();
+                        const source = document.getElementById('source').value.trim();
+                        const enabled = document.getElementById('isEnabled').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                code,
+                                desc,
+                                warehouse,
+                                company,
+                                source,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+                        showToast('分配策略信息已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'editProfileModal',
+                    saveBtnId: 'editSaveProfileBtn',
+                    cancelBtnId: 'editCancelProfileBtn',
+                    validations: [
+                        { id: 'editTemplateDesc', message: '请输入分配策略描述', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editTemplateDesc').value.trim(),
+                            6: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            7: page.getCurrentTimeStr(),
+                            8: '当前用户'
+                        });
+                        showToast('分配策略信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editWarehouse: cells[3].textContent,
+                            editCompany: cells[4].textContent,
+                            editTemplateCode: cells[1].textContent,
+                            editTemplateDesc: cells[2].textContent,
+                            editSource: cells[5].textContent,
+                            editIsEnabled: cells[6].querySelector('.status').textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {}
+            });
+            
+            page.init();
+            
+            const detailModal = document.getElementById('detailModal');
+            const detailCloseBtn = document.getElementById('detailCloseBtn');
+            const detailEditModal = document.getElementById('detailEditModal');
+            const detailEditCloseBtn = document.getElementById('detailEditCloseBtn');
+            const detailEditCancelBtn = document.getElementById('detailEditCancelBtn');
+            const detailEditSaveBtn = document.getElementById('detailEditSaveBtn');
+            
+            function openDetailModal(rowData) {
+                const detailContent = document.getElementById('detailContent');
+                detailContent.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;"><strong>优先级:</strong> 1</div>
+                            <div style="flex: 1;"><strong>分配来源类型:</strong> 销售出库</div>
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;"><strong>分配来源业务类型:</strong> 销售出库</div>
+                            <div style="flex: 1;"><strong>拣货储位类型:</strong> 拣选位</div>
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;"><strong>是否补货:</strong> 否</div>
+                            <div style="flex: 1;"><strong>补货储位类型:</strong> 存储位</div>
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;"><strong>周转策略:</strong> 先进先出</div>
+                            <div style="flex: 1;"><strong>库存状态:</strong> 正常</div>
+                        </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;"><strong>冻结标记:</strong> 未冻结</div>
+                        </div>
+                    </div>
+                `;
+                detailModal.style.display = 'flex';
+            }
+            
+            function closeDetailModal() {
+                detailModal.style.display = 'none';
+            }
+
+            function openDetailEditModal() {
+                document.getElementById('detailPriority').value = '1';
+                document.getElementById('detailSourceType').value = '';
+                document.getElementById('detailSourceType').dataset.value = '';
+                document.getElementById('detailSourceBizType').value = '';
+                document.getElementById('detailSourceBizType').dataset.value = '';
+                document.getElementById('detailPickLocationType').value = '';
+                document.getElementById('detailPickLocationType').dataset.value = '';
+                document.getElementById('detailIsReplenish').value = '';
+                document.getElementById('detailIsReplenish').dataset.value = '';
+                document.getElementById('detailReplenishLocationType').value = '';
+                document.getElementById('detailReplenishLocationType').dataset.value = '';
+                document.getElementById('detailTurnStrategy').value = '';
+                document.getElementById('detailTurnStrategy').dataset.value = '';
+                document.getElementById('detailInventoryStatus').value = '';
+                document.getElementById('detailInventoryStatus').dataset.value = '';
+                document.getElementById('detailFreezeFlag').value = '';
+                document.getElementById('detailFreezeFlag').dataset.value = '';
+                
+                detailEditModal.style.display = 'block';
+            }
+
+            function closeDetailEditModal() {
+                detailEditModal.style.display = 'none';
+            }
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('detail-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    openDetailModal({
+                        code: cells[1].textContent,
+                        desc: cells[2].textContent,
+                        source: cells[5].textContent
+                    });
+                }
+            });
+            
+            if (detailCloseBtn) {
+                detailCloseBtn.addEventListener('click', closeDetailModal);
+            }
+            
+            if (detailEditCloseBtn) {
+                detailEditCloseBtn.addEventListener('click', closeDetailEditModal);
+            }
+            if (detailEditCancelBtn) {
+                detailEditCancelBtn.addEventListener('click', closeDetailEditModal);
+            }
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.id === 'editAddDetailBtn') {
+                    e.preventDefault();
+                    openDetailEditModal();
+                }
+            });
+
+            if (detailEditSaveBtn) {
+                detailEditSaveBtn.addEventListener('click', () => {
+                    const priority = document.getElementById('detailPriority').value.trim();
+                    const sourceType = document.getElementById('detailSourceType').value.trim();
+                    const sourceBizType = document.getElementById('detailSourceBizType').value.trim();
+                    const pickLocationType = document.getElementById('detailPickLocationType').value.trim();
+                    const isReplenish = document.getElementById('detailIsReplenish').value.trim();
+                    const replenishLocationType = document.getElementById('detailReplenishLocationType').value.trim();
+                    const turnStrategy = document.getElementById('detailTurnStrategy').value.trim();
+                    const inventoryStatus = document.getElementById('detailInventoryStatus').value.trim();
+                    const freezeFlag = document.getElementById('detailFreezeFlag').value.trim();
+
+                    if (!priority) {
+                        showToast('请输入优先级', 'error');
+                        return;
+                    }
+                    if (!sourceType) {
+                        showToast('请选择分配来源类型', 'error');
+                        return;
+                    }
+                    if (!sourceBizType) {
+                        showToast('请选择分配来源业务类型', 'error');
+                        return;
+                    }
+                    if (!pickLocationType) {
+                        showToast('请选择拣货储位类型', 'error');
+                        return;
+                    }
+                    if (!isReplenish) {
+                        showToast('请选择是否补货', 'error');
+                        return;
+                    }
+                    if (!turnStrategy) {
+                        showToast('请选择周转策略', 'error');
+                        return;
+                    }
+                    if (!inventoryStatus) {
+                        showToast('请选择库存状态', 'error');
+                        return;
+                    }
+                    if (!freezeFlag) {
+                        showToast('请选择冻结标记', 'error');
+                        return;
+                    }
+
+                    const newRow = `
+                        <tr>
+                            <td><input type="text" value="${priority}" style="width: 60px;"></td>
+                            <td><input type="text" value="${sourceType}" style="width: 100px;"></td>
+                            <td><input type="text" value="${sourceBizType}" style="width: 100px;"></td>
+                            <td><input type="text" value="${pickLocationType}" style="width: 100px;"></td>
+                            <td><input type="text" value="${isReplenish}" style="width: 60px;"></td>
+                            <td><input type="text" value="${replenishLocationType}" style="width: 80px;"></td>
+                            <td><input type="text" value="${turnStrategy}" style="width: 100px;"></td>
+                            <td><input type="text" value="${inventoryStatus}" style="width: 80px;"></td>
+                            <td><input type="text" value="${freezeFlag}" style="width: 80px;"></td>
+                            <td>${page.getCurrentTimeStr()}</td>
+                            <td>当前用户</td>
+                            <td class="action-links">
+                                <a href="#" class="detail-delete-btn delete-btn">删除</a>
+                            </td>
+                        </tr>
+                    `;
+                    const editDetailTableBody = document.getElementById('editDetailTableBody');
+                    if (editDetailTableBody) {
+                        editDetailTableBody.insertAdjacentHTML('beforeend', newRow);
+                    }
+                    showToast('明细已添加', 'success');
+                    closeDetailEditModal();
+                });
+            }
+
+            if (typeof initCustomSelect === 'function') {
+                initCustomSelect('detailSourceType', 'detailSourceTypeDropdown');
+                initCustomSelect('detailSourceBizType', 'detailSourceBizTypeDropdown');
+                initCustomSelect('detailPickLocationType', 'detailPickLocationTypeDropdown');
+                initCustomSelect('detailIsReplenish', 'detailIsReplenishDropdown');
+                initCustomSelect('detailReplenishLocationType', 'detailReplenishLocationTypeDropdown');
+                initCustomSelect('detailTurnStrategy', 'detailTurnStrategyDropdown');
+                initCustomSelect('detailInventoryStatus', 'detailInventoryStatusDropdown');
+                initCustomSelect('detailFreezeFlag', 'detailFreezeFlagDropdown');
+            }
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('detail-delete-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.remove();
+                        showToast('明细已删除', 'success');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

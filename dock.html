@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 月台</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">月台</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">基础信息 / 月台</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>月台编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>月台名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>月台类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchDockType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchDockTypeDropdown">
+                                <div class="select-option" data-value="inbound">入库月台</div>
+                                <div class="select-option" data-value="outbound">出库月台</div>
+                                <div class="select-option" data-value="crossdock">越库月台</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>月台编码</th>
+                                <th>月台名称</th>
+                                <th>月台类型</th>
+                                <th>仓库</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>D001</td>
+                                <td>1号入库月台</td>
+                                <td>入库月台</td>
+                                <td>南京仓</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>D002</td>
+                                <td>1号出库月台</td>
+                                <td>出库月台</td>
+                                <td>南京仓</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>D003</td><td>2号入库月台</td><td>入库月台</td><td>南京仓</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>王五</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>D004</td><td>越库月台</td><td>越库月台</td><td>南京仓</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '月台',
+                statusColumnIndex: 5,
+                
+                customSelects: [
+                    { inputId: 'searchDockType', dropdownId: 'searchDockTypeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, editDisabled: true,
+                      options: [
+                          { value: 'W001', text: '南京仓' },
+                          { value: 'W002', text: '嘉兴仓' },
+                          { value: 'W003', text: '上海仓' }
+                      ] },
+                    { id: 'dockCode', label: '月台编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'dockName', label: '月台名称', type: 'text', required: true, editDisabled: true },
+                    { id: 'dockType', label: '月台类型', type: 'select', required: true, editDisabled: true,
+                      options: [
+                          { value: 'inbound', text: '入库月台' },
+                          { value: 'outbound', text: '出库月台' },
+                          { value: 'crossdock', text: '越库月台' }
+                      ] },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                    { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
+                ],
+                
+                addModal: {
+                    modalId: 'dockModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用', tenant: 'XX集团', warehouse: 'W001' },
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'warehouse', message: '请选择仓库', required: true },
+                        { id: 'dockCode', message: '请输入月台编码', required: true },
+                        { id: 'dockName', message: '请输入月台名称', required: true },
+                        { id: 'dockType', message: '请选择月台类型', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const tenant = document.getElementById('tenant').value.trim();
+                        const warehouse = document.getElementById('warehouse').value.trim();
+                        const code = document.getElementById('dockCode').value.trim();
+                        const name = document.getElementById('dockName').value.trim();
+                        const type = document.getElementById('dockType').value.trim();
+                        const enabled = document.getElementById('isEnabled').value.trim();
+                        
+                        let warehouseText = '南京仓';
+                        if (warehouse === 'W002') warehouseText = '嘉兴仓';
+                        if (warehouse === 'W003') warehouseText = '上海仓';
+                        
+                        let typeText = '入库月台';
+                        if (type === 'outbound') typeText = '出库月台';
+                        if (type === 'crossdock') typeText = '越库月台';
+                        
+                        page.addTableRow({
+                            cells: [
+                                code, name, typeText, warehouseText,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('月台信息已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'dockEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
+                        { id: 'editWarehouse', message: '请选择仓库', required: true },
+                        { id: 'editDockName', message: '请输入月台名称', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editDockName').value.trim(),
+                            4: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            5: page.getCurrentTimeStr(),
+                            6: '当前用户'
+                        });
+                        showToast('月台信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editDockCode: cells[1].textContent,
+                            editDockName: cells[2].textContent,
+                            editDockType: cells[3].textContent,
+                            editWarehouse: cells[4].textContent,
+                            editTenant: 'XX集团',
+                            editIsEnabled: cells[5].querySelector('.status').textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+            
+            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+        });
+    </script>
+</body>
+</html>

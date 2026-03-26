@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 商品品类</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* 页面特定样式 - 商品品类详情模态框 */
+        #categoryDetailModal .modal-form-group {
+            width: calc(33.33% - 10px);
+        }
+        #categoryDetailModal .modal-form-group label {
+            width: 90px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">商品品类</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">基础信息 / 商品品类</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>租户:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTenant" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTenantDropdown">
+                                <div class="select-option" data-value="T001-南京租户">T001-南京租户</div>
+                                <div class="select-option" data-value="T002-北京租户">T002-北京租户</div>
+                                <div class="select-option" data-value="T003-上海租户">T003-上海租户</div>
+                                <div class="select-option" data-value="T004-广州租户">T004-广州租户</div>
+                                <div class="select-option" data-value="T005-深圳租户">T005-深圳租户</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>品类单头编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCategoryCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>品类单头名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCategoryName" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" id="searchBtn" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>品类单头编码</th>
+                                <th>品类单头名称</th>
+                                <th>租户</th>
+                                <th>备注</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>CAT001</td>
+                                <td>食品</td>
+                                <td>T001-南京租户</td>
+                                <td>食品类商品</td>
+                                <td>2025-01-07 10:30:00</td>
+                                <td>张三</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>CAT002</td>
+                                <td>冷冻肉类</td>
+                                <td>T002-北京租户</td>
+                                <td>冷冻类肉类商品</td>
+                                <td>2025-01-07 09:15:00</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>CAT003</td>
+                                <td>乳制品</td>
+                                <td>T003-上海租户</td>
+                                <td></td>
+                                <td>2025-01-06 14:20:00</td>
+                                <td>王五</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>CAT004</td>
+                                <td>速冻食品</td>
+                                <td>T004-广州租户</td>
+                                <td></td>
+                                <td>2025-01-06 11:00:00</td>
+                                <td>赵六</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>CAT005</td>
+                                <td>休闲食品</td>
+                                <td>T005-深圳租户</td>
+                                <td>零食类商品</td>
+                                <td>2025-01-05 16:45:00</td>
+                                <td>钱七</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 商品品类详情弹窗 -->
+    <div id="categoryDetailModal" class="modal">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">商品品类 - 编辑</div>
+                <span class="close" id="categoryDetailCloseBtn">&times;</span>
+            </div>
+            <!-- 商品品类详情信息 -->
+            <form class="modal-form" style="gap: 15px;">
+                <div class="modal-form-group">
+                    <label>租户</label>
+                    <input type="text" id="detailTenant" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头编码</label>
+                    <input type="text" id="detailCategoryCode" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头名称</label>
+                    <input type="text" id="detailCategoryName" disabled>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label style="width: 80px;">备注</label>
+                    <textarea id="detailRemark" disabled style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </form>
+            
+            <!-- 分割线 -->
+            <hr style="width: 100%; border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+            
+            <!-- 商品品类信息 - 树状结构 -->
+            <div class="category-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="spec-title" style="font-weight: bold; color: #333;">三级品类信息</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-primary" id="addCategoryItemBtn" style="font-size: 12px; padding: 5px 12px;">新增品类</button>
+                        <button type="button" class="btn btn-primary" id="categoryDetailSaveBtn" style="font-size: 12px; padding: 5px 12px;">保存</button>
+                        <button type="button" class="btn btn-secondary" id="categoryDetailCancelBtn" style="font-size: 12px; padding: 5px 12px;">取消</button>
+                    </div>
+                </div>
+                
+                <!-- 树状结构组件 -->
+                <div class="tree-container" id="categoryTree" role="tree" aria-label="商品品类树"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 品类新增模态框 -->
+    <div id="categoryItemAddModal" class="modal">
+        <div class="modal-content" style="width: 70%;">
+            <div class="modal-header">
+                <h2 class="modal-title">品类-新增</h2>
+                <span class="close" id="categoryItemAddCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form">
+                <div class="modal-form-group">
+                    <label>租户</label>
+                    <input type="text" id="itemAddTenant" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头编码</label>
+                    <input type="text" id="itemAddCategoryCode" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头名称</label>
+                    <input type="text" id="itemAddCategoryName" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>父品类编码</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemAddParentCode" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类编码<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemAddCode" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类名称<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemAddName" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>品类层级<span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="itemAddLevel" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="itemAddLevelDropdown">
+                            <div class="select-option" data-value="一级">一级</div>
+                            <div class="select-option" data-value="二级">二级</div>
+                            <div class="select-option" data-value="三级">三级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>同级显示排序<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="itemAddOrder" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label style="width: 80px;">备注</label>
+                    <textarea id="itemAddRemark" placeholder="请输入" rows="4" style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="categoryItemAddSaveBtn">保存</button>
+                <button type="button" class="btn btn-secondary" id="categoryItemAddCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 品类编辑模态框 -->
+    <div id="categoryItemEditModal" class="modal">
+        <div class="modal-content" style="width: 70%;">
+            <div class="modal-header">
+                <h2 class="modal-title">品类-编辑</h2>
+                <span class="close" id="categoryItemEditCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form">
+                <div class="modal-form-group">
+                    <label>租户</label>
+                    <input type="text" id="itemEditTenant" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头编码</label>
+                    <input type="text" id="itemEditCategoryCode" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类单头名称</label>
+                    <input type="text" id="itemEditCategoryName" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>父品类编码</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemEditParentCode" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类编码<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemEditCode" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>品类名称<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="itemEditName" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>品类层级<span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="itemEditLevel" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="itemEditLevelDropdown">
+                            <div class="select-option" data-value="一级">一级</div>
+                            <div class="select-option" data-value="二级">二级</div>
+                            <div class="select-option" data-value="三级">三级</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>同级显示排序<span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="itemEditOrder" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label style="width: 80px;">备注</label>
+                    <textarea id="itemEditRemark" placeholder="请输入" rows="4" style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="categoryItemEditSaveBtn">保存</button>
+                <button type="button" class="btn btn-secondary" id="categoryItemEditCancelBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script src="js/tree-component.js"></script>
+    <script>
+        // 模拟商品品类详情数据 - 层级结构
+        const categoryDetails = {
+            'CAT001': {
+                tenant: 'T001-南京租户', categoryCode: 'CAT001', categoryName: '食品', 
+                remark: '食品类商品',
+                items: [
+                    {
+                        id: 'node-1',
+                        code: 'CAT001-L1',
+                        name: '食品大类',
+                        level: '一级',
+                        order: '1',
+                        remark: '食品大类',
+                        hasChildren: true,
+                        lazyLoaded: false,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-1-1',
+                                code: 'CAT001-L1-M1',
+                                name: '肉类',
+                                level: '二级',
+                                order: '1',
+                                remark: '肉类中类',
+                                hasChildren: true,
+                                lazyLoaded: false,
+                                expanded: false,
+                                children: [
+                                    {
+                                        id: 'node-1-1-1',
+                                        code: 'CAT001-L1-M1-S1',
+                                        name: '冷冻肉类',
+                                        level: '三级',
+                                        order: '1',
+                                        remark: '冷冻肉类小类',
+                                        hasChildren: false,
+                                        lazyLoaded: false,
+                                        expanded: false,
+                                        children: []
+                                    },
+                                    {
+                                        id: 'node-1-1-2',
+                                        code: 'CAT001-L1-M1-S2',
+                                        name: '冷藏肉类',
+                                        level: '三级',
+                                        order: '2',
+                                        remark: '冷藏肉类小类',
+                                        hasChildren: false,
+                                        lazyLoaded: false,
+                                        expanded: false,
+                                        children: []
+                                    }
+                                ]
+                            },
+                            {
+                                id: 'node-1-2',
+                                code: 'CAT001-L1-M2',
+                                name: '乳制品',
+                                level: '二级',
+                                order: '2',
+                                remark: '乳制品中类',
+                                hasChildren: true,
+                                lazyLoaded: false,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-2',
+                        code: 'CAT001-L2',
+                        name: '休闲食品',
+                        level: '一级',
+                        order: '2',
+                        remark: '休闲食品大类',
+                        hasChildren: false,
+                        lazyLoaded: false,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            'CAT002': {
+                tenant: 'T002-北京租户', categoryCode: 'CAT002', categoryName: '冷冻肉类', 
+                remark: '冷冻类肉类商品',
+                items: []
+            },
+            'CAT003': {
+                tenant: 'T003-上海租户', categoryCode: 'CAT003', categoryName: '乳制品', 
+                remark: '',
+                items: []
+            },
+            'CAT004': {
+                tenant: 'T004-广州租户', categoryCode: 'CAT004', categoryName: '速冻食品', 
+                remark: '',
+                items: []
+            },
+            'CAT005': {
+                tenant: 'T005-深圳租户', categoryCode: 'CAT005', categoryName: '休闲食品', 
+                remark: '零食类商品',
+                items: []
+            }
+        };
+
+        let categoryTree = null;
+        let currentCategoryDetail = null;
+        let currentParentNode = null;
+        let currentEditNode = null;
+
+        // 打开详情弹窗
+        function openDetailModal(categoryCode) {
+            const detail = categoryDetails[categoryCode];
+            if (detail) {
+                currentCategoryDetail = detail;
+                document.getElementById('detailTenant').value = detail.tenant;
+                document.getElementById('detailCategoryCode').value = detail.categoryCode;
+                document.getElementById('detailCategoryName').value = detail.categoryName;
+                document.getElementById('detailRemark').value = detail.remark || '';
+                
+                if (!categoryTree) {
+                    categoryTree = new TreeComponent({
+                        container: document.getElementById('categoryTree'),
+                        columns: [
+                            { key: 'name', label: '品类名称' },
+                            { key: 'level', label: '品类层级', width: '100px' },
+                            { key: 'order', label: '同级显示排序', width: '100px' },
+                            { key: 'remark', label: '备注', width: '150px' }
+                        ],
+                        onAdd: (nodeId) => {
+                            openCategoryItemAddModalWithParent(nodeId);
+                        },
+                        onEdit: (nodeId) => {
+                            openCategoryItemEditModal(nodeId);
+                        },
+                        onDelete: (nodeId) => {
+                            deleteCategoryNode(nodeId);
+                        }
+                    });
+                }
+                categoryTree.expandedNodes.clear();
+                categoryTree.setData(detail.items || []);
+                
+                document.getElementById('categoryDetailModal').style.display = 'block';
+            }
+        }
+
+        // 关闭详情弹窗
+        function closeDetailModal() {
+            document.getElementById('categoryDetailModal').style.display = 'none';
+            currentCategoryDetail = null;
+        }
+
+        // 打开品类新增模态框（不带父节点）
+        function openCategoryItemAddModal() {
+            currentParentNode = null;
+            if (currentCategoryDetail) {
+                document.getElementById('itemAddTenant').value = currentCategoryDetail.tenant;
+                document.getElementById('itemAddCategoryCode').value = currentCategoryDetail.categoryCode;
+                document.getElementById('itemAddCategoryName').value = currentCategoryDetail.categoryName;
+                document.getElementById('itemAddParentCode').value = '';
+                document.getElementById('itemAddLevel').value = '';
+                document.getElementById('itemAddParentCode').disabled = false;
+                document.getElementById('itemAddLevel').disabled = false;
+            }
+            document.getElementById('categoryItemAddModal').style.display = 'block';
+        }
+
+        // 打开品类新增模态框（带父节点）
+        function openCategoryItemAddModalWithParent(nodeId) {
+            const parentNode = findNodeByIdInTree(nodeId);
+            if (parentNode) {
+                currentParentNode = parentNode;
+                if (currentCategoryDetail) {
+                    document.getElementById('itemAddTenant').value = currentCategoryDetail.tenant;
+                    document.getElementById('itemAddCategoryCode').value = currentCategoryDetail.categoryCode;
+                    document.getElementById('itemAddCategoryName').value = currentCategoryDetail.categoryName;
+                    document.getElementById('itemAddParentCode').value = parentNode.code || '';
+                    
+                    // 自动设置下一层级
+                    const levelMap = { '一级': '二级', '二级': '三级' };
+                    const nextLevel = levelMap[parentNode.level] || '一级';
+                    document.getElementById('itemAddLevel').value = nextLevel;
+                    
+                    // 禁用父品类编码和品类层级编辑
+                    document.getElementById('itemAddParentCode').disabled = true;
+                    document.getElementById('itemAddLevel').disabled = true;
+                }
+                document.getElementById('categoryItemAddModal').style.display = 'block';
+            }
+        }
+
+        // 在树状结构中查找节点
+        function findNodeByIdInTree(nodeId) {
+            if (!currentCategoryDetail) return null;
+            const findNode = (nodes, id) => {
+                for (const node of nodes) {
+                    if (node.id === id) return node;
+                    if (node.children && node.children.length > 0) {
+                        const found = findNode(node.children, id);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            return findNode(currentCategoryDetail.items || [], nodeId);
+        }
+
+        // 关闭品类新增模态框
+        function closeCategoryItemAddModal() {
+            document.getElementById('categoryItemAddModal').style.display = 'none';
+            currentParentNode = null;
+            document.getElementById('itemAddTenant').value = '';
+            document.getElementById('itemAddCategoryCode').value = '';
+            document.getElementById('itemAddCategoryName').value = '';
+            document.getElementById('itemAddParentCode').value = '';
+            document.getElementById('itemAddCode').value = '';
+            document.getElementById('itemAddName').value = '';
+            document.getElementById('itemAddLevel').value = '';
+            document.getElementById('itemAddOrder').value = '';
+            document.getElementById('itemAddRemark').value = '';
+            
+            // 重置禁用状态
+            document.getElementById('itemAddParentCode').disabled = false;
+            document.getElementById('itemAddLevel').disabled = false;
+        }
+
+        // 打开品类编辑模态框
+        function openCategoryItemEditModal(nodeId) {
+            const editNode = findNodeByIdInTree(nodeId);
+            if (!editNode || !currentCategoryDetail) return;
+            
+            currentEditNode = editNode;
+            
+            // 查找父节点
+            const parentNode = findParentNodeInTree(nodeId);
+            const parentCode = parentNode ? parentNode.code : '';
+            
+            document.getElementById('itemEditTenant').value = currentCategoryDetail.tenant;
+            document.getElementById('itemEditCategoryCode').value = currentCategoryDetail.categoryCode;
+            document.getElementById('itemEditCategoryName').value = currentCategoryDetail.categoryName;
+            document.getElementById('itemEditParentCode').value = parentCode;
+            document.getElementById('itemEditCode').value = editNode.code || '';
+            document.getElementById('itemEditName').value = editNode.name || '';
+            document.getElementById('itemEditLevel').value = editNode.level || '';
+            document.getElementById('itemEditOrder').value = editNode.order || '';
+            document.getElementById('itemEditRemark').value = editNode.remark || '';
+            
+            // 禁用父品类编码和品类层级
+            document.getElementById('itemEditParentCode').disabled = true;
+            document.getElementById('itemEditLevel').disabled = true;
+            
+            document.getElementById('categoryItemEditModal').style.display = 'block';
+        }
+
+        // 在树状结构中查找父节点
+        function findParentNodeInTree(nodeId) {
+            if (!currentCategoryDetail) return null;
+            
+            const findParent = (nodes, id, parent = null) => {
+                for (const node of nodes) {
+                    if (node.id === id) return parent;
+                    if (node.children && node.children.length > 0) {
+                        const found = findParent(node.children, id, node);
+                        if (found !== undefined) return found;
+                    }
+                }
+                return undefined;
+            };
+            return findParent(currentCategoryDetail.items || [], nodeId);
+        }
+
+        // 关闭品类编辑模态框
+        function closeCategoryItemEditModal() {
+            document.getElementById('categoryItemEditModal').style.display = 'none';
+            currentEditNode = null;
+            document.getElementById('itemEditTenant').value = '';
+            document.getElementById('itemEditCategoryCode').value = '';
+            document.getElementById('itemEditCategoryName').value = '';
+            document.getElementById('itemEditParentCode').value = '';
+            document.getElementById('itemEditCode').value = '';
+            document.getElementById('itemEditName').value = '';
+            document.getElementById('itemEditLevel').value = '';
+            document.getElementById('itemEditOrder').value = '';
+            document.getElementById('itemEditRemark').value = '';
+            
+            // 重置禁用状态
+            document.getElementById('itemEditParentCode').disabled = false;
+            document.getElementById('itemEditLevel').disabled = false;
+        }
+
+        // 删除节点
+        function deleteCategoryNode(nodeId) {
+            if (!currentCategoryDetail) return;
+            
+            const nodeToDelete = findNodeByIdInTree(nodeId);
+            if (!nodeToDelete) return;
+            
+            // 检查是否有子节点
+            if (nodeToDelete.hasChildren && nodeToDelete.children && nodeToDelete.children.length > 0) {
+                showToast('节点下存在数据，不允许删除', 'error');
+                return;
+            }
+            
+            // 从树中删除节点
+            const removeNode = (nodes, id) => {
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].id === id) {
+                        nodes.splice(i, 1);
+                        return true;
+                    }
+                    if (nodes[i].children && nodes[i].children.length > 0) {
+                        if (removeNode(nodes[i].children, id)) {
+                            // 如果父节点没有子节点了，更新 hasChildren
+                            if (nodes[i].children.length === 0) {
+                                nodes[i].hasChildren = false;
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+            
+            removeNode(currentCategoryDetail.items || [], nodeId);
+            
+            // 刷新树状结构
+            if (categoryTree) {
+                categoryTree.setData(currentCategoryDetail.items || []);
+            }
+            
+            showToast('品类已删除', 'success');
+        }
+
+        // 使用PageManager简化页面逻辑
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '商品品类',
+                statusColumnIndex: -1,
+                
+                customSelects: [
+                    { inputId: 'searchTenant', dropdownId: 'searchTenantDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true,
+                      options: [
+                          { value: 'T001-南京租户', text: 'T001-南京租户' },
+                          { value: 'T002-北京租户', text: 'T002-北京租户' },
+                          { value: 'T003-上海租户', text: 'T003-上海租户' },
+                          { value: 'T004-广州租户', text: 'T004-广州租户' },
+                          { value: 'T005-深圳租户', text: 'T005-深圳租户' }
+                      ]
+                    },
+                    { id: 'categoryCode', label: '品类单头编码', type: 'text', required: true },
+                    { id: 'categoryName', label: '品类单头名称', type: 'text', required: true },
+                    { id: 'remark', label: '备注', type: 'textarea' }
+                ],
+                
+                addModal: {
+                    modalId: 'categoryAddModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'categoryCode', message: '请输入品类单头编码', required: true },
+                        { id: 'categoryName', message: '请输入品类单头名称', required: true }
+                    ],
+                    onSave: () => {
+                        const tenant = document.getElementById('tenant').value.trim();
+                        const categoryCode = document.getElementById('categoryCode').value.trim();
+                        const categoryName = document.getElementById('categoryName').value.trim();
+                        const remark = document.getElementById('remark').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                categoryCode, categoryName, tenant, remark,
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('商品品类已保存', 'success');
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+            
+            // 编辑按钮事件 - 打开详情弹窗
+            document.querySelector('.table').addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                if (editBtn) {
+                    e.preventDefault();
+                    const row = editBtn.closest('tr');
+                    const categoryCode = row.querySelectorAll('td')[1].textContent;
+                    openDetailModal(categoryCode);
+                }
+            });
+            
+            // 商品品类详情弹窗关闭事件
+            const categoryDetailModal = document.getElementById('categoryDetailModal');
+            const categoryDetailCloseBtn = document.getElementById('categoryDetailCloseBtn');
+            const categoryDetailCancelBtn = document.getElementById('categoryDetailCancelBtn');
+            
+            categoryDetailCloseBtn.addEventListener('click', closeDetailModal);
+            categoryDetailCancelBtn.addEventListener('click', closeDetailModal);
+            categoryDetailModal.addEventListener('click', (e) => {
+                if (e.target === categoryDetailModal) closeDetailModal();
+            });
+            
+            // 品类新增模态框
+            const categoryItemAddModal = document.getElementById('categoryItemAddModal');
+            const categoryItemAddCloseBtn = document.getElementById('categoryItemAddCloseBtn');
+            const categoryItemAddCancelBtn = document.getElementById('categoryItemAddCancelBtn');
+            const categoryItemAddSaveBtn = document.getElementById('categoryItemAddSaveBtn');
+            const addCategoryItemBtn = document.getElementById('addCategoryItemBtn');
+            
+            // 初始化品类新增模态框的下拉框
+            function initCategoryItemAddSelects() {
+                initCustomSelect('itemAddLevel', 'itemAddLevelDropdown');
+            }
+            
+            // 事件绑定
+            addCategoryItemBtn.addEventListener('click', () => {
+                openCategoryItemAddModal();
+            });
+            
+            categoryItemAddCloseBtn.addEventListener('click', closeCategoryItemAddModal);
+            categoryItemAddCancelBtn.addEventListener('click', closeCategoryItemAddModal);
+            
+            categoryItemAddModal.addEventListener('click', (e) => {
+                if (e.target === categoryItemAddModal) closeCategoryItemAddModal();
+            });
+            
+            // 保存品类
+            categoryItemAddSaveBtn.addEventListener('click', () => {
+                const code = document.getElementById('itemAddCode').value.trim();
+                const name = document.getElementById('itemAddName').value.trim();
+                const level = document.getElementById('itemAddLevel').value.trim();
+                const order = document.getElementById('itemAddOrder').value.trim();
+                const parentCode = document.getElementById('itemAddParentCode').value.trim();
+                const remark = document.getElementById('itemAddRemark').value.trim();
+                
+                if (!code) {
+                    showToast('请输入品类编码', 'error');
+                    return;
+                }
+                if (!name) {
+                    showToast('请输入品类名称', 'error');
+                    return;
+                }
+                if (!level) {
+                    showToast('请选择品类层级', 'error');
+                    return;
+                }
+                if (!order) {
+                    showToast('请输入同级显示排序', 'error');
+                    return;
+                }
+                
+                // 创建新节点
+                const newNode = {
+                    id: 'node-' + Date.now(),
+                    code: code,
+                    name: name,
+                    level: level,
+                    order: order,
+                    remark: remark,
+                    hasChildren: false,
+                    lazyLoaded: true,
+                    expanded: false,
+                    children: []
+                };
+                
+                // 如果有父节点，添加到父节点的children中
+                if (currentParentNode && currentCategoryDetail) {
+                    if (!currentParentNode.children) {
+                        currentParentNode.children = [];
+                    }
+                    currentParentNode.children.push(newNode);
+                    currentParentNode.hasChildren = true;
+                    
+                    // 展开父节点
+                    if (categoryTree) {
+                        categoryTree.expandNode(currentParentNode.id);
+                    }
+                } else if (currentCategoryDetail) {
+                    // 否则添加到根节点
+                    if (!currentCategoryDetail.items) {
+                        currentCategoryDetail.items = [];
+                    }
+                    currentCategoryDetail.items.push(newNode);
+                }
+                
+                // 刷新树状结构
+                if (categoryTree && currentCategoryDetail) {
+                    categoryTree.setData(currentCategoryDetail.items || []);
+                }
+                
+                closeCategoryItemAddModal();
+                showToast('品类已保存', 'success');
+            });
+            
+            // 初始化下拉框
+            initCategoryItemAddSelects();
+            initCustomSelect('itemEditLevel', 'itemEditLevelDropdown');
+            
+            // 品类编辑模态框
+            const categoryItemEditModal = document.getElementById('categoryItemEditModal');
+            const categoryItemEditCloseBtn = document.getElementById('categoryItemEditCloseBtn');
+            const categoryItemEditCancelBtn = document.getElementById('categoryItemEditCancelBtn');
+            const categoryItemEditSaveBtn = document.getElementById('categoryItemEditSaveBtn');
+            
+            // 事件绑定
+            categoryItemEditCloseBtn.addEventListener('click', closeCategoryItemEditModal);
+            categoryItemEditCancelBtn.addEventListener('click', closeCategoryItemEditModal);
+            
+            categoryItemEditModal.addEventListener('click', (e) => {
+                if (e.target === categoryItemEditModal) closeCategoryItemEditModal();
+            });
+            
+            // 保存品类编辑
+            categoryItemEditSaveBtn.addEventListener('click', () => {
+                const code = document.getElementById('itemEditCode').value.trim();
+                const name = document.getElementById('itemEditName').value.trim();
+                const level = document.getElementById('itemEditLevel').value.trim();
+                const order = document.getElementById('itemEditOrder').value.trim();
+                const remark = document.getElementById('itemEditRemark').value.trim();
+                
+                if (!code) {
+                    showToast('请输入品类编码', 'error');
+                    return;
+                }
+                if (!name) {
+                    showToast('请输入品类名称', 'error');
+                    return;
+                }
+                if (!level) {
+                    showToast('请选择品类层级', 'error');
+                    return;
+                }
+                if (!order) {
+                    showToast('请输入同级显示排序', 'error');
+                    return;
+                }
+                
+                if (currentEditNode) {
+                    currentEditNode.code = code;
+                    currentEditNode.name = name;
+                    currentEditNode.level = level;
+                    currentEditNode.order = order;
+                    currentEditNode.remark = remark;
+                }
+                
+                // 刷新树状结构
+                if (categoryTree && currentCategoryDetail) {
+                    categoryTree.setData(currentCategoryDetail.items || []);
+                }
+                
+                closeCategoryItemEditModal();
+                showToast('品类已更新', 'success');
+            });
+        });
+    </script>
+</body>
+</html>

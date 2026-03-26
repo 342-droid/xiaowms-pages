@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 入库策略</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <!-- 侧边栏容器 -->
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+
+    <!-- 顶部导航栏容器 -->
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">入库策略</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">策略管理 / 入库策略</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>入库策略编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>入库策略名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">仓库:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchWarehouse" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchWarehouseDropdown">
+                                <div class="select-option" data-value="W001-南京仓">W001-南京仓</div>
+                                <div class="select-option" data-value="W002-嘉兴仓">W002-嘉兴仓</div>
+                                <div class="select-option" data-value="W003-上海仓">W003-上海仓</div>
+                                <div class="select-option" data-value="W004-北京仓">W004-北京仓</div>
+                                <div class="select-option" data-value="W005-广州仓">W005-广州仓</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown">
+                                <div class="select-option" data-value="C001-食品">C001-食品</div>
+                                <div class="select-option" data-value="C002-鲜食优选">C002-鲜食优选</div>
+                                <div class="select-option" data-value="C003-绿源农业">C003-绿源农业</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 100px;">入库类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchInboundType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchInboundTypeDropdown">
+                                <div class="select-option" data-value="采购入库">采购入库</div>
+                                <div class="select-option" data-value="调拨入库">调拨入库</div>
+                                <div class="select-option" data-value="退货入库">退货入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>入库业务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchBusinessType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchBusinessTypeDropdown">
+                                <div class="select-option" data-value="采购入库">采购入库</div>
+                                <div class="select-option" data-value="调拨入库">调拨入库</div>
+                                <div class="select-option" data-value="退货入库">退货入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="启用">启用</div>
+                                <div class="select-option" data-value="禁用">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>入库策略编码</th>
+                                <th>入库策略名称</th>
+                                <th>仓库</th>
+                                <th>委托方</th>
+                                <th>入库类型</th>
+                                <th>入库业务类型</th>
+                                <th>默认收货储位</th>
+                                <th>收货储位可修改</th>
+                                <th>自动下发入库单</th>
+                                <th>自动关闭入库单</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>IS001</td>
+                                <td>南京仓采购入库策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C001-食品</td>
+                                <td>采购入库</td>
+                                <td>采购入库</td>
+                                <td>A-01-01</td>
+                                <td>是</td>
+                                <td>是</td>
+                                <td>是</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>IS002</td>
+                                <td>南京仓调拨入库策略</td>
+                                <td>W001-南京仓</td>
+                                <td>C001-食品</td>
+                                <td>调拨入库</td>
+                                <td>调拨入库</td>
+                                <td>A-02-01</td>
+                                <td>否</td>
+                                <td>否</td>
+                                <td>否</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 分页组件容器 -->
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 引入公共脚本 -->
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        // 使用PageManager简化页面逻辑
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '入库策略',
+                statusColumnIndex: 11,
+                
+                // 搜索区域下拉框
+                customSelects: [
+                    { inputId: 'searchWarehouse', dropdownId: 'searchWarehouseDropdown' },
+                    { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                    { inputId: 'searchInboundType', dropdownId: 'searchInboundTypeDropdown' },
+                    { inputId: 'searchBusinessType', dropdownId: 'searchBusinessTypeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                // 字段定义 - 自动生成新增/编辑模态框
+                fields: [
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, disabled: true,
+                      options: [
+                          { value: 'W001-南京仓', text: 'W001-南京仓' },
+                          { value: 'W002-嘉兴仓', text: 'W002-嘉兴仓' },
+                          { value: 'W003-上海仓', text: 'W003-上海仓' },
+                          { value: 'W004-北京仓', text: 'W004-北京仓' },
+                          { value: 'W005-广州仓', text: 'W005-广州仓' }
+                      ] },
+                    { id: 'company', label: '委托方', type: 'select', required: true, editDisabled: true,
+                      options: [
+                          { value: 'C001-食品', text: 'C001-食品' },
+                          { value: 'C002-鲜食优选', text: 'C002-鲜食优选' },
+                          { value: 'C003-绿源农业', text: 'C003-绿源农业' }
+                      ] },
+                    { id: 'strategyCode', label: '入库策略编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'strategyName', label: '入库策略名称', type: 'text', required: true, editDisabled: true },
+                    { id: 'inboundType', label: '入库类型', type: 'select', required: true,
+                      options: [
+                          { value: '采购入库', text: '采购入库' },
+                          { value: '调拨入库', text: '调拨入库' },
+                          { value: '退货入库', text: '退货入库' }
+                      ] },
+                    { id: 'businessType', label: '入库业务类型', type: 'select', required: true,
+                      options: [
+                          { value: '采购入库', text: '采购入库' },
+                          { value: '调拨入库', text: '调拨入库' },
+                          { value: '退货入库', text: '退货入库' }
+                      ] },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [
+                          { value: '启用', text: '启用' },
+                          { value: '禁用', text: '禁用' }
+                      ] },
+                    { id: 'divider1', label: '', type: 'raw', content: '<hr class="modal-divider">' },
+                    { id: 'defaultLocation', label: '默认收货储位', type: 'text', width: '100%', labelWidth: '160px', required: true },
+                    { id: 'locationEditable', label: '收货储位可修改', type: 'select', width: '100%', labelWidth: '160px', required: true,
+                      options: [
+                          { value: '是', text: '是' },
+                          { value: '否', text: '否' }
+                      ] },
+                    { id: 'autoIssueIbd', label: '自动下发入库单', type: 'select', width: '100%', labelWidth: '160px', required: true,
+                      options: [
+                          { value: '是', text: '是' },
+                          { value: '否', text: '否' }
+                      ] },
+                    { id: 'autoCloseIbd', label: '自动关闭入库单', type: 'select', width: '100%', labelWidth: '160px', required: true,
+                      options: [
+                          { value: '是', text: '是' },
+                          { value: '否', text: '否' }
+                      ] }
+                ],
+                
+                addModal: {
+                    modalId: 'ibdStrategyModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    validations: [
+                        { id: 'warehouse', message: '请选择仓库', required: true },
+                        { id: 'company', message: '请选择委托方', required: true },
+                        { id: 'strategyCode', message: '请输入入库策略编码', required: true },
+                        { id: 'strategyName', message: '请输入入库策略名称', required: true },
+                        { id: 'inboundType', message: '请选择入库类型', required: true },
+                        { id: 'businessType', message: '请选择入库业务类型', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true },
+                        { id: 'defaultLocation', message: '请输入默认收货储位', required: true },
+                        { id: 'locationEditable', message: '请选择收货储位是否可修改', required: true },
+                        { id: 'autoIssueIbd', message: '请选择是否自动下发入库单', required: true },
+                        { id: 'autoCloseIbd', message: '请选择是否自动关闭入库单', required: true }
+                    ],
+                    onSave: () => {
+                        const warehouse = document.getElementById('warehouse').value.trim();
+                        const company = document.getElementById('company').value.trim();
+                        const code = document.getElementById('strategyCode').value.trim();
+                        const name = document.getElementById('strategyName').value.trim();
+                        const inboundType = document.getElementById('inboundType').value.trim();
+                        const businessType = document.getElementById('businessType').value.trim();
+                        const isEnabled = document.getElementById('isEnabled').value.trim();
+                        const defaultLocation = document.getElementById('defaultLocation').value.trim() || '-';
+                        const locationEditable = document.getElementById('locationEditable').value.trim() || '-';
+                        const autoIssueIbd = document.getElementById('autoIssueIbd').value.trim() || '-';
+                        const autoCloseIbd = document.getElementById('autoCloseIbd').value.trim() || '-';
+                        
+                        page.addTableRow({
+                            cells: [
+                                code,
+                                name,
+                                warehouse,
+                                company,
+                                inboundType,
+                                businessType,
+                                defaultLocation,
+                                locationEditable,
+                                autoIssueIbd,
+                                autoCloseIbd,
+                                { value: isEnabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+                        showToast('入库策略已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'ibdStrategyEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editStrategyName', message: '请输入入库策略名称', required: true },
+                        { id: 'editInboundType', message: '请选择入库类型', required: true },
+                        { id: 'editBusinessType', message: '请选择入库业务类型', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true },
+                        { id: 'editDefaultLocation', message: '请输入默认收货储位', required: true },
+                        { id: 'editLocationEditable', message: '请选择收货储位是否可修改', required: true },
+                        { id: 'editAutoIssueIbd', message: '请选择是否自动下发入库单', required: true },
+                        { id: 'editAutoCloseIbd', message: '请选择是否自动关闭入库单', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editStrategyName').value.trim(),
+                            5: document.getElementById('editInboundType').value.trim(),
+                            6: document.getElementById('editBusinessType').value.trim(),
+                            7: document.getElementById('editDefaultLocation').value.trim() || '-',
+                            8: document.getElementById('editLocationEditable').value.trim() || '-',
+                            9: document.getElementById('editAutoIssueIbd').value.trim() || '-',
+                            10: document.getElementById('editAutoCloseIbd').value.trim() || '-',
+                            11: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            12: page.getCurrentTimeStr(),
+                            13: '当前用户'
+                        });
+                        showToast('入库策略已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editWarehouse: cells[3].textContent,
+                            editCompany: cells[4].textContent,
+                            editStrategyCode: cells[1].textContent,
+                            editStrategyName: cells[2].textContent,
+                            editInboundType: cells[5].textContent,
+                            editBusinessType: cells[6].textContent,
+                            editDefaultLocation: cells[7].textContent === '-' ? '' : cells[7].textContent,
+                            editLocationEditable: cells[8].textContent === '-' ? '' : cells[8].textContent,
+                            editIsEnabled: cells[11].querySelector('.status').textContent,
+                            editAutoIssueIbd: cells[9].textContent === '-' ? '' : cells[9].textContent,
+                            editAutoCloseIbd: cells[10].textContent === '-' ? '' : cells[10].textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+            
+            // 新增时设置当前仓库
+            document.getElementById('addBtn').addEventListener('click', () => {
+                const currentWarehouse = getCurrentWarehouse();
+                if (currentWarehouse) {
+                    const warehouseInput = document.getElementById('warehouse');
+                    warehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                    warehouseInput.dataset.value = currentWarehouse.code;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 系统功能角色</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* 自定义树状结构样式 */
+        #moduleGroupModuleTree.tree-container {
+            border: none;
+            padding: 8px 0;
+        }
+        
+        #moduleGroupModuleTree .tree-body {
+            background: transparent;
+        }
+        
+        #moduleGroupModuleTree .tree-node {
+            border-bottom: none;
+            padding: 4px 0;
+        }
+        
+        #moduleGroupModuleTree .tree-node:hover {
+            background-color: transparent;
+        }
+        
+        #moduleGroupModuleTree .node-content {
+            padding: 4px 0;
+        }
+        
+        #moduleGroupModuleTree .node-name {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">系统功能角色</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">权限管理 / 系统功能角色</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>功能角色编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchModuleGroupCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>功能角色名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchModuleGroupName" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>功能模块编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchModuleCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>功能模块名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchModuleName" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>功能角色编码</th>
+                                <th>功能角色名称</th>
+                                <th>备注</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>MG001</td>
+                                <td>管理员</td>
+                                <td>系统管理员角色</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-07 10:30:00</td>
+                                <td>张三</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>MG002</td>
+                                <td>仓管员</td>
+                                <td>仓库管理员角色</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-07 09:15:00</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>MG003</td>
+                                <td>质检员</td>
+                                <td></td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-06 14:20:00</td>
+                                <td>王五</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script src="js/tree-component.js"></script>
+    <script>
+        // 模块数据
+        const moduleData = [
+            {
+                id: 'node-1',
+                code: 'M001',
+                name: '基础信息',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-1-1',
+                        code: 'M001-01',
+                        name: '仓库管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-1-1-1',
+                                code: 'M001-01-01',
+                                name: '仓库查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-1-2',
+                                code: 'M001-01-02',
+                                name: '仓库新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-1-2',
+                        code: 'M001-02',
+                        name: '商品管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 'node-2',
+                code: 'M002',
+                name: '权限管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-2-1',
+                        code: 'M002-01',
+                        name: '用户管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            }
+        ];
+
+        let moduleTree = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '系统功能角色',
+                statusColumnIndex: 4,
+                
+                fields: [
+                    { id: 'moduleGroupCode', label: '功能角色编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'moduleGroupName', label: '功能角色名称', type: 'text', required: true },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [
+                          { value: '启用', text: '启用' },
+                          { value: '禁用', text: '禁用' }
+                      ]
+                    },
+                    { id: 'remark', label: '备注', type: 'textarea' },
+                    { 
+                        type: 'raw', 
+                        editHtml: `
+                            <div class="modal-divider"></div>
+                            <div class="modal-form-group" style="width: 100%;">
+                                <label style="width: 80px; font-weight: bold; visibility: hidden;">功能模块</label>
+                                <div style="flex: 1; width: 100%;">
+                                    <div class="tree-container" id="moduleGroupModuleTree" style="max-height: 300px; min-height: 150px; border: 1px solid #e0e0e0; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        ` 
+                    }
+                ],
+                
+                addModal: {
+                    modalId: 'moduleGroupModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'moduleGroupCode', message: '请输入功能角色编码', required: true },
+                        { id: 'moduleGroupName', message: '请输入功能角色名称', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const moduleGroupCode = document.getElementById('moduleGroupCode').value.trim();
+                        const moduleGroupName = document.getElementById('moduleGroupName').value.trim();
+                        const isEnabled = document.getElementById('isEnabled').value.trim();
+                        const remark = document.getElementById('remark').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                moduleGroupCode, moduleGroupName, remark,
+                                { value: isEnabled, isStatus: true },
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('系统功能角色已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'moduleGroupEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editModuleGroupCode', message: '请输入功能角色编码', required: true },
+                        { id: 'editModuleGroupName', message: '请输入功能角色名称', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        
+                        const moduleGroupCode = document.getElementById('editModuleGroupCode').value.trim();
+                        const moduleGroupName = document.getElementById('editModuleGroupName').value.trim();
+                        const isEnabled = document.getElementById('editIsEnabled').value.trim();
+                        const remark = document.getElementById('editRemark').value.trim();
+                        
+                        // 获取选中的模块
+                        if (moduleTree) {
+                            const checkedNodes = moduleTree.getCheckedNodes();
+                            console.log('选中的模块:', checkedNodes);
+                        }
+                        
+                        page.updateTableRow(page.currentEditRow, {
+                            1: moduleGroupCode,
+                            2: moduleGroupName,
+                            3: remark,
+                            4: { value: isEnabled, isStatus: true },
+                            5: page.getCurrentTimeStr(),
+                            6: '当前用户'
+                        });
+                        showToast('系统功能角色已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        
+                        // 延迟初始化树状组件，确保模态框已打开
+                        setTimeout(() => {
+                            initModuleTree();
+                        }, 100);
+                        
+                        return {
+                            editModuleGroupCode: cells[1].textContent,
+                            editModuleGroupName: cells[2].textContent,
+                            editIsEnabled: cells[4].querySelector('.status').textContent,
+                            editRemark: cells[3].textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {}
+            });
+            
+            page.init();
+            
+            // 关闭编辑模态框按钮
+            const editCloseBtn = document.querySelector('#moduleGroupEditModal .close');
+            if (editCloseBtn) {
+                editCloseBtn.addEventListener('click', () => page.closeModal('edit'));
+            }
+
+            // 监听编辑模态框关闭事件，销毁树状组件
+            const editModal = document.getElementById('moduleGroupEditModal');
+            if (editModal) {
+                editModal.addEventListener('click', (e) => {
+                    if (e.target === editModal) {
+                        destroyModuleTree();
+                    }
+                });
+            }
+
+            // 编辑取消按钮
+            const editCancelBtn = document.getElementById('editCancelBtn');
+            if (editCancelBtn) {
+                editCancelBtn.addEventListener('click', () => {
+                    destroyModuleTree();
+                });
+            }
+        });
+
+        // 初始化树状组件
+        function initModuleTree() {
+            destroyModuleTree();
+            
+            const container = document.getElementById('moduleGroupModuleTree');
+            if (!container) return;
+            
+            moduleTree = new TreeComponent({
+                container: container,
+                columns: [
+                    { key: 'name', label: '名称' }
+                ],
+                showCheckboxes: true,
+                showActions: false,
+                showHeader: false,
+                onCheckChange: (checkedNodes) => {
+                    console.log('选中的模块变化:', checkedNodes);
+                }
+            });
+            
+            moduleTree.expandedNodes.clear();
+            moduleTree.saveState = function() {};
+            moduleTree.setData(moduleData);
+            moduleTree.expandAll();
+        }
+
+        // 销毁树状组件
+        function destroyModuleTree() {
+            if (moduleTree) {
+                moduleTree.destroy();
+                moduleTree = null;
+            }
+        }
+
+    </script>
+</body>
+</html>

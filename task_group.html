@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 任务组管理</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <!-- 侧边栏容器 -->
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+
+    <!-- 顶部导航栏容器 -->
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">任务组管理</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">任务管理 / 任务组管理</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 130px;">仓库:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchWarehouse" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchWarehouseDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchClient" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchClientDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">货主:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择或输入搜索">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">任务组号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchTaskGroupNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 130px;">任务组状态:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskGroupStatus" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskGroupStatusDropdown">
+                                <div class="select-option" data-value="initial">初始</div>
+                                <div class="select-option" data-value="released">已释放</div>
+                                <div class="select-option" data-value="assigned">已指派</div>
+                                <div class="select-option" data-value="in_progress">执行中</div>
+                                <div class="select-option" data-value="completed">已完成</div>
+                                <div class="select-option" data-value="cancelled">已取消</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">任务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskTypeDropdown">
+                                <div class="select-option" data-value="putaway">上架任务</div>
+                                <div class="select-option" data-value="picking">拣货任务</div>
+                                <div class="select-option" data-value="replenish">补货任务</div>
+                                <div class="select-option" data-value="count">盘点任务</div>
+                                <div class="select-option" data-value="move">移动任务</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSource" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceDropdown">
+                                <div class="select-option" data-value="inbound">入库</div>
+                                <div class="select-option" data-value="outbound">出库</div>
+                                <div class="select-option" data-value="replenish">补货</div>
+                                <div class="select-option" data-value="count">盘点</div>
+                                <div class="select-option" data-value="move">移动</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSourceType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceTypeDropdown">
+                                <div class="select-option" data-value="purchase_inbound">采购入库</div>
+                                <div class="select-option" data-value="return_inbound">退货入库</div>
+                                <div class="select-option" data-value="transfer_inbound">调拨入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>任务来源业务类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTaskSourceBizType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTaskSourceBizTypeDropdown">
+                                <div class="select-option" data-value="purchase_inbound">采购入库</div>
+                                <div class="select-option" data-value="return_inbound">退货入库</div>
+                                <div class="select-option" data-value="transfer_inbound">调拨入库</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>调用单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCallNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>来源单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="width: 100px;">关联单号:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchRelatedNo" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 130px;">自动释放:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchAutoRelease" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchAutoReleaseDropdown">
+                                <div class="select-option" data-value="true">是</div>
+                                <div class="select-option" data-value="false">否</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label style="width: 70px;">优先级:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchPriority" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchPriorityDropdown">
+                                <div class="select-option" data-value="high">高</div>
+                                <div class="select-option" data-value="medium">中</div>
+                                <div class="select-option" data-value="low">低</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>创建时间:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCreateTime" placeholder="请选择" class="date-range-input">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="searchTaskGroup()">查询</button>
+                        <button type="button" class="btn btn-secondary">释放</button>
+                        <button type="button" class="btn btn-secondary">指派</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>任务组号</th>
+                                <th>仓库</th>
+                                <th>委托方</th>
+                                <th>货主</th>
+                                <th>任务组状态</th>
+                                <th>任务类型</th>
+                                <th>任务来源</th>
+                                <th>任务来源类型</th>
+                                <th>任务来源业务类型</th>
+                                <th>调用单号</th>
+                                <th>来源单号</th>
+                                <th>关联单号</th>
+                                <th>自动释放</th>
+                                <th>优先级</th>
+                                <th>执行人</th>
+                                <th>计划开始时间</th>
+                                <th>计划完成时间</th>
+                                <th>开始时间</th>
+                                <th>完成时间</th>
+                                <th>分组值1</th>
+                                <th>分组值2</th>
+                                <th>分组值3</th>
+                                <th>分组值4</th>
+                                <th>分组值5</th>
+                                <th>取用值1</th>
+                                <th>取用值2</th>
+                                <th>取用值3</th>
+                                <th>取用值4</th>
+                                <th>取用值5</th>
+                                <th>创建时间</th>
+                                <th>创建人</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        const taskGroupData = [
+            {
+                taskGroupNo: 'TG20260307001',
+                warehouse: 'W001-南京仓',
+                client: '委托方A',
+                company: '货主1',
+                taskGroupStatus: '初始',
+                taskType: '上架任务',
+                taskSource: '入库',
+                taskSourceType: '采购入库',
+                taskSourceBizType: '采购入库',
+                callNo: 'CALL001',
+                sourceNo: 'PO001',
+                relatedNo: 'REL001',
+                autoRelease: '否',
+                priority: '中',
+                executor: '',
+                plannedStartTime: '2026-03-07 09:00:00',
+                plannedEndTime: '2026-03-07 18:00:00',
+                startTime: '',
+                endTime: '',
+                groupValue1: '',
+                groupValue2: '',
+                groupValue3: '',
+                groupValue4: '',
+                groupValue5: '',
+                takeValue1: '',
+                takeValue2: '',
+                takeValue3: '',
+                takeValue4: '',
+                takeValue5: '',
+                createTime: '2026-03-07 08:00:00',
+                createUser: 'admin',
+                updateTime: '2026-03-07 08:00:00',
+                updateUser: 'admin'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const warehouseDropdown = document.getElementById('searchWarehouseDropdown');
+                const warehouses = ['W001-南京仓', 'W002-上海仓', 'W003-北京仓'];
+                warehouses.forEach(warehouse => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', warehouse);
+                    option.textContent = warehouse;
+                    warehouseDropdown.appendChild(option);
+                });
+
+                const companyDropdown = document.getElementById('searchCompanyDropdown');
+                const companies = ['货主1', '货主2', '货主3', '货主4', '货主5'];
+                companies.forEach(company => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', company);
+                    option.textContent = company;
+                    companyDropdown.appendChild(option);
+                });
+
+                const clientDropdown = document.getElementById('searchClientDropdown');
+                const clients = ['委托方A', '委托方B', '委托方C', '委托方D'];
+                clients.forEach(client => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.setAttribute('data-value', client);
+                    option.textContent = client;
+                    clientDropdown.appendChild(option);
+                });
+
+                function loadTaskGroupData() {
+                    const tbody = document.querySelector('#tableBody');
+                    tbody.innerHTML = '';
+                    
+                    taskGroupData.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                            <td>${item.taskGroupNo}</td>
+                            <td>${item.warehouse}</td>
+                            <td>${item.client}</td>
+                            <td>${item.company}</td>
+                            <td><span class="status active">${item.taskGroupStatus}</span></td>
+                            <td>${item.taskType}</td>
+                            <td>${item.taskSource}</td>
+                            <td>${item.taskSourceType}</td>
+                            <td>${item.taskSourceBizType}</td>
+                            <td>${item.callNo}</td>
+                            <td>${item.sourceNo}</td>
+                            <td>${item.relatedNo}</td>
+                            <td>${item.autoRelease}</td>
+                            <td>${item.priority}</td>
+                            <td>${item.executor}</td>
+                            <td>${item.plannedStartTime}</td>
+                            <td>${item.plannedEndTime}</td>
+                            <td>${item.startTime}</td>
+                            <td>${item.endTime}</td>
+                            <td>${item.groupValue1}</td>
+                            <td>${item.groupValue2}</td>
+                            <td>${item.groupValue3}</td>
+                            <td>${item.groupValue4}</td>
+                            <td>${item.groupValue5}</td>
+                            <td>${item.takeValue1}</td>
+                            <td>${item.takeValue2}</td>
+                            <td>${item.takeValue3}</td>
+                            <td>${item.takeValue4}</td>
+                            <td>${item.takeValue5}</td>
+                            <td>${item.createTime}</td>
+                            <td>${item.createUser}</td>
+                            <td>${item.updateTime}</td>
+                            <td>${item.updateUser}</td>
+                            <td class="action-links">
+                                <a href="#" class="view-btn">查看</a>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                function searchTaskGroup() {
+                    const warehouse = document.getElementById('searchWarehouse').value.trim();
+                    const client = document.getElementById('searchClient').value.trim();
+                    const company = document.getElementById('searchCompany').value.trim();
+                    const taskGroupNo = document.getElementById('searchTaskGroupNo').value.trim();
+                    const taskGroupStatus = document.getElementById('searchTaskGroupStatus').value.trim();
+                    const taskType = document.getElementById('searchTaskType').value.trim();
+                    const taskSource = document.getElementById('searchTaskSource').value.trim();
+                    const taskSourceType = document.getElementById('searchTaskSourceType').value.trim();
+                    const taskSourceBizType = document.getElementById('searchTaskSourceBizType').value.trim();
+                    const callNo = document.getElementById('searchCallNo').value.trim();
+                    const sourceNo = document.getElementById('searchSourceNo').value.trim();
+                    const relatedNo = document.getElementById('searchRelatedNo').value.trim();
+                    const autoRelease = document.getElementById('searchAutoRelease').value.trim();
+                    const priority = document.getElementById('searchPriority').value.trim();
+                    const createTime = document.getElementById('searchCreateTime').value.trim();
+                    
+                    console.log('搜索条件:', {
+                        warehouse,
+                        client,
+                        company,
+                        taskGroupNo,
+                        taskGroupStatus,
+                        taskType,
+                        taskSource,
+                        taskSourceType,
+                        taskSourceBizType,
+                        callNo,
+                        sourceNo,
+                        relatedNo,
+                        autoRelease,
+                        priority,
+                        createTime
+                    });
+                    
+                    loadTaskGroupData();
+                }
+
+                const page = new PageManager({
+                    entityName: '任务组',
+                    statusColumnIndex: 5,
+                    
+                    customSelects: [
+                        { inputId: 'searchWarehouse', dropdownId: 'searchWarehouseDropdown' },
+                        { inputId: 'searchClient', dropdownId: 'searchClientDropdown' },
+                        { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                        { inputId: 'searchTaskGroupStatus', dropdownId: 'searchTaskGroupStatusDropdown' },
+                        { inputId: 'searchTaskType', dropdownId: 'searchTaskTypeDropdown' },
+                        { inputId: 'searchTaskSource', dropdownId: 'searchTaskSourceDropdown' },
+                        { inputId: 'searchTaskSourceType', dropdownId: 'searchTaskSourceTypeDropdown' },
+                        { inputId: 'searchTaskSourceBizType', dropdownId: 'searchTaskSourceBizTypeDropdown' },
+                        { inputId: 'searchAutoRelease', dropdownId: 'searchAutoReleaseDropdown' },
+                        { inputId: 'searchPriority', dropdownId: 'searchPriorityDropdown' }
+                    ],
+                    
+                    deleteModal: {
+                        modalId: 'confirmDeleteModal',
+                        closeBtnId: 'confirmDeleteCloseBtn',
+                        cancelBtnId: 'cancelDeleteBtn',
+                        confirmBtnId: 'confirmDeleteBtn'
+                    }
+                });
+                
+                page.init();
+                loadTaskGroupData();
+
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('view-btn')) {
+                        e.preventDefault();
+                    }
+                });
+            } catch (error) {
+                console.error('初始化错误:', error);
+                if (typeof showToast === 'function') {
+                    showToast('页面初始化失败，请刷新重试', 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

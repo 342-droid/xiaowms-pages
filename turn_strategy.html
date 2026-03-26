@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 周转策略</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .modal-form-group label {
+            width: 120px;
+        }
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background-color: #eee;
+            margin: 15px 0;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            display: block;
+            width: 100%;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">周转策略</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">策略管理 / 周转策略</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>周转策略编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchStrategyCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>周转策略描述:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchStrategyDesc" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>周转类型:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTurnType" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTurnTypeDropdown">
+                                <div class="select-option" data-value="outbound">出库周转</div>
+                                <div class="select-option" data-value="inbound">入库周转</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="启用">启用</div>
+                                <div class="select-option" data-value="禁用">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>周转策略编码</th>
+                                <th>周转策略描述</th>
+                                <th>周转类型</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>TS001</td>
+                                <td>标准出库周转策略</td>
+                                <td>出库周转</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>TS002</td>
+                                <td>标准入库周转策略</td>
+                                <td>入库周转</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>张三</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="detailModal" class="modal" style="display: none; align-items: flex-start; padding-top: 10%; z-index: 9999;">
+        <div class="modal-content" style="width: 400px; max-height: none; margin: 0 auto;">
+            <div class="modal-header" style="margin-bottom: 15px;">
+                <h2 class="modal-title">周转规则明细</h2>
+                <span class="close" id="detailCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form" style="gap: 15px;">
+                <div class="modal-form-group" style="width: 100%;">
+                    <label>优先级 <span style="color: red;">*</span></label>
+                    <input type="number" id="detailPriority" placeholder="请输入">
+                </div>
+                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
+                    <label>周转规则 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailTurnRule" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailTurnRuleDropdown">
+                            <div class="select-option" data-value="product_date">生产日期</div>
+                            <div class="select-option" data-value="inbound_date">入库日期</div>
+                            <div class="select-option" data-value="location_qty">储位库存数量</div>
+                            <div class="select-option" data-value="pick_order">拣货顺序</div>
+                            <div class="select-option" data-value="no_rule">无规则</div>
+                            <div class="select-option" data-value="empty_location">空储位</div>
+                            <div class="select-option" data-value="same_sku_location">同商品储位</div>
+                            <div class="select-option" data-value="same_category_location">同品类储位</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
+                    <label>排序规则 <span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="detailSortRule" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="detailSortRuleDropdown">
+                            <div class="select-option" data-value="asc">升序</div>
+                            <div class="select-option" data-value="desc">降序</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer" style="margin-top: 15px;">
+                <button type="button" class="btn btn-secondary" id="detailCancelBtn">取消</button>
+                <button type="button" class="btn btn-primary" id="detailSaveBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="turnStrategyDetailModal" class="modal">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">周转策略 - 编辑</div>
+                <span class="close" id="turnStrategyDetailCloseBtn">&times;</span>
+            </div>
+            <form class="modal-form" style="gap: 15px;">
+                <div class="modal-form-group">
+                    <label>周转策略编码</label>
+                    <input type="text" id="editStrategyCode" disabled>
+                </div>
+                <div class="modal-form-group">
+                    <label>周转策略描述</label>
+                    <input type="text" id="editStrategyDesc" placeholder="请输入">
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>周转类型</label>
+                    <div class="custom-select">
+                        <input type="text" id="editTurnType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="editTurnTypeDropdown">
+                            <div class="select-option" data-value="outbound">出库周转</div>
+                            <div class="select-option" data-value="inbound">入库周转</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>是否启用</label>
+                    <div class="custom-select">
+                        <input type="text" id="editIsEnabled" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="editIsEnabledDropdown">
+                            <div class="select-option" data-value="启用">启用</div>
+                            <div class="select-option" data-value="禁用">禁用</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="detail-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="detail-title" style="font-weight: bold; color: #333;">周转规则明细</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-primary" id="addTurnStrategyDetailBtn" style="font-size: 12px; padding: 5px 12px;">添加</button>
+                        <button type="button" class="btn btn-primary" id="turnStrategyDetailSaveBtn" style="font-size: 12px; padding: 5px 12px;">保存</button>
+                        <button type="button" class="btn btn-secondary" id="turnStrategyDetailCancelBtn" style="font-size: 12px; padding: 5px 12px;">取消</button>
+                    </div>
+                </div>
+                <table class="table" id="turnStrategyDetailTable">
+                    <thead>
+                        <tr>
+                            <th>优先级</th>
+                            <th>周转规则</th>
+                            <th>排序规则</th>
+                            <th>更新时间</th>
+                            <th>更新人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="turnStrategyDetailTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isEnabledOptions = [
+                { value: '启用', text: '启用' },
+                { value: '禁用', text: '禁用' }
+            ];
+            
+            const turnTypeOptions = [
+                { value: 'outbound', text: '出库周转' },
+                { value: 'inbound', text: '入库周转' }
+            ];
+            
+            const page = new PageManager({
+                entityName: '周转策略',
+                statusColumnIndex: 4,
+                
+                customSelects: [
+                    { inputId: 'searchTurnType', dropdownId: 'searchTurnTypeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'strategyCode', label: '周转策略编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'strategyDesc', label: '周转策略描述', type: 'text', required: false },
+                    { id: 'turnType', label: '周转类型', type: 'select', required: true, options: turnTypeOptions },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: isEnabledOptions }
+                ],
+                
+                addModal: {
+                    modalId: 'addTurnStrategyModal',
+                    saveBtnId: 'saveTurnStrategyBtn',
+                    cancelBtnId: 'cancelTurnStrategyBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'strategyCode', message: '请输入周转策略编码', required: true },
+                        { id: 'turnType', message: '请选择周转类型', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const strategyCode = document.getElementById('strategyCode').value.trim();
+                        const strategyDesc = document.getElementById('strategyDesc').value.trim();
+                        const turnType = document.getElementById('turnType').value.trim();
+                        const isEnabled = document.getElementById('isEnabled').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                strategyCode,
+                                strategyDesc,
+                                turnType,
+                                { value: isEnabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+                        showToast('周转策略信息已保存', 'success');
+                    }
+                },
+                
+                deleteModal: {}
+            });
+            
+            page.init();
+            
+            let currentEditingRow = null;
+            
+            const turnStrategyDetails = {
+                'TS001': [
+                    { priority: 1, turnRule: '生产日期', sortRule: '升序', updateTime: '2025-01-05 12:31:43', updateUser: '李四' },
+                    { priority: 2, turnRule: '入库日期', sortRule: '升序', updateTime: '2025-01-05 12:31:43', updateUser: '李四' }
+                ],
+                'TS002': [
+                    { priority: 1, turnRule: '同商品储位', sortRule: '升序', updateTime: '2025-01-05 12:31:43', updateUser: '张三' }
+                ]
+            };
+            
+            function openTurnStrategyDetailModal(strategyCode, row) {
+                currentEditingRow = row;
+                const cells = row.querySelectorAll('td');
+                
+                document.getElementById('editStrategyCode').value = cells[1].textContent;
+                document.getElementById('editStrategyDesc').value = cells[2].textContent;
+                document.getElementById('editTurnType').value = cells[3].textContent;
+                document.getElementById('editIsEnabled').value = cells[4].querySelector('.status').textContent;
+                
+                const detailTableBody = document.getElementById('turnStrategyDetailTableBody');
+                detailTableBody.innerHTML = '';
+                
+                const details = turnStrategyDetails[cells[1].textContent] || [];
+                details.forEach(detail => {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${detail.priority}</td>
+                        <td>${detail.turnRule}</td>
+                        <td>${detail.sortRule}</td>
+                        <td>${detail.updateTime}</td>
+                        <td>${detail.updateUser}</td>
+                        <td class="action-links">
+                            <a href="#" class="detail-delete-btn delete-btn">删除</a>
+                        </td>
+                    `;
+                    detailTableBody.appendChild(newRow);
+                });
+                
+                document.getElementById('turnStrategyDetailModal').style.display = 'block';
+            }
+            
+            document.querySelector('.table').addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                if (editBtn) {
+                    e.preventDefault();
+                    const row = editBtn.closest('tr');
+                    const strategyCode = row.querySelectorAll('td')[1].textContent;
+                    openTurnStrategyDetailModal(strategyCode, row);
+                }
+            });
+            
+            const turnStrategyDetailModal = document.getElementById('turnStrategyDetailModal');
+            const turnStrategyDetailCloseBtn = document.getElementById('turnStrategyDetailCloseBtn');
+            const turnStrategyDetailCancelBtn = document.getElementById('turnStrategyDetailCancelBtn');
+            const turnStrategyDetailSaveBtn = document.getElementById('turnStrategyDetailSaveBtn');
+            
+            function closeTurnStrategyDetailModal() {
+                turnStrategyDetailModal.style.display = 'none';
+                currentEditingRow = null;
+            }
+            
+            turnStrategyDetailSaveBtn.addEventListener('click', () => {
+                if (!currentEditingRow) return;
+                
+                const cells = currentEditingRow.querySelectorAll('td');
+                
+                cells[2].textContent = document.getElementById('editStrategyDesc').value.trim();
+                cells[3].textContent = document.getElementById('editTurnType').value.trim();
+                
+                const isEnabled = document.getElementById('editIsEnabled').value.trim();
+                const statusSpan = document.createElement('span');
+                statusSpan.className = isEnabled === '启用' ? 'status active' : 'status inactive';
+                statusSpan.textContent = isEnabled;
+                cells[4].innerHTML = '';
+                cells[4].appendChild(statusSpan);
+                
+                cells[5].textContent = page.getCurrentTimeStr();
+                cells[6].textContent = '当前用户';
+                
+                showToast('周转策略信息已更新', 'success');
+                closeTurnStrategyDetailModal();
+            });
+            
+            turnStrategyDetailCloseBtn.addEventListener('click', closeTurnStrategyDetailModal);
+            turnStrategyDetailCancelBtn.addEventListener('click', closeTurnStrategyDetailModal);
+            turnStrategyDetailModal.addEventListener('click', (e) => {
+                if (e.target === turnStrategyDetailModal) closeTurnStrategyDetailModal();
+            });
+            
+            const detailModal = document.getElementById('detailModal');
+            const detailCloseBtn = document.getElementById('detailCloseBtn');
+            const detailCancelBtn = document.getElementById('detailCancelBtn');
+            const detailSaveBtn = document.getElementById('detailSaveBtn');
+            const addTurnStrategyDetailBtn = document.getElementById('addTurnStrategyDetailBtn');
+            
+            let currentDetailTarget = null;
+            
+            function openDetailModal(target) {
+                currentDetailTarget = target;
+                detailModal.style.display = 'block';
+                document.getElementById('detailPriority').value = '';
+                document.getElementById('detailTurnRule').value = '';
+                document.getElementById('detailTurnRule').dataset.value = '';
+                document.getElementById('detailSortRule').value = '';
+                document.getElementById('detailSortRule').dataset.value = '';
+            }
+            
+            function closeDetailModal() {
+                detailModal.style.display = 'none';
+                currentDetailTarget = null;
+            }
+            
+            if (addTurnStrategyDetailBtn) {
+                addTurnStrategyDetailBtn.addEventListener('click', () => openDetailModal('edit'));
+            }
+            if (detailCloseBtn) {
+                detailCloseBtn.addEventListener('click', closeDetailModal);
+            }
+            if (detailCancelBtn) {
+                detailCancelBtn.addEventListener('click', closeDetailModal);
+            }
+            
+            if (detailSaveBtn) {
+                detailSaveBtn.addEventListener('click', () => {
+                    const priority = document.getElementById('detailPriority').value.trim();
+                    const turnRule = document.getElementById('detailTurnRule').value.trim();
+                    const sortRule = document.getElementById('detailSortRule').value.trim();
+                    
+                    if (!priority) {
+                        showToast('请输入优先级', 'error');
+                        return;
+                    }
+                    if (!turnRule) {
+                        showToast('请选择周转规则', 'error');
+                        return;
+                    }
+                    if (!sortRule) {
+                        showToast('请选择排序规则', 'error');
+                        return;
+                    }
+                    
+                    const existingRows = document.querySelectorAll('#turnStrategyDetailTableBody tr');
+                    const existingData = [];
+                    existingRows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length >= 3) {
+                            existingData.push({
+                                priority: cells[0].textContent,
+                                turnRule: cells[1].textContent,
+                                sortRule: cells[2].textContent
+                            });
+                        }
+                    });
+                    
+                    const isDuplicate = existingData.some(item => 
+                        item.priority === priority
+                    );
+                    
+                    if (isDuplicate) {
+                        showToast('已存在相同优先级的规则，请检查！', 'error');
+                        return;
+                    }
+                    
+                    const now = new Date();
+                    const timeStr = now.getFullYear() + '-' + 
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(now.getDate()).padStart(2, '0') + ' ' +
+                        String(now.getHours()).padStart(2, '0') + ':' +
+                        String(now.getMinutes()).padStart(2, '0') + ':' +
+                        String(now.getSeconds()).padStart(2, '0');
+                    
+                    const newRow = `
+                        <tr>
+                            <td>${priority}</td>
+                            <td>${turnRule}</td>
+                            <td>${sortRule}</td>
+                            <td>${timeStr}</td>
+                            <td>当前用户</td>
+                            <td class="action-links">
+                                <a href="#" class="detail-delete-btn delete-btn">删除</a>
+                            </td>
+                        </tr>
+                    `;
+                    const editDetailTableBody = document.getElementById('turnStrategyDetailTableBody');
+                    if (editDetailTableBody) {
+                        editDetailTableBody.insertAdjacentHTML('beforeend', newRow);
+                    }
+                    
+                    showToast('明细已添加', 'success');
+                    closeDetailModal();
+                });
+            }
+            
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('detail-delete-btn')) {
+                    e.preventDefault();
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.remove();
+                        showToast('明细已删除', 'success');
+                    }
+                }
+            });
+            
+            function initDetailModalSelects() {
+                initCustomSelect('detailTurnRule', 'detailTurnRuleDropdown');
+                initCustomSelect('detailSortRule', 'detailSortRuleDropdown');
+                initCustomSelect('editTurnType', 'editTurnTypeDropdown');
+                initCustomSelect('editIsEnabled', 'editIsEnabledDropdown');
+            }
+            
+            function initCustomSelect(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                if (!input || !dropdown) return;
+                
+                const customSelect = input.parentElement;
+                const selectArrow = customSelect.querySelector('.select-arrow');
+                const clearBtn = customSelect.querySelector('.clear-btn');
+                
+                customSelect.addEventListener('click', (e) => {
+                    if (e.target !== clearBtn) {
+                        dropdown.classList.toggle('show');
+                    }
+                });
+                
+                dropdown.querySelectorAll('.select-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        input.value = option.textContent;
+                        dropdown.classList.remove('show');
+                    });
+                });
+                
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        input.value = '';
+                    });
+                }
+                
+                document.addEventListener('click', (e) => {
+                    if (!customSelect.contains(e.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            }
+            
+            initDetailModalSelects();
+        });
+    </script>
+</body>
+</html>

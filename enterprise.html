@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 机构管理</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">机构</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">基础信息 / 机构</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>机构编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>机构名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>机构编码</th>
+                                <th>机构名称</th>
+                                <th>租户</th>
+                                <th>地址</th>
+                                <th>联系人</th>
+                                <th>电话</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>E001</td>
+                                <td>南京机构</td>
+                                <td>XX科技</td>
+                                <td>江苏省南京市江陵区...</td>
+                                <td>张三</td>
+                                <td>18612341234</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>E002</td>
+                                <td>嘉兴机构</td>
+                                <td>测试租户</td>
+                                <td>江苏省南京市江陵区...</td>
+                                <td>王五</td>
+                                <td>18612341235</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2025-01-05 12:31:43</td>
+                                <td>赵六</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '机构',
+                statusColumnIndex: 7,
+                
+                customSelects: [
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
+                      options: [{ value: 'XX科技', text: 'XX科技' }, { value: '测试租户', text: '测试租户' }] },
+                    { id: 'enterpriseCode', label: '机构编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'enterpriseName', label: '机构名称', type: 'text', required: true, editDisabled: true },
+                    { id: 'address', label: '地址', type: 'text' },
+                    { id: 'contactPerson', label: '联系人', type: 'text' },
+                    { id: 'phone', label: '电话', type: 'text' },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [{ value: 'yes', text: '启用' }, { value: 'no', text: '禁用' }] },
+                    { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
+                ],
+                
+                addModal: {
+                    modalId: 'enterpriseModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'enterpriseCode', message: '请输入机构编码', required: true },
+                        { id: 'enterpriseName', message: '请输入机构名称', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const tenant = document.getElementById('tenant').value.trim();
+                        const code = document.getElementById('enterpriseCode').value.trim();
+                        const name = document.getElementById('enterpriseName').value.trim();
+                        const address = document.getElementById('address').value.trim() || '-';
+                        const contact = document.getElementById('contactPerson').value.trim() || '-';
+                        const phone = document.getElementById('phone').value.trim() || '-';
+                        const enabled = document.getElementById('isEnabled').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                code, name, tenant, address, contact, phone,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('机构信息已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'enterpriseEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
+                        { id: 'editEnterpriseName', message: '请输入机构名称', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            2: document.getElementById('editTenant').value.trim(),
+                            3: document.getElementById('editEnterpriseName').value.trim(),
+                            4: document.getElementById('editAddress').value.trim() || '-',
+                            5: document.getElementById('editContactPerson').value.trim() || '-',
+                            6: document.getElementById('editPhone').value.trim() || '-',
+                            7: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            8: page.getCurrentTimeStr(),
+                            9: '当前用户'
+                        });
+                        showToast('机构信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editEnterpriseCode: cells[1].textContent,
+                            editEnterpriseName: cells[2].textContent,
+                            editTenant: cells[3].textContent,
+                            editAddress: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editContactPerson: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editPhone: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
+                        };
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+            
+            document.getElementById('editCloseBtn').addEventListener('click', () => page.closeModal('edit'));
+        });
+    </script>
+</body>
+</html>

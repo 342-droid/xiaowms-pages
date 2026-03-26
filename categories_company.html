@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 品类-委托方</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+    
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">品类-委托方</button>
+            </div>
+            
+            <hr class="content-divider">
+            
+            <div class="content-title">基础信息 / 品类-委托方</div>
+            
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>委托方:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchCompany" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchCompanyDropdown">
+                                <div class="select-option" data-value="Y001-南京委托方">Y001-南京委托方</div>
+                                <div class="select-option" data-value="Y002-北京委托方">Y002-北京委托方</div>
+                                <div class="select-option" data-value="Y003-上海委托方">Y003-上海委托方</div>
+                                <div class="select-option" data-value="Y004-广州委托方">Y004-广州委托方</div>
+                                <div class="select-option" data-value="Y005-深圳委托方">Y005-深圳委托方</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>品类名称:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCategoryName" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="是">是</div>
+                                <div class="select-option" data-value="否">否</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" id="searchBtn" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>委托方</th>
+                                <th>品类</th>
+                                <th>租户</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>Y001-南京委托方</td>
+                                <td>食品</td>
+                                <td>T001-南京租户</td>
+                                <td><span class="status active">是</span></td>
+                                <td>2025-01-07 10:30:00</td>
+                                <td>张三</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>Y002-北京委托方</td>
+                                <td>冷冻肉类</td>
+                                <td>T002-北京租户</td>
+                                <td><span class="status active">是</span></td>
+                                <td>2025-01-07 09:15:00</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>Y003-上海委托方</td>
+                                <td>乳制品</td>
+                                <td>T003-上海租户</td>
+                                <td><span class="status inactive">否</span></td>
+                                <td>2025-01-06 14:20:00</td>
+                                <td>王五</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>Y004-广州委托方</td>
+                                <td>速冻食品</td>
+                                <td>T004-广州租户</td>
+                                <td><span class="status active">是</span></td>
+                                <td>2025-01-06 11:00:00</td>
+                                <td>赵六</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>Y005-深圳委托方</td>
+                                <td>休闲食品</td>
+                                <td>T005-深圳租户</td>
+                                <td><span class="status active">是</span></td>
+                                <td>2025-01-05 16:45:00</td>
+                                <td>钱七</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page = new PageManager({
+                entityName: '品类-委托方',
+                statusColumnIndex: 4,
+                modalWidth: '70%',
+                labelWidth: '100px',
+                
+                customSelects: [
+                    { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                
+                fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true,
+                      options: [
+                          { value: 'T001-南京租户', text: 'T001-南京租户' },
+                          { value: 'T002-北京租户', text: 'T002-北京租户' },
+                          { value: 'T003-上海租户', text: 'T003-上海租户' },
+                          { value: 'T004-广州租户', text: 'T004-广州租户' },
+                          { value: 'T005-深圳租户', text: 'T005-深圳租户' }
+                      ]
+                    },
+                    { id: 'company', label: '委托方', type: 'select', required: true,
+                      options: [
+                          { value: 'Y001-南京委托方', text: 'Y001-南京委托方' },
+                          { value: 'Y002-北京委托方', text: 'Y002-北京委托方' },
+                          { value: 'Y003-上海委托方', text: 'Y003-上海委托方' },
+                          { value: 'Y004-广州委托方', text: 'Y004-广州委托方' },
+                          { value: 'Y005-深圳委托方', text: 'Y005-深圳委托方' }
+                      ]
+                    },
+                    { id: 'category', label: '品类', type: 'select', required: true,
+                      options: [
+                          { value: '食品', text: '食品' },
+                          { value: '冷冻肉类', text: '冷冻肉类' },
+                          { value: '乳制品', text: '乳制品' },
+                          { value: '速冻食品', text: '速冻食品' },
+                          { value: '休闲食品', text: '休闲食品' }
+                      ]
+                    },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
+                      options: [ { value: '是', text: '是' }, { value: '否', text: '否' } ]
+                    },
+                    { id: 'remark', label: '备注', type: 'textarea', labelWidth: '80px' }
+                ],
+                
+                addModal: {
+                    modalId: 'categoriesCompanyAddModal',
+                    cancelBtnId: 'cancelBtn',
+                    saveBtnId: 'saveBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '是' },
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'company', message: '请选择委托方', required: true },
+                        { id: 'category', message: '请选择品类', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const tenant = document.getElementById('tenant').value.trim();
+                        const company = document.getElementById('company').value.trim();
+                        const category = document.getElementById('category').value.trim();
+                        const isEnabled = document.getElementById('isEnabled').value.trim();
+                        const remark = document.getElementById('remark').value.trim();
+                        
+                        page.addTableRow({
+                            cells: [
+                                company, category, tenant,
+                                { value: isEnabled, isStatus: true, statusClass: isEnabled === '是' ? 'active' : 'inactive' },
+                                page.getCurrentTimeStr(), '当前用户'
+                            ]
+                        });
+                        showToast('品类-委托方信息已保存', 'success');
+                    }
+                },
+                
+                editModal: {
+                    modalId: 'categoriesCompanyEditModal',
+                    cancelBtnId: 'editCancelBtn',
+                    saveBtnId: 'editSaveBtn',
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'company', message: '请选择委托方', required: true },
+                        { id: 'category', message: '请选择品类', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        showToast('品类-委托方信息已更新', 'success');
+                    },
+                    mapRowToForm: (row) => {
+                        const cells = row.querySelectorAll('td');
+                        const statusCell = cells[4];
+                        const statusSpan = statusCell.querySelector('.status');
+                        const isEnabledValue = statusSpan ? statusSpan.textContent.trim() : statusCell.textContent.trim();
+                        
+                        return {
+                            editTenant: cells[3].textContent,
+                            editCompany: cells[1].textContent,
+                            editCategory: cells[2].textContent,
+                            editIsEnabled: isEnabledValue
+                        };
+                    }
+                },
+                
+                deleteModal: {
+                    modalId: 'confirmDeleteModal',
+                    closeBtnId: 'confirmDeleteCloseBtn',
+                    cancelBtnId: 'cancelDeleteBtn',
+                    confirmBtnId: 'confirmDeleteBtn'
+                }
+            });
+            
+            page.init();
+        });
+    </script>
+</body>
+</html>
