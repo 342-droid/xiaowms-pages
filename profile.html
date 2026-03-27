@@ -395,6 +395,27 @@
                 initCustomSelect('detailArea', 'detailAreaDropdown');
                 initCustomSelect('detailWorkType', 'detailWorkTypeDropdown');
             }
+
+            // 查询条件：仓库默认取当前登录仓库，置灰且不可编辑
+            const searchWarehouseInput = document.getElementById('searchWarehouse');
+            const applySearchWarehouse = () => {
+                if (!searchWarehouseInput) return;
+                const currentWarehouse = getCurrentWarehouse();
+                if (currentWarehouse) {
+                    searchWarehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                    searchWarehouseInput.dataset.value = currentWarehouse.code;
+                }
+            };
+            if (searchWarehouseInput) {
+                applySearchWarehouse();
+                searchWarehouseInput.disabled = true;
+                searchWarehouseInput.readOnly = true;
+                const searchWarehouseSelect = searchWarehouseInput.closest('.custom-select');
+                if (searchWarehouseSelect) {
+                    searchWarehouseSelect.style.pointerEvents = 'none';
+                }
+                document.addEventListener('warehouseChange', applySearchWarehouse);
+            }
             
             // 明细模态框逻辑
             const detailSaveBtn = document.getElementById('detailSaveBtn');
