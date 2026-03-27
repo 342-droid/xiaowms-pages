@@ -26,7 +26,7 @@
     // 权限管理菜单项
     const permissionMenuItems = [
         { href: 'profile.html', text: '作业档案' },
-        { href: 'user_profile.html', text: '用户-作业档案' },
+        { href: 'user_profile.html', text: '用户-仓库' },
         { href: 'user_company.html', text: '用户-委托方' },
         { href: 'user.html', text: '用户管理' },
         { href: 'module.html', text: '系统功能模块' },

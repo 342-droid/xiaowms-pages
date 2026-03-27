@@ -3,13 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WMS - 用户-作业档案</title>
+    <title>WMS - 用户-仓库</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/components.css">
     <style>
         /* 页面特定样式 - 与作业档案页面保持一致 */
         .modal-form-group label {
             width: 110px;
+        }
+
+        /* 查询仓库锁定为当前登录仓库时的灰态样式 */
+        .custom-select.is-disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled input {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled .select-arrow,
+        .custom-select.is-disabled .clear-btn {
+            color: #bbb;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -21,22 +39,15 @@
     <div class="container">
         <main class="main-content">
             <div class="content-tabs">
-                <button class="active">用户-作业档案</button>
+                <button class="active">用户-仓库</button>
             </div>
             
             <hr class="content-divider">
             
-            <div class="content-title">权限管理 / 用户-作业档案</div>
+            <div class="content-title">权限管理 / 用户-仓库</div>
             
             <section class="search-section">
                 <form class="search-form">
-                    <div class="form-group">
-                        <label>用户编码:</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="searchUserCode" placeholder="请输入">
-                            <span class="clear-btn">×</span>
-                        </div>
-                    </div>
                     <div class="form-group custom-select-wrapper">
                         <label>仓库:</label>
                         <div class="custom-select">
@@ -50,6 +61,13 @@
                                 <div class="select-option" data-value="W004">W004-北京仓</div>
                                 <div class="select-option" data-value="W005">W005-广州仓</div>
                             </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>用户编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchUserCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
                         </div>
                     </div>
                     <div class="form-group custom-select-wrapper">
@@ -91,8 +109,8 @@
                             <tr>
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
                                 <th>用户编码</th>
+                                <th>用户名称</th>
                                 <th>作业档案</th>
-                                <th>租户</th>
                                 <th>仓库</th>
                                 <th>是否启用</th>
                                 <th>更新时间</th>
@@ -103,9 +121,9 @@
                         <tbody id="tableBody">
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>U001</td>
+                                <td><a href="#" class="user-code-link">U001</a></td>
+                                <td>张三</td>
                                 <td>P001-标准作业档案</td>
-                                <td>T001-南京租户</td>
                                 <td>W001-南京仓</td>
                                 <td><span class="status active">启用</span></td>
                                 <td>2025-01-05 12:31:43</td>
@@ -117,9 +135,9 @@
                             </tr>
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>U002</td>
+                                <td><a href="#" class="user-code-link">U002</a></td>
+                                <td>李四</td>
                                 <td>P002-冷链作业档案</td>
-                                <td>T002-北京租户</td>
                                 <td>W001-南京仓</td>
                                 <td><span class="status inactive">禁用</span></td>
                                 <td>2025-01-05 12:31:43</td>
@@ -148,9 +166,15 @@
     <script>
         // 使用PageManager简化页面逻辑
         document.addEventListener('DOMContentLoaded', () => {
+            const userOptions = [
+                { value: 'U001', text: 'U001-张三' },
+                { value: 'U002', text: 'U002-李四' },
+                { value: 'U003', text: 'U003-王五' },
+                { value: 'U004', text: 'U004-赵六' }
+            ];
             
             const page = new PageManager({
-                entityName: '用户-作业档案',
+                entityName: '用户-仓库',
                 statusColumnIndex: 5,
                 
                 customSelects: [
@@ -160,17 +184,7 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
-                      options: [
-                          { value: 'T001-南京租户', text: 'T001-南京租户' },
-                          { value: 'T002-北京租户', text: 'T002-北京租户' },
-                          { value: 'T003-上海租户', text: 'T003-上海租户' },
-                          { value: 'T004-广州租户', text: 'T004-广州租户' },
-                          { value: 'T005-深圳租户', text: 'T005-深圳租户' }
-                      ]
-                    },
-                    { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
-                    { id: 'warehouse', label: '仓库', type: 'select', required: true, options: CommonOptions.warehouse },
+                    { id: 'userCode', label: '用户', type: 'select', required: true, editDisabled: true, placeholder: '请输入用户编码/名称搜索', options: userOptions },
                     { id: 'profile', label: '作业档案', type: 'select', required: true, options: CommonOptions.profile },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' }
@@ -181,33 +195,44 @@
                     saveBtnId: 'saveUserProfileBtn',
                     cancelBtnId: 'cancelUserProfileBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用', tenant: 'T001-南京租户' },
+                    defaults: { isEnabled: '启用' },
                     validations: [
-                        { id: 'tenant', message: '请选择租户', required: true },
-                        { id: 'userCode', message: '请输入用户编码', required: true },
-                        { id: 'warehouse', message: '请选择仓库', required: true },
+                        { id: 'userCode', message: '请选择用户', required: true },
                         { id: 'profile', message: '请选择作业档案', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
-                        const userCode = document.getElementById('userCode').value.trim();
-                        const tenant = document.getElementById('tenant').value.trim();
+                        const userInput = document.getElementById('userCode');
+                        const userText = userInput ? userInput.value.trim() : '';
+                        const userDataValue = userInput ? (userInput.dataset.value || '').trim() : '';
+                        const matchedUser = userOptions.find(item => item.value === userDataValue || item.text === userText);
+                        const userDisplay = matchedUser ? matchedUser.text : userText;
+                        const [userCode, ...nameParts] = userDisplay.split('-');
+                        const userName = nameParts.join('-');
+                        if (!userCode || !userName) {
+                            showToast('请选择有效的用户');
+                            if (userInput) userInput.focus();
+                            return;
+                        }
                         const profile = document.getElementById('profile').value.trim();
-                        const warehouse = document.getElementById('warehouse').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
+                        const currentWarehouse = getCurrentWarehouse();
+                        const warehouse = currentWarehouse
+                            ? `${currentWarehouse.code}-${currentWarehouse.name}`
+                            : (document.getElementById('searchWarehouse')?.value.trim() || '');
                         
                         page.addTableRow({
                             cells: [
-                                userCode,
+                                `<a href="#" class="user-code-link">${userCode}</a>`,
+                                userName,
                                 profile,
-                                tenant,
                                 warehouse,
                                 { value: enabled, isStatus: true },
                                 page.getCurrentTimeStr(),
                                 '当前用户'
                             ]
                         });
-                        showToast('用户-作业档案信息已保存', 'success');
+                        showToast('用户-仓库信息已保存', 'success');
                     }
                 },
                 
@@ -217,28 +242,25 @@
                     cancelBtnId: 'editCancelUserProfileBtn',
                     validations: [
                         { id: 'editProfile', message: '请选择作业档案', required: true },
-                        { id: 'editWarehouse', message: '请选择仓库', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
-                            2: document.getElementById('editProfile').value.trim(),
+                            3: document.getElementById('editProfile').value.trim(),
                             5: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
                             6: page.getCurrentTimeStr(),
                             7: '当前用户'
                         });
-                        showToast('用户-作业档案信息已更新', 'success');
+                        showToast('用户-仓库信息已更新', 'success');
                         page.currentEditRow = null;
                     },
                     mapRowToForm: (row) => {
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
-                            editUserCode: cells[1].textContent,
-                            editTenant: cells[3].textContent,
-                            editProfile: cells[2].textContent,
-                            editWarehouse: cells[4].textContent,
+                            editUserCode: `${cells[1].textContent}-${cells[2].textContent}`,
+                            editProfile: cells[3].textContent,
                             editIsEnabled: cells[5].querySelector('.status').textContent
                         };
                     }
@@ -249,13 +271,83 @@
             
             page.init();
 
-            // 新增时自动填充租户（参考 lpn 页面行为）
-            document.getElementById('addBtn').addEventListener('click', () => {
-                const tenantInput = document.getElementById('tenant');
-                if (!tenantInput) return;
-                tenantInput.value = 'T001-南京租户';
-                tenantInput.dataset.value = 'T001-南京租户';
-            });
+            // 新增/编辑弹窗标题统一为“用户-仓库-详情”
+            const addModalTitle = document.querySelector('#addUserProfileModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '用户-仓库-详情';
+            }
+            const editModalTitle = document.querySelector('#editUserProfileModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '用户-仓库-详情';
+            }
+
+            function setEditModalReadOnly(isReadOnly) {
+                const editModal = document.getElementById('editUserProfileModal');
+                if (!editModal) return;
+
+                editModal.querySelectorAll('input, textarea, select').forEach((el) => {
+                    if (!el.dataset.originDisabled) {
+                        el.dataset.originDisabled = el.disabled ? '1' : '0';
+                    }
+                    el.disabled = isReadOnly ? true : el.dataset.originDisabled === '1';
+                });
+
+                editModal.querySelectorAll('.custom-select').forEach((el) => {
+                    if (!el.dataset.originPointerEvents) {
+                        el.dataset.originPointerEvents = el.style.pointerEvents || '';
+                    }
+                    el.style.pointerEvents = isReadOnly ? 'none' : el.dataset.originPointerEvents;
+                    el.classList.toggle('is-disabled', isReadOnly);
+                });
+
+                const saveBtn = document.getElementById('editSaveUserProfileBtn');
+                const cancelBtn = document.getElementById('editCancelUserProfileBtn');
+                if (saveBtn) saveBtn.style.display = isReadOnly ? 'none' : '';
+                if (cancelBtn) cancelBtn.textContent = isReadOnly ? '关闭' : '取消';
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const link = e.target.closest('.user-code-link');
+                    if (!link) return;
+                    e.preventDefault();
+
+                    const row = link.closest('tr');
+                    if (!row) return;
+                    if (page.config.editModal && page.config.editModal.mapRowToForm) {
+                        const data = page.config.editModal.mapRowToForm(row);
+                        page.openModal('edit', { data, reset: false });
+                        setEditModalReadOnly(true);
+                    }
+                });
+
+                // 点击编辑按钮时恢复可编辑态
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => setEditModalReadOnly(false), 0);
+                });
+            }
+
+            // 查询条件：仓库默认取当前登录仓库，置灰且不可编辑
+            const searchWarehouseInput = document.getElementById('searchWarehouse');
+            if (searchWarehouseInput) {
+                const currentWarehouse = getCurrentWarehouse();
+                if (currentWarehouse) {
+                    searchWarehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
+                    searchWarehouseInput.dataset.value = currentWarehouse.code;
+                }
+
+                searchWarehouseInput.disabled = true;
+                searchWarehouseInput.readOnly = true;
+
+                const searchWarehouseSelect = searchWarehouseInput.closest('.custom-select');
+                if (searchWarehouseSelect) {
+                    searchWarehouseSelect.classList.add('is-disabled');
+                    searchWarehouseSelect.style.pointerEvents = 'none';
+                }
+            }
+
         });
     </script>
 </body>
