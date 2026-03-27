@@ -397,6 +397,7 @@ class PageManager {
         // 生成新增模态框
         if (this.config.addModal && this.config.addModal.modalId) {
             const addModalId = this.config.addModal.modalId;
+            const addModalTitle = this.config.addModal.title || `${entityName}-新增`;
             if (!document.getElementById(addModalId)) {
                 const addFieldsHtml = fields.map(field => 
                     this.generateFieldHTML(field, false, labelWidth)
@@ -405,7 +406,7 @@ class PageManager {
                     <div id="${addModalId}" class="modal">
                         <div class="modal-content" style="width: ${modalWidth};">
                             <div class="modal-header">
-                                <h2 class="modal-title">${entityName}-新增</h2>
+                                <h2 class="modal-title">${addModalTitle}</h2>
                                 <span class="close" id="${this.config.addModal.closeBtnId || 'addCloseBtn'}">&times;</span>
                             </div>
                             <form class="modal-form">
@@ -424,6 +425,7 @@ class PageManager {
         // 生成编辑模态框
         if (this.config.editModal && this.config.editModal.modalId) {
             const editModalId = this.config.editModal.modalId;
+            const editModalTitle = this.config.editModal.title || `${entityName}-编辑`;
             if (!document.getElementById(editModalId)) {
                 const editFieldsHtml = fields.map(field => 
                     this.generateFieldHTML(field, true, labelWidth)
@@ -432,7 +434,7 @@ class PageManager {
                     <div id="${editModalId}" class="modal">
                         <div class="modal-content" style="width: ${modalWidth};">
                             <div class="modal-header">
-                                <h2 class="modal-title">${entityName}-编辑</h2>
+                                <h2 class="modal-title">${editModalTitle}</h2>
                                 <span class="close" id="${this.config.editModal.closeBtnId || 'editCloseBtn'}">&times;</span>
                             </div>
                             <form class="modal-form">

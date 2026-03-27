@@ -10,6 +10,15 @@
         .modal-form-group label {
             width: 110px;
         }
+        #tableBody tr td:nth-child(2) {
+            color: #1677ff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        #editUserCompanyModal.detail-readonly .custom-select,
+        #editUserCompanyModal.detail-readonly .clear-btn {
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -78,8 +87,8 @@
                             <tr>
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
                                 <th>用户编码</th>
+                                <th>用户名称</th>
                                 <th>委托方</th>
-                                <th>租户</th>
                                 <th>是否启用</th>
                                 <th>更新时间</th>
                                 <th>更新人</th>
@@ -90,8 +99,8 @@
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
                                 <td>U001</td>
+                                <td>张三</td>
                                 <td>Y001-南京委托方</td>
-                                <td>T001-南京租户</td>
                                 <td><span class="status active">启用</span></td>
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
@@ -103,8 +112,8 @@
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
                                 <td>U002</td>
+                                <td>李四</td>
                                 <td>Y002-北京委托方</td>
-                                <td>T002-北京租户</td>
                                 <td><span class="status inactive">禁用</span></td>
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
@@ -141,15 +150,6 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
-                      options: [
-                          { value: 'T001-南京租户', text: 'T001-南京租户' },
-                          { value: 'T002-北京租户', text: 'T002-北京租户' },
-                          { value: 'T003-上海租户', text: 'T003-上海租户' },
-                          { value: 'T004-广州租户', text: 'T004-广州租户' },
-                          { value: 'T005-深圳租户', text: 'T005-深圳租户' }
-                      ]
-                    },
                     { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
                     { id: 'company', label: '委托方', type: 'select', required: true, options: CommonOptions.company },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
@@ -158,27 +158,27 @@
                 
                 addModal: {
                     modalId: 'addUserCompanyModal',
+                    title: '用户-委托方-详情',
                     saveBtnId: 'saveUserCompanyBtn',
                     cancelBtnId: 'cancelUserCompanyBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用', tenant: 'T001-南京租户' },
+                    defaults: { isEnabled: '启用' },
                     validations: [
-                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'userCode', message: '请输入用户编码', required: true },
                         { id: 'company', message: '请选择委托方', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         const userCode = document.getElementById('userCode').value.trim();
-                        const tenant = document.getElementById('tenant').value.trim();
+                        const userName = '-';
                         const company = document.getElementById('company').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
                         
                         page.addTableRow({
                             cells: [
                                 userCode,
+                                userName,
                                 company,
-                                tenant,
                                 { value: enabled, isStatus: true },
                                 page.getCurrentTimeStr(),
                                 '当前用户'
@@ -190,6 +190,7 @@
                 
                 editModal: {
                     modalId: 'editUserCompanyModal',
+                    title: '用户-委托方-详情',
                     saveBtnId: 'editSaveUserCompanyBtn',
                     cancelBtnId: 'editCancelUserCompanyBtn',
                     validations: [
@@ -199,7 +200,7 @@
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
-                            2: document.getElementById('editCompany').value.trim(),
+                            3: document.getElementById('editCompany').value.trim(),
                             4: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
                             5: page.getCurrentTimeStr(),
                             6: '当前用户'
@@ -212,8 +213,7 @@
                         const cells = row.querySelectorAll('td');
                         return {
                             editUserCode: cells[1].textContent,
-                            editTenant: cells[3].textContent,
-                            editCompany: cells[2].textContent,
+                            editCompany: cells[3].textContent,
                             editIsEnabled: cells[4].querySelector('.status').textContent
                         };
                     }
@@ -224,13 +224,53 @@
             
             page.init();
 
-            // 新增时自动填充租户（参考 lpn 页面行为）
-            document.getElementById('addBtn').addEventListener('click', () => {
-                const tenantInput = document.getElementById('tenant');
-                if (!tenantInput) return;
-                tenantInput.value = 'T001-南京租户';
-                tenantInput.dataset.value = 'T001-南京租户';
-            });
+            const tableBody = document.getElementById('tableBody');
+            const editModal = document.getElementById('editUserCompanyModal');
+            const editSaveBtn = document.getElementById('editSaveUserCompanyBtn');
+
+            const toggleDetailReadOnly = (isReadOnly) => {
+                if (!editModal) return;
+                const form = editModal.querySelector('.modal-form');
+                if (!form) return;
+
+                form.querySelectorAll('input, textarea, select').forEach((el) => {
+                    if (!el.dataset.originDisabled) {
+                        el.dataset.originDisabled = el.disabled ? '1' : '0';
+                    }
+                    if (isReadOnly) {
+                        el.disabled = true;
+                    } else {
+                        el.disabled = el.dataset.originDisabled === '1';
+                    }
+                });
+
+                editModal.classList.toggle('detail-readonly', isReadOnly);
+                if (editSaveBtn) {
+                    editSaveBtn.style.display = isReadOnly ? 'none' : '';
+                }
+            };
+
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const editBtn = e.target.closest('.edit-btn');
+                    if (editBtn) {
+                        setTimeout(() => toggleDetailReadOnly(false), 0);
+                        return;
+                    }
+
+                    const cell = e.target.closest('td');
+                    const row = e.target.closest('tr');
+                    if (!cell || !row) return;
+
+                    const colIndex = Array.from(row.children).indexOf(cell);
+                    if (colIndex !== 1) return;
+
+                    e.preventDefault();
+                    const data = page.config.editModal.mapRowToForm(row);
+                    page.openModal('edit', { data, reset: false });
+                    toggleDetailReadOnly(true);
+                });
+            }
         });
     </script>
 </body>
