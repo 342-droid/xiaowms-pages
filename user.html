@@ -67,10 +67,15 @@
         }
         
         .role-action-btn {
-            width: 50px;
+            width: 88px;
             height: 36px;
             padding: 0;
-            font-size: 18px;
+            font-size: 14px;
+        }
+
+        .user-code-link {
+            color: #1677ff;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -105,6 +110,13 @@
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label>功能角色编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
                     <div class="form-group custom-select-wrapper">
                         <label>是否启用:</label>
                         <div class="custom-select">
@@ -132,7 +144,6 @@
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
                                 <th>用户编码</th>
                                 <th>用户姓名</th>
-                                <th>租户</th>
                                 <th>身份证号</th>
                                 <th>手机号</th>
                                 <th>邮箱</th>
@@ -146,9 +157,8 @@
                         <tbody id="tableBody">
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>U001</td>
+                                <td><a href="#" class="user-code-link user-detail-link">U001</a></td>
                                 <td>张三</td>
-                                <td>XX集团</td>
                                 <td>320101199001011234</td>
                                 <td>13812345678</td>
                                 <td>zhangsan@example.com</td>
@@ -164,9 +174,8 @@
                             </tr>
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>U002</td>
+                                <td><a href="#" class="user-code-link user-detail-link">U002</a></td>
                                 <td>李四</td>
-                                <td>XX集团</td>
                                 <td>320101199102025678</td>
                                 <td>13987654321</td>
                                 <td>lisi@example.com</td>
@@ -180,7 +189,7 @@
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
-                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>U003</td><td>王五</td><td>XX集团</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="add-role-btn">添加角色</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td><a href="#" class="user-code-link user-detail-link">U003</a></td><td>王五</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="add-role-btn">添加角色</a><a href="#" class="delete-btn">删除</a></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -199,15 +208,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const page = new PageManager({
                 entityName: '用户',
-                statusColumnIndex: 8,
+                statusColumnIndex: 7,
                 
                 customSelects: [
                     { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
-                      options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
                     { id: 'userName', label: '用户姓名', type: 'text', required: true },
                     { id: 'password', label: '密码', type: 'text', required: true },
@@ -222,19 +229,18 @@
                 
                 addModal: {
                     modalId: 'userModal',
+                    title: '用户管理-详情',
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
+                    defaults: { isEnabled: '启用' },
                     validations: [
-                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'userCode', message: '请输入用户编码', required: true },
                         { id: 'userName', message: '请输入用户姓名', required: true },
                         { id: 'password', message: '请输入密码', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
-                        const tenant = document.getElementById('tenant').value.trim();
                         const code = document.getElementById('userCode').value.trim();
                         const name = document.getElementById('userName').value.trim();
                         const idCard = document.getElementById('idCard').value.trim() || '-';
@@ -245,7 +251,7 @@
                         
                         page.addTableRow({
                             cells: [
-                                code, name, tenant,
+                                `<a href="#" class="user-code-link user-detail-link">${code}</a>`, name,
                                 idCard, phone, email,
                                 remark,
                                 { value: enabled, isStatus: true },
@@ -258,24 +264,24 @@
                 
                 editModal: {
                     modalId: 'userEditModal',
+                    title: '用户管理-详情',
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
+                    onOpen: () => setEditModalReadonly(false),
                     validations: [
-                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editUserName', message: '请输入用户姓名', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
-                            3: document.getElementById('editTenant').value.trim(),
-                            4: document.getElementById('editIdCard').value.trim() || '-',
-                            5: document.getElementById('editPhone').value.trim() || '-',
-                            6: document.getElementById('editEmail').value.trim() || '-',
-                            7: document.getElementById('editRemark').value.trim() || '-',
-                            8: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
-                            9: page.getCurrentTimeStr(),
-                            10: '当前用户'
+                            3: document.getElementById('editIdCard').value.trim() || '-',
+                            4: document.getElementById('editPhone').value.trim() || '-',
+                            5: document.getElementById('editEmail').value.trim() || '-',
+                            6: document.getElementById('editRemark').value.trim() || '-',
+                            7: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            8: page.getCurrentTimeStr(),
+                            9: '当前用户'
                         });
                         showToast('用户信息已更新', 'success');
                         page.currentEditRow = null;
@@ -286,12 +292,11 @@
                         return {
                             editUserCode: cells[1].textContent,
                             editUserName: cells[2].textContent,
-                            editTenant: cells[3].textContent,
-                            editIdCard: cells[4].textContent === '-' ? '' : cells[4].textContent,
-                            editPhone: cells[5].textContent === '-' ? '' : cells[5].textContent,
-                            editEmail: cells[6].textContent === '-' ? '' : cells[6].textContent,
-                            editRemark: cells[7].textContent === '-' ? '' : cells[7].textContent,
-                            editIsEnabled: cells[8].querySelector('.status').textContent
+                            editIdCard: cells[3].textContent === '-' ? '' : cells[3].textContent,
+                            editPhone: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editEmail: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editRemark: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
                         };
                     }
                 },
@@ -314,17 +319,54 @@
             
             page.init();
 
+            const setEditModalReadonly = (readonly) => {
+                const modal = document.getElementById('userEditModal');
+                if (!modal) return;
+
+                modal.querySelectorAll('input, textarea').forEach((el) => {
+                    if (readonly) {
+                        el.setAttribute('disabled', 'disabled');
+                        return;
+                    }
+
+                    if (el.id === 'editUserCode') {
+                        el.setAttribute('disabled', 'disabled');
+                    } else {
+                        el.removeAttribute('disabled');
+                    }
+                });
+
+                modal.querySelectorAll('.clear-btn, .select-arrow').forEach((el) => {
+                    el.style.display = readonly ? 'none' : '';
+                });
+
+                const saveBtn = document.getElementById('editSaveBtn');
+                if (saveBtn) saveBtn.style.display = readonly ? 'none' : '';
+
+                const cancelBtn = document.getElementById('editCancelBtn');
+                if (cancelBtn) cancelBtn.textContent = readonly ? '关闭' : '取消';
+            };
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const detailLink = e.target.closest('.user-detail-link');
+                    if (!detailLink) return;
+
+                    e.preventDefault();
+                    const row = detailLink.closest('tr');
+                    if (!row) return;
+
+                    page.currentEditRow = row;
+                    const data = page.config.editModal.mapRowToForm(row);
+                    page.openModal('edit', { data, reset: false });
+                    setEditModalReadonly(true);
+                });
+            }
+
             // 等DOM完全就绪后再初始化“添加角色”弹窗控制器
             addRoleModalController = window.WMSUI.createModalController({
                 modalId: 'addRoleModal'
-            });
-
-            // 新增时自动填充租户（参考 lpn 页面行为）
-            document.getElementById('addBtn').addEventListener('click', () => {
-                const tenantInput = document.getElementById('tenant');
-                if (!tenantInput) return;
-                tenantInput.value = 'XX集团';
-                tenantInput.dataset.value = 'XX集团';
             });
             
         });
@@ -425,8 +467,8 @@
                     <div class="role-list-content" id="availableRolesList"></div>
                 </div>
                 <div class="role-actions">
-                    <button type="button" class="btn btn-secondary role-action-btn" onclick="moveRolesRight()">→</button>
-                    <button type="button" class="btn btn-secondary role-action-btn" onclick="moveRolesLeft()">←</button>
+                    <button type="button" class="btn btn-secondary role-action-btn" onclick="moveRolesRight()">→ 绑定</button>
+                    <button type="button" class="btn btn-secondary role-action-btn" onclick="moveRolesLeft()">← 解绑</button>
                 </div>
                 <div class="role-list-box">
                     <div class="role-list-header">已有角色</div>
