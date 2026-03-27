@@ -21,7 +21,7 @@ body {
     top: 0;
     left: 0;
     z-index: 1001;
-    background-color: #004080;
+    background-color: #005FCC;
     transition: width 0.3s ease;
 }
 
@@ -32,7 +32,7 @@ body {
 /* 左侧导航栏 */
 .sidebar {
     width: 200px;
-    background-color: #004080;
+    background-color: #005FCC;
     color: white;
     transition: width 0.3s ease;
     overflow: hidden;
@@ -55,8 +55,8 @@ body {
     justify-content: center;
     height: 60px;
     padding: 0 20px;
-    background-color: #003366;
-    border-bottom: 1px solid #0059b3;
+    background-color: #005FCC;
+    border-bottom: 1px solid #005FCC;
 }
 
 .sidebar-header img {
@@ -86,14 +86,14 @@ body {
 /* 仓库选择器 */
 .warehouse-selector {
     padding: 15px 20px;
-    background-color: #003366;
-    border-bottom: 1px solid #0059b3;
+    background-color: #005FCC;
+    border-bottom: 1px solid #005FCC;
 }
 
 .warehouse-selector button {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #0059b3;
+    border: 1px solid #005FCC;
     border-radius: 3px;
     background-color: white;
     color: #333;
@@ -320,6 +320,25 @@ body {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #004C99 #005FCC;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+    background: #005FCC;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background: #004C99;
+    border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+    background: #003D80;
 }
 
 .menu-item {
@@ -336,7 +355,7 @@ body {
 }
 
 .menu-item a:hover {
-    background-color: #0059b3;
+    background-color: #005FCC;
 }
 
 .menu-item > a.active {
@@ -344,7 +363,7 @@ body {
 }
 
 .submenu li a.active {
-    background-color: #0059b3;
+    background-color: #005FCC;
 }
 
 .menu-toggle {
@@ -358,7 +377,7 @@ body {
 
 .submenu {
     list-style: none;
-    background-color: #003366;
+    background-color: #005FCC;
     display: none;
 }
 
@@ -369,6 +388,10 @@ body {
 .submenu li a {
     padding-left: 40px;
     font-size: 14px;
+}
+
+.submenu li a:hover {
+    background-color: #004C99;
 }
 
 /* 内容区域标题和分隔线 */
