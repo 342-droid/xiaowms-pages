@@ -21,7 +21,7 @@ body {
     top: 0;
     left: 0;
     z-index: 1001;
-    background-color: #005FCC;
+    background-color: #12B4D0;
     transition: width 0.3s ease;
 }
 
@@ -32,8 +32,8 @@ body {
 /* 左侧导航栏 */
 .sidebar {
     width: 200px;
-    background-color: #005FCC;
-    color: white;
+    background-color: #12B4D0;
+    color: black;
     transition: width 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -55,8 +55,8 @@ body {
     justify-content: center;
     height: 60px;
     padding: 0 20px;
-    background-color: #005FCC;
-    border-bottom: 1px solid #005FCC;
+    background-color: #12B4D0;
+    border-bottom: 1px solid #12B4D0;
 }
 
 .sidebar-header img {
@@ -86,14 +86,14 @@ body {
 /* 仓库选择器 */
 .warehouse-selector {
     padding: 15px 20px;
-    background-color: #005FCC;
-    border-bottom: 1px solid #005FCC;
+    background-color: #12B4D0;
+    border-bottom: 1px solid #12B4D0;
 }
 
 .warehouse-selector button {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid #005FCC;
+    border: 1px solid #12B4D0;
     border-radius: 3px;
     background-color: white;
     color: #333;
@@ -321,7 +321,7 @@ body {
     overflow-y: auto;
     min-height: 0;
     scrollbar-width: thin;
-    scrollbar-color: #004C99 #005FCC;
+    scrollbar-color: #0FA2BC #12B4D0;
 }
 
 .sidebar-menu::-webkit-scrollbar {
@@ -329,16 +329,16 @@ body {
 }
 
 .sidebar-menu::-webkit-scrollbar-track {
-    background: #005FCC;
+    background: #12B4D0;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb {
-    background: #004C99;
+    background: #0FA2BC;
     border-radius: 4px;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb:hover {
-    background: #003D80;
+    background: #0D8CA3;
 }
 
 .menu-item {
@@ -349,13 +349,13 @@ body {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: white;
+    color: black;
     text-decoration: none;
     transition: background-color 0.2s;
 }
 
 .menu-item a:hover {
-    background-color: #005FCC;
+    background-color: #12B4D0;
 }
 
 .menu-item > a.active {
@@ -363,13 +363,13 @@ body {
 }
 
 .submenu li a.active {
-    background-color: #005FCC;
+    background-color: #12B4D0;
 }
 
 .menu-toggle {
     background: none;
     border: none;
-    color: white;
+    color: black;
     cursor: pointer;
     margin-left: auto;
     font-size: 12px;
@@ -377,7 +377,7 @@ body {
 
 .submenu {
     list-style: none;
-    background-color: #005FCC;
+    background-color: #12B4D0;
     display: none;
 }
 
@@ -391,7 +391,7 @@ body {
 }
 
 .submenu li a:hover {
-    background-color: #004C99;
+    background-color: #0FA2BC;
 }
 
 /* 内容区域标题和分隔线 */
