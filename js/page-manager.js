@@ -149,7 +149,7 @@ class PageManager {
         
         html += `<td class="action-links">
             <a href="#" class="edit-btn">编辑</a>
-            <a href="#" class="add-role-btn">添加角色</a>
+            <a href="#" class="add-role-btn">角色授权</a>
             <a href="#" class="delete-btn">删除</a>
         </td>`;
         

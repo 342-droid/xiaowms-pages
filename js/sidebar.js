@@ -29,7 +29,7 @@
         { href: 'user_profile.html', text: '用户-仓库' },
         { href: 'user_company.html', text: '用户-委托方' },
         { href: 'user.html', text: '用户管理' },
-        { href: 'module.html', text: '系统功能模块' },
+        { href: 'module.html', text: '系统模块' },
         { href: 'module_group.html', text: '系统功能角色' }
     ];
     

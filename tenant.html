@@ -6,6 +6,34 @@
     <title>WMS - 租户管理</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/components.css">
+    <style>
+        #tenantModuleTree.tree-container {
+            border: none;
+            padding: 8px 0;
+        }
+
+        #tenantModuleTree .tree-body {
+            background: transparent;
+        }
+
+        #tenantModuleTree .tree-node {
+            border-bottom: none;
+            padding: 4px 0;
+        }
+
+        #tenantModuleTree .tree-node:hover {
+            background-color: transparent;
+        }
+
+        #tenantModuleTree .node-content {
+            padding: 4px 0;
+        }
+
+        #tenantModuleTree .node-name {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
     <div id="sidebar-container"></div>
@@ -89,6 +117,7 @@
                                 <td>李四</td>
                                 <td class="action-links">
                                     <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="module-auth-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -105,6 +134,7 @@
                                 <td>赵六</td>
                                 <td class="action-links">
                                     <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="module-auth-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -122,7 +152,100 @@
     <script src="js/form-utils.js"></script>
     <script src="js/modal-manager.js"></script>
     <script src="js/page-manager.js"></script>
+    <script src="js/tree-component.js"></script>
     <script>
+        const moduleData = [
+            {
+                id: 'node-1',
+                code: 'M001',
+                name: '基础信息',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-1-1',
+                        code: 'M001-01',
+                        name: '仓库管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-1-1-1',
+                                code: 'M001-01-01',
+                                name: '仓库查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-1-2',
+                                code: 'M001-01-02',
+                                name: '仓库新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-1-2',
+                        code: 'M001-02',
+                        name: '商品管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 'node-2',
+                code: 'M002',
+                name: '权限管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-2-1',
+                        code: 'M002-01',
+                        name: '用户管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            }
+        ];
+
+        let tenantModuleTree = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             const page = new PageManager({
                 entityName: '租户',
@@ -146,6 +269,7 @@
                 
                 addModal: {
                     modalId: 'tenantModal',
+                    title: '租户-详情',
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
@@ -177,6 +301,7 @@
                 
                 editModal: {
                     modalId: 'tenantEditModal',
+                    title: '租户-详情',
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
@@ -220,8 +345,145 @@
                     confirmBtnId: 'confirmDeleteBtn'
                 }
             });
+
+            const ensureModuleAuthButtons = () => {
+                document.querySelectorAll('#tableBody .action-links').forEach((cell) => {
+                    if (cell.querySelector('.module-auth-btn')) return;
+                    const moduleAuthBtn = document.createElement('a');
+                    moduleAuthBtn.href = '#';
+                    moduleAuthBtn.className = 'module-auth-btn';
+                    moduleAuthBtn.textContent = '模块授权';
+                    const deleteBtn = cell.querySelector('.delete-btn');
+                    if (deleteBtn) {
+                        cell.insertBefore(moduleAuthBtn, deleteBtn);
+                    } else {
+                        cell.appendChild(moduleAuthBtn);
+                    }
+                });
+            };
+
+            const ensureModuleAuthModal = () => {
+                if (document.getElementById('tenantModuleAuthModal')) return;
+                const modalHtml = `
+                    <div id="tenantModuleAuthModal" class="modal">
+                        <div class="modal-content" style="width: 60%;">
+                            <div class="modal-header">
+                                <h2 class="modal-title">模块授权</h2>
+                                <span class="close" id="tenantModuleAuthCloseBtn">&times;</span>
+                            </div>
+                            <form class="modal-form">
+                                <div class="modal-form-group">
+                                    <label style="width: 80px;">租户编码</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="authTenantCode" placeholder="请输入" disabled>
+                                    </div>
+                                </div>
+                                <div class="modal-form-group">
+                                    <label style="width: 80px;">租户名称</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="authTenantName" placeholder="请输入" disabled>
+                                    </div>
+                                </div>
+                                <div class="modal-divider"></div>
+                                <div class="modal-form-group" style="width: 100%;">
+                                    <label style="width: 80px; font-weight: bold; visibility: hidden;">功能模块</label>
+                                    <div style="flex: 1; width: 100%;">
+                                        <div class="tree-container" id="tenantModuleTree" style="max-height: 300px; min-height: 150px; border: 1px solid #e0e0e0; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="tenantModuleAuthSaveBtn">保存</button>
+                                <button type="button" class="btn btn-secondary" id="tenantModuleAuthCancelBtn">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            };
+
+            const destroyModuleTree = () => {
+                if (tenantModuleTree) {
+                    tenantModuleTree.destroy();
+                    tenantModuleTree = null;
+                }
+            };
+
+            const initModuleTree = () => {
+                destroyModuleTree();
+                const container = document.getElementById('tenantModuleTree');
+                if (!container) return;
+                tenantModuleTree = new TreeComponent({
+                    container: container,
+                    columns: [{ key: 'name', label: '名称' }],
+                    showCheckboxes: true,
+                    showActions: false,
+                    showHeader: false
+                });
+                tenantModuleTree.expandedNodes.clear();
+                tenantModuleTree.saveState = function() {};
+                tenantModuleTree.setData(moduleData);
+                tenantModuleTree.expandAll();
+            };
+
+            const closeModuleAuthModal = () => {
+                const modal = document.getElementById('tenantModuleAuthModal');
+                if (modal) modal.style.display = 'none';
+                destroyModuleTree();
+            };
+
+            const openModuleAuthModal = (row) => {
+                const modal = document.getElementById('tenantModuleAuthModal');
+                if (!modal || !row) return;
+                const cells = row.querySelectorAll('td');
+                const codeInput = document.getElementById('authTenantCode');
+                const nameInput = document.getElementById('authTenantName');
+                if (codeInput) codeInput.value = cells[1]?.textContent.trim() || '';
+                if (nameInput) nameInput.value = cells[2]?.textContent.trim() || '';
+                modal.style.display = 'block';
+                setTimeout(() => initModuleTree(), 100);
+            };
             
             page.init();
+            ensureModuleAuthButtons();
+            ensureModuleAuthModal();
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const moduleAuthBtn = e.target.closest('.module-auth-btn');
+                    if (!moduleAuthBtn) return;
+                    e.preventDefault();
+                    openModuleAuthModal(moduleAuthBtn.closest('tr'));
+                });
+            }
+
+            const authCloseBtn = document.getElementById('tenantModuleAuthCloseBtn');
+            if (authCloseBtn) authCloseBtn.addEventListener('click', closeModuleAuthModal);
+
+            const authCancelBtn = document.getElementById('tenantModuleAuthCancelBtn');
+            if (authCancelBtn) authCancelBtn.addEventListener('click', closeModuleAuthModal);
+
+            const authSaveBtn = document.getElementById('tenantModuleAuthSaveBtn');
+            if (authSaveBtn) {
+                authSaveBtn.addEventListener('click', () => {
+                    if (tenantModuleTree) {
+                        const checkedNodes = tenantModuleTree.getCheckedNodes();
+                        console.log('选中的模块:', checkedNodes);
+                    }
+                    showToast('模块授权已保存', 'success');
+                    closeModuleAuthModal();
+                });
+            }
+
+            const authModal = document.getElementById('tenantModuleAuthModal');
+            if (authModal) {
+                authModal.addEventListener('click', (e) => {
+                    if (e.target === authModal) {
+                        closeModuleAuthModal();
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -74,13 +74,6 @@
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>功能模块名称:</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="searchModuleName" placeholder="请输入">
-                            <span class="clear-btn">×</span>
-                        </div>
-                    </div>
                     <div class="form-actions">
                         <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
@@ -113,7 +106,8 @@
                                 <td>2025-01-07 10:30:00</td>
                                 <td>张三</td>
                                 <td class="action-links">
-                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="detail-edit-btn">编辑</a>
+                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -126,7 +120,8 @@
                                 <td>2025-01-07 09:15:00</td>
                                 <td>李四</td>
                                 <td class="action-links">
-                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="detail-edit-btn">编辑</a>
+                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -139,7 +134,8 @@
                                 <td>2025-01-06 14:20:00</td>
                                 <td>王五</td>
                                 <td class="action-links">
-                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="detail-edit-btn">编辑</a>
+                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -286,6 +282,7 @@
                 
                 addModal: {
                     modalId: 'moduleGroupModal',
+                    title: '系统功能角色-详情',
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
@@ -301,35 +298,60 @@
                         const moduleGroupName = document.getElementById('moduleGroupName').value.trim();
                         const isEnabled = document.getElementById('isEnabled').value.trim();
                         const remark = document.getElementById('remark').value.trim();
-                        
-                        page.addTableRow({
-                            cells: [
-                                moduleGroupCode, moduleGroupName, remark,
-                                { value: isEnabled, isStatus: true },
-                                page.getCurrentTimeStr(), '当前用户'
-                            ]
-                        });
-                        showToast('系统功能角色已保存', 'success');
+
+                        if (currentDetailEditRow) {
+                            // 编辑模式：更新已有行
+                            page.updateTableRow(currentDetailEditRow, {
+                                1: moduleGroupCode,
+                                2: moduleGroupName,
+                                3: remark,
+                                4: { value: isEnabled, isStatus: true },
+                                5: page.getCurrentTimeStr(),
+                                6: '当前用户'
+                            });
+                            showToast('系统功能角色已更新', 'success');
+                            currentDetailEditRow = null;
+                        } else {
+                            // 新增模式：插入新行
+                            const newRow = page.addTableRow({
+                                cells: [
+                                    moduleGroupCode, moduleGroupName, remark,
+                                    { value: isEnabled, isStatus: true },
+                                    page.getCurrentTimeStr(), '当前用户'
+                                ]
+                            });
+                            if (newRow) {
+                                const editBtn = newRow.querySelector('.edit-btn');
+                                if (editBtn) {
+                                    editBtn.classList.replace('edit-btn', 'detail-edit-btn');
+                                }
+                                const addRoleBtn = newRow.querySelector('.add-role-btn');
+                                if (addRoleBtn) {
+                                    addRoleBtn.textContent = '模块授权';
+                                    addRoleBtn.classList.add('edit-btn');
+                                    addRoleBtn.classList.remove('add-role-btn');
+                                }
+                            }
+                            showToast('系统功能角色已保存', 'success');
+                        }
                     }
                 },
                 
                 editModal: {
                     modalId: 'moduleGroupEditModal',
+                    title: '模块授权',
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
                         { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editModuleGroupCode', message: '请输入功能角色编码', required: true },
-                        { id: 'editModuleGroupName', message: '请输入功能角色名称', required: true },
-                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                        { id: 'editModuleGroupName', message: '请输入功能角色名称', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         
                         const moduleGroupCode = document.getElementById('editModuleGroupCode').value.trim();
                         const moduleGroupName = document.getElementById('editModuleGroupName').value.trim();
-                        const isEnabled = document.getElementById('editIsEnabled').value.trim();
-                        const remark = document.getElementById('editRemark').value.trim();
                         
                         // 获取选中的模块
                         if (moduleTree) {
@@ -340,8 +362,6 @@
                         page.updateTableRow(page.currentEditRow, {
                             1: moduleGroupCode,
                             2: moduleGroupName,
-                            3: remark,
-                            4: { value: isEnabled, isStatus: true },
                             5: page.getCurrentTimeStr(),
                             6: '当前用户'
                         });
@@ -360,9 +380,7 @@
                         return {
                             editTenant: 'XX集团',
                             editModuleGroupCode: cells[1].textContent,
-                            editModuleGroupName: cells[2].textContent,
-                            editIsEnabled: cells[4].querySelector('.status').textContent,
-                            editRemark: cells[3].textContent
+                            editModuleGroupName: cells[2].textContent
                         };
                     }
                 },
@@ -372,15 +390,99 @@
             
             page.init();
 
-            // 新增时自动填充租户（参考 lpn 页面行为）
+            // 模块授权弹窗不展示“是否启用、备注”
+            const editIsEnabledGroup = document.getElementById('editIsEnabled')?.closest('.modal-form-group');
+            if (editIsEnabledGroup) {
+                editIsEnabledGroup.remove();
+            }
+            const editRemarkGroup = document.getElementById('editRemark')?.closest('.modal-form-group');
+            if (editRemarkGroup) {
+                editRemarkGroup.remove();
+            }
+
+            // 当前正在编辑详情的行（null 表示新增模式）
+            let currentDetailEditRow = null;
+
+            // 打开系统功能角色-详情弹窗（编辑模式）
+            function openDetailModal(row) {
+                currentDetailEditRow = row;
+                const cells = row.querySelectorAll('td');
+
+                // 重置表单，再填数据
+                const modal = document.getElementById('moduleGroupModal');
+                if (!modal) return;
+
+                const codeEl = document.getElementById('moduleGroupCode');
+                const tenantEl = document.getElementById('tenant');
+                const nameEl = document.getElementById('moduleGroupName');
+                const isEnabledEl = document.getElementById('isEnabled');
+                const remarkEl = document.getElementById('remark');
+
+                if (tenantEl) {
+                    tenantEl.value = 'XX集团';
+                    tenantEl.dataset.value = 'XX集团';
+                }
+                if (codeEl) {
+                    codeEl.disabled = true;
+                    codeEl.value = cells[1].textContent.trim();
+                }
+                if (nameEl) nameEl.value = cells[2].textContent.trim();
+                if (isEnabledEl) {
+                    const statusText = cells[4].querySelector('.status')?.textContent.trim() || '';
+                    isEnabledEl.value = statusText;
+                    isEnabledEl.dataset.value = statusText;
+                }
+                if (remarkEl) remarkEl.value = cells[3].textContent.trim();
+
+                modal.style.display = 'block';
+            }
+
+            // 关闭详情弹窗时的清理：重置 currentDetailEditRow，解除 moduleGroupCode 禁用
+            function onDetailModalClose() {
+                currentDetailEditRow = null;
+                const codeEl = document.getElementById('moduleGroupCode');
+                if (codeEl) codeEl.disabled = false;
+            }
+
+            // 监听详情编辑按钮（事件委托）
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const detailBtn = e.target.closest('.detail-edit-btn');
+                    if (!detailBtn) return;
+                    e.preventDefault();
+                    openDetailModal(detailBtn.closest('tr'));
+                });
+            }
+
+            // 新增时自动填充租户，并确保编码字段可编辑
             document.getElementById('addBtn').addEventListener('click', () => {
+                currentDetailEditRow = null;
+                const codeEl = document.getElementById('moduleGroupCode');
+                if (codeEl) codeEl.disabled = false;
                 const tenantInput = document.getElementById('tenant');
                 if (!tenantInput) return;
                 tenantInput.value = 'XX集团';
                 tenantInput.dataset.value = 'XX集团';
             });
             
-            // 关闭编辑模态框按钮
+            // 详情弹窗关闭/取消/遮罩 → 清理编辑状态
+            const addModal = document.getElementById('moduleGroupModal');
+            if (addModal) {
+                addModal.addEventListener('click', (e) => {
+                    if (e.target === addModal) onDetailModalClose();
+                });
+            }
+            const addCancelBtn = document.getElementById('cancelBtn');
+            if (addCancelBtn) {
+                addCancelBtn.addEventListener('click', () => onDetailModalClose());
+            }
+            const addCloseBtn = document.querySelector('#moduleGroupModal .close');
+            if (addCloseBtn) {
+                addCloseBtn.addEventListener('click', () => onDetailModalClose());
+            }
+
+            // 关闭模块授权模态框按钮
             const editCloseBtn = document.querySelector('#moduleGroupEditModal .close');
             if (editCloseBtn) {
                 editCloseBtn.addEventListener('click', () => page.closeModal('edit'));

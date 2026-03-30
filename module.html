@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WMS - 系统功能模块</title>
+    <title>WMS - 系统模块</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/components.css">
 </head>
@@ -15,17 +15,16 @@
     <div class="container">
         <main class="main-content">
             <div class="content-tabs">
-                <button class="active">系统功能模块</button>
+                <button class="active">系统模块</button>
             </div>
             
             <hr class="content-divider">
             
-            <div class="content-title">权限管理 / 系统功能模块</div>
+            <div class="content-title">权限管理 / 系统模块</div>
             
             <section class="search-section">
                 <form class="search-form">
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
                     </div>
                 </form>
@@ -43,7 +42,7 @@
     <div id="moduleModal" class="modal">
         <div class="modal-content" style="width: 60%;">
             <div class="modal-header">
-                <h2 class="modal-title" id="moduleModalTitle">系统功能模块-新增</h2>
+                <h2 class="modal-title" id="moduleModalTitle">系统模块-详情</h2>
                 <span class="close" id="moduleModalCloseBtn">&times;</span>
             </div>
             <form class="modal-form">
@@ -55,36 +54,51 @@
                     </div>
                 </div>
                 <div class="modal-form-group">
-                    <label>功能模块编码<span style="color: red;">*</span></label>
+                    <label>模块编码<span style="color: red;">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" id="moduleCode" placeholder="请输入">
                         <span class="clear-btn">×</span>
                     </div>
                 </div>
                 <div class="modal-form-group">
-                    <label>功能模块名称<span style="color: red;">*</span></label>
+                    <label>模块名称<span style="color: red;">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" id="moduleName" placeholder="请输入">
                         <span class="clear-btn">×</span>
                     </div>
                 </div>
                 <div class="modal-form-group">
-                    <label>父模块编码</label>
+                    <label>父模块</label>
                     <div class="input-wrapper">
                         <input type="text" id="parentModuleCode" placeholder="请输入" disabled>
                         <span class="clear-btn">×</span>
                     </div>
                 </div>
                 <div class="modal-form-group custom-select-wrapper">
-                    <label>是否启用<span style="color: red;">*</span></label>
+                    <label>模块类型<span style="color: red;">*</span></label>
                     <div class="custom-select">
-                        <input type="text" id="isEnabled" placeholder="请选择">
+                        <input type="text" id="moduleType" placeholder="请选择">
                         <span class="select-arrow">▼</span>
                         <span class="clear-btn">×</span>
-                        <div class="select-dropdown" id="isEnabledDropdown">
-                            <div class="select-option" data-value="yes">启用</div>
-                            <div class="select-option" data-value="no">禁用</div>
+                        <div class="select-dropdown" id="moduleTypeDropdown">
+                            <div class="select-option" data-value="menu">菜单</div>
+                            <div class="select-option" data-value="button">按钮</div>
+                            <div class="select-option" data-value="tab">TAB栏</div>
                         </div>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>排序</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="sortOrder" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                </div>
+                <div class="modal-form-group">
+                    <label>URL</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="moduleUrl" placeholder="请输入">
+                        <span class="clear-btn">×</span>
                     </div>
                 </div>
                 <div class="modal-form-group" style="width: 100%;">
@@ -206,7 +220,7 @@
 
         function openModuleModal(isEdit, nodeId = null) {
             isEditMode = isEdit;
-            document.getElementById('moduleModalTitle').textContent = isEdit ? '系统功能模块-编辑' : '系统功能模块-新增';
+            document.getElementById('moduleModalTitle').textContent = '系统模块-详情';
             document.getElementById('tenant').value = 'XX集团';
             
             if (isEdit && nodeId) {
@@ -216,7 +230,9 @@
                     document.getElementById('moduleCode').value = currentEditNode.code || '';
                     document.getElementById('moduleName').value = currentEditNode.name || '';
                     document.getElementById('parentModuleCode').value = parent ? parent.code : '';
-                    document.getElementById('isEnabled').value = currentEditNode.isEnabled || '启用';
+                    document.getElementById('moduleType').value = currentEditNode.moduleType || '';
+                    document.getElementById('sortOrder').value = currentEditNode.sortOrder || '';
+                    document.getElementById('moduleUrl').value = currentEditNode.moduleUrl || '';
                     document.getElementById('remark').value = currentEditNode.remark || '';
                     document.getElementById('moduleCode').disabled = true;
                     document.getElementById('parentModuleCode').disabled = true;
@@ -226,7 +242,9 @@
                 document.getElementById('moduleCode').value = '';
                 document.getElementById('moduleName').value = '';
                 document.getElementById('parentModuleCode').value = currentParentNode ? currentParentNode.code : '';
-                document.getElementById('isEnabled').value = '启用';
+                document.getElementById('moduleType').value = '';
+                document.getElementById('sortOrder').value = '';
+                document.getElementById('moduleUrl').value = '';
                 document.getElementById('remark').value = '';
                 document.getElementById('moduleCode').disabled = false;
                 document.getElementById('parentModuleCode').disabled = currentParentNode ? true : false;
@@ -246,7 +264,9 @@
             const code = document.getElementById('moduleCode').value.trim();
             const name = document.getElementById('moduleName').value.trim();
             const parentCodeInput = document.getElementById('parentModuleCode').value.trim();
-            const isEnabled = document.getElementById('isEnabled').value.trim();
+            const moduleType = document.getElementById('moduleType').value.trim();
+            const sortOrder = document.getElementById('sortOrder').value.trim();
+            const moduleUrl = document.getElementById('moduleUrl').value.trim();
             const remark = document.getElementById('remark').value.trim();
 
             if (!tenant) {
@@ -261,15 +281,16 @@
                 showToast('请输入功能模块名称', 'error');
                 return;
             }
-            if (!isEnabled) {
-                showToast('请选择是否启用', 'error');
+            if (!moduleType) {
+                showToast('请选择模块类型', 'error');
                 return;
             }
-
             if (isEditMode && currentEditNode) {
                 currentEditNode.code = code;
                 currentEditNode.name = name;
-                currentEditNode.isEnabled = isEnabled;
+                currentEditNode.moduleType = moduleType;
+                currentEditNode.sortOrder = sortOrder;
+                currentEditNode.moduleUrl = moduleUrl;
                 currentEditNode.remark = remark;
                 showToast('系统功能模块已更新', 'success');
             } else {
@@ -299,7 +320,9 @@
                     code: code,
                     name: name,
                     level: level,
-                    isEnabled: isEnabled,
+                    moduleType: moduleType,
+                    sortOrder: sortOrder,
+                    moduleUrl: moduleUrl,
                     remark: remark,
                     hasChildren: false,
                     lazyLoaded: true,
@@ -382,8 +405,8 @@
             });
 
             document.getElementById('moduleSaveBtn').addEventListener('click', saveModule);
+            initCustomSelect('moduleType', 'moduleTypeDropdown');
 
-            initCustomSelect('isEnabled', 'isEnabledDropdown');
         });
     </script>
 </body>

@@ -168,7 +168,7 @@
                                 <td>李四</td>
                                 <td class="action-links">
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="add-role-btn">添加角色</a>
+                                    <a href="#" class="add-role-btn">角色授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -185,11 +185,11 @@
                                 <td>王五</td>
                                 <td class="action-links">
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="add-role-btn">添加角色</a>
+                                    <a href="#" class="add-role-btn">角色授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
-                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td><a href="#" class="user-code-link user-detail-link">U003</a></td><td>王五</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="add-role-btn">添加角色</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td><a href="#" class="user-code-link user-detail-link">U003</a></td><td>王五</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="add-role-btn">角色授权</a><a href="#" class="delete-btn">删除</a></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -425,6 +425,7 @@
                 checkbox.checked = false;
                 assignedList.appendChild(item);
             });
+            showToast('保存成功', 'success');
         }
 
         function moveRolesLeft() {
@@ -437,6 +438,7 @@
                 checkbox.checked = false;
                 availableList.appendChild(item);
             });
+            showToast('保存成功', 'success');
         }
 
         function saveUserRoles() {
@@ -454,16 +456,26 @@
     <div id="addRoleModal" class="modal">
         <div class="modal-content" style="width: 70%;">
             <div class="modal-header">
-                <h2 class="modal-title">添加角色</h2>
+                <h2 class="modal-title">角色授权</h2>
                 <span class="close" onclick="closeAddRoleModal()">&times;</span>
             </div>
             <div style="margin-bottom: 20px;">
                 <span style="margin-right: 30px;"><strong>用户编码：</strong><span id="addRoleUserCode"></span></span>
                 <span><strong>用户姓名：</strong><span id="addRoleUserName"></span></span>
             </div>
+            <div class="form-group" style="max-width: 460px; margin-bottom: 16px;">
+                <label>功能角色名称:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="input-wrapper" style="flex: 1;">
+                        <input type="text" id="roleNameKeyword" placeholder="请输入">
+                        <span class="clear-btn">×</span>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="showToast('查询成功', 'success')">查询</button>
+                </div>
+            </div>
             <div class="role-selector-container">
                 <div class="role-list-box">
-                    <div class="role-list-header">功能角色</div>
+                    <div class="role-list-header">未授权角色</div>
                     <div class="role-list-content" id="availableRolesList"></div>
                 </div>
                 <div class="role-actions">
@@ -471,13 +483,12 @@
                     <button type="button" class="btn btn-secondary role-action-btn" onclick="moveRolesLeft()">← 解绑</button>
                 </div>
                 <div class="role-list-box">
-                    <div class="role-list-header">已有角色</div>
+                    <div class="role-list-header">已授权角色</div>
                     <div class="role-list-content" id="assignedRolesList"></div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeAddRoleModal()">取消</button>
-                <button type="button" class="btn btn-primary" onclick="saveUserRoles()">保存</button>
             </div>
         </div>
     </div>
