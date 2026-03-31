@@ -47,13 +47,6 @@
             </div>
             <form class="modal-form">
                 <div class="modal-form-group">
-                    <label>租户<span style="color: red;">*</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="tenant" placeholder="请输入" disabled>
-                        <span class="clear-btn">×</span>
-                    </div>
-                </div>
-                <div class="modal-form-group">
                     <label>模块编码<span style="color: red;">*</span></label>
                     <div class="input-wrapper">
                         <input type="text" id="moduleCode" placeholder="请输入">
@@ -84,6 +77,18 @@
                             <div class="select-option" data-value="menu">菜单</div>
                             <div class="select-option" data-value="button">按钮</div>
                             <div class="select-option" data-value="tab">TAB栏</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group custom-select-wrapper">
+                    <label>校验类型<span style="color: red;">*</span></label>
+                    <div class="custom-select">
+                        <input type="text" id="validateType" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="validateTypeDropdown">
+                            <div class="select-option" data-value="warehouse">仓库</div>
+                            <div class="select-option" data-value="organization">机构</div>
                         </div>
                     </div>
                 </div>
@@ -221,7 +226,6 @@
         function openModuleModal(isEdit, nodeId = null) {
             isEditMode = isEdit;
             document.getElementById('moduleModalTitle').textContent = '系统模块-详情';
-            document.getElementById('tenant').value = 'XX集团';
             
             if (isEdit && nodeId) {
                 currentEditNode = treeDataService.findNodeById(nodeId);
@@ -231,6 +235,7 @@
                     document.getElementById('moduleName').value = currentEditNode.name || '';
                     document.getElementById('parentModuleCode').value = parent ? parent.code : '';
                     document.getElementById('moduleType').value = currentEditNode.moduleType || '';
+                    document.getElementById('validateType').value = currentEditNode.validateType || '';
                     document.getElementById('sortOrder').value = currentEditNode.sortOrder || '';
                     document.getElementById('moduleUrl').value = currentEditNode.moduleUrl || '';
                     document.getElementById('remark').value = currentEditNode.remark || '';
@@ -243,6 +248,7 @@
                 document.getElementById('moduleName').value = '';
                 document.getElementById('parentModuleCode').value = currentParentNode ? currentParentNode.code : '';
                 document.getElementById('moduleType').value = '';
+                document.getElementById('validateType').value = '';
                 document.getElementById('sortOrder').value = '';
                 document.getElementById('moduleUrl').value = '';
                 document.getElementById('remark').value = '';
@@ -260,19 +266,15 @@
         }
 
         function saveModule() {
-            const tenant = document.getElementById('tenant').value.trim();
             const code = document.getElementById('moduleCode').value.trim();
             const name = document.getElementById('moduleName').value.trim();
             const parentCodeInput = document.getElementById('parentModuleCode').value.trim();
             const moduleType = document.getElementById('moduleType').value.trim();
+            const validateType = document.getElementById('validateType').value.trim();
             const sortOrder = document.getElementById('sortOrder').value.trim();
             const moduleUrl = document.getElementById('moduleUrl').value.trim();
             const remark = document.getElementById('remark').value.trim();
 
-            if (!tenant) {
-                showToast('租户不能为空', 'error');
-                return;
-            }
             if (!code) {
                 showToast('请输入功能模块编码', 'error');
                 return;
@@ -285,10 +287,15 @@
                 showToast('请选择模块类型', 'error');
                 return;
             }
+            if (!validateType) {
+                showToast('请选择校验类型', 'error');
+                return;
+            }
             if (isEditMode && currentEditNode) {
                 currentEditNode.code = code;
                 currentEditNode.name = name;
                 currentEditNode.moduleType = moduleType;
+                currentEditNode.validateType = validateType;
                 currentEditNode.sortOrder = sortOrder;
                 currentEditNode.moduleUrl = moduleUrl;
                 currentEditNode.remark = remark;
@@ -321,6 +328,7 @@
                     name: name,
                     level: level,
                     moduleType: moduleType,
+                    validateType: validateType,
                     sortOrder: sortOrder,
                     moduleUrl: moduleUrl,
                     remark: remark,
@@ -406,6 +414,7 @@
 
             document.getElementById('moduleSaveBtn').addEventListener('click', saveModule);
             initCustomSelect('moduleType', 'moduleTypeDropdown');
+            initCustomSelect('validateType', 'validateTypeDropdown');
 
         });
     </script>

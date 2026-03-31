@@ -140,6 +140,13 @@
     <script src="js/page-manager.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const userOptions = [
+                { value: 'U001', text: 'U001-张三' },
+                { value: 'U002', text: 'U002-李四' },
+                { value: 'U003', text: 'U003-王五' },
+                { value: 'U004', text: 'U004-赵六' }
+            ];
+
             const page = new PageManager({
                 entityName: '用户-委托方',
                 statusColumnIndex: 4,
@@ -150,7 +157,7 @@
                 ],
                 
                 fields: [
-                    { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
+                    { id: 'userCode', label: '用户编码', type: 'select', required: true, editDisabled: true, placeholder: '请选择', options: userOptions },
                     { id: 'company', label: '委托方', type: 'select', required: true, options: CommonOptions.company },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' }
@@ -164,13 +171,23 @@
                     triggerBtnId: 'addBtn',
                     defaults: { isEnabled: '启用' },
                     validations: [
-                        { id: 'userCode', message: '请输入用户编码', required: true },
+                        { id: 'userCode', message: '请选择用户编码', required: true },
                         { id: 'company', message: '请选择委托方', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
-                        const userCode = document.getElementById('userCode').value.trim();
-                        const userName = '-';
+                        const userCodeInput = document.getElementById('userCode');
+                        const userCodeText = userCodeInput ? userCodeInput.value.trim() : '';
+                        const userCodeValue = userCodeInput ? (userCodeInput.dataset.value || '').trim() : '';
+                        const matchedUser = userOptions.find(item => item.value === userCodeValue || item.text === userCodeText);
+                        const userDisplay = matchedUser ? matchedUser.text : userCodeText;
+                        const [userCode, ...nameParts] = userDisplay.split('-');
+                        const userName = nameParts.join('-');
+                        if (!userCode || !userName) {
+                            showToast('请选择有效的用户编码');
+                            if (userCodeInput) userCodeInput.focus();
+                            return;
+                        }
                         const company = document.getElementById('company').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
                         
@@ -212,7 +229,7 @@
                         page.currentEditRow = row;
                         const cells = row.querySelectorAll('td');
                         return {
-                            editUserCode: cells[1].textContent,
+                            editUserCode: `${cells[1].textContent}-${cells[2].textContent}`,
                             editCompany: cells[3].textContent,
                             editIsEnabled: cells[4].querySelector('.status').textContent
                         };

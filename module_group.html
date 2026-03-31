@@ -254,12 +254,6 @@
                 statusColumnIndex: 4,
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
-                      options: [
-                          { value: 'XX集团', text: 'XX集团' },
-                          { value: '测试租户', text: '测试租户' }
-                      ]
-                    },
                     { id: 'moduleGroupCode', label: '功能角色编码', type: 'text', required: true, editDisabled: true },
                     { id: 'moduleGroupName', label: '功能角色名称', type: 'text', required: true },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
@@ -286,9 +280,8 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
+                    defaults: { isEnabled: '启用' },
                     validations: [
-                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'moduleGroupCode', message: '请输入功能角色编码', required: true },
                         { id: 'moduleGroupName', message: '请输入功能角色名称', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
@@ -343,7 +336,6 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
-                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editModuleGroupCode', message: '请输入功能角色编码', required: true },
                         { id: 'editModuleGroupName', message: '请输入功能角色名称', required: true }
                     ],
@@ -378,7 +370,6 @@
                         }, 100);
                         
                         return {
-                            editTenant: 'XX集团',
                             editModuleGroupCode: cells[1].textContent,
                             editModuleGroupName: cells[2].textContent
                         };
@@ -413,15 +404,10 @@
                 if (!modal) return;
 
                 const codeEl = document.getElementById('moduleGroupCode');
-                const tenantEl = document.getElementById('tenant');
                 const nameEl = document.getElementById('moduleGroupName');
                 const isEnabledEl = document.getElementById('isEnabled');
                 const remarkEl = document.getElementById('remark');
 
-                if (tenantEl) {
-                    tenantEl.value = 'XX集团';
-                    tenantEl.dataset.value = 'XX集团';
-                }
                 if (codeEl) {
                     codeEl.disabled = true;
                     codeEl.value = cells[1].textContent.trim();
@@ -455,15 +441,11 @@
                 });
             }
 
-            // 新增时自动填充租户，并确保编码字段可编辑
+            // 新增时确保编码字段可编辑
             document.getElementById('addBtn').addEventListener('click', () => {
                 currentDetailEditRow = null;
                 const codeEl = document.getElementById('moduleGroupCode');
                 if (codeEl) codeEl.disabled = false;
-                const tenantInput = document.getElementById('tenant');
-                if (!tenantInput) return;
-                tenantInput.value = 'XX集团';
-                tenantInput.dataset.value = 'XX集团';
             });
             
             // 详情弹窗关闭/取消/遮罩 → 清理编辑状态
