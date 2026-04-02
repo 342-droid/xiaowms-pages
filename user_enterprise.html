@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 用户-机构</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .modal-form-group label {
+            width: 110px;
+        }
+        #tableBody tr td:nth-child(2) {
+            color: #1677ff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .custom-select.is-disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled input {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled .select-arrow,
+        .custom-select.is-disabled .clear-btn {
+            color: #bbb;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">用户-机构</button>
+            </div>
+
+            <hr class="content-divider">
+
+            <div class="content-title">权限管理 / 用户-机构</div>
+
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>机构编码:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchEnterpriseCode" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchEnterpriseCodeDropdown">
+                                <div class="select-option" data-value="E001">E001-南京机构</div>
+                                <div class="select-option" data-value="E002">E002-嘉兴机构</div>
+                                <div class="select-option" data-value="E003">E003-上海机构</div>
+                                <div class="select-option" data-value="E004">E004-北京机构</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>用户编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchUserCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>用户编码</th>
+                                <th>用户名称</th>
+                                <th>机构</th>
+                                <th>备注</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>U001</td>
+                                <td>张三</td>
+                                <td>E001-南京机构</td>
+                                <td>南京机构主账号</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2026-03-20 10:15:28</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>U002</td>
+                                <td>李四</td>
+                                <td>E002-嘉兴机构</td>
+                                <td>临时停用</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2026-03-18 16:42:09</td>
+                                <td>王五</td>
+                                <td class="action-links">
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userOptions = [
+                { value: 'U001', text: 'U001-张三' },
+                { value: 'U002', text: 'U002-李四' },
+                { value: 'U003', text: 'U003-王五' },
+                { value: 'U004', text: 'U004-赵六' }
+            ];
+
+            const enterpriseOptions = [
+                { value: 'E001', text: 'E001-南京机构' },
+                { value: 'E002', text: 'E002-嘉兴机构' },
+                { value: 'E003', text: 'E003-上海机构' },
+                { value: 'E004', text: 'E004-北京机构' }
+            ];
+
+            const page = new PageManager({
+                entityName: '用户-机构',
+                statusColumnIndex: 5,
+                customSelects: [
+                    { inputId: 'searchEnterpriseCode', dropdownId: 'searchEnterpriseCodeDropdown' },
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                fields: [
+                    { id: 'userCode', label: '用户', type: 'select', required: true, editDisabled: true, options: userOptions, placeholder: '请选择' },
+                    { id: 'enterprise', label: '机构', type: 'select', required: true, options: enterpriseOptions, placeholder: '请选择' },
+                    { id: 'remark', label: '备注', type: 'text' },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled }
+                ],
+                addModal: {
+                    modalId: 'addUserEnterpriseModal',
+                    saveBtnId: 'saveUserEnterpriseBtn',
+                    cancelBtnId: 'cancelUserEnterpriseBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'userCode', message: '请选择用户', required: true },
+                        { id: 'enterprise', message: '请选择机构', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const userInput = document.getElementById('userCode');
+                        const userText = userInput ? userInput.value.trim() : '';
+                        const userDataValue = userInput ? (userInput.dataset.value || '').trim() : '';
+                        const matchedUser = userOptions.find(item => item.value === userDataValue || item.text === userText);
+                        const userDisplay = matchedUser ? matchedUser.text : userText;
+                        const userParts = userDisplay.split('-');
+                        const userCode = userParts.shift() || '';
+                        const userName = userParts.join('-');
+
+                        if (!userCode || !userName) {
+                            showToast('请选择有效的用户');
+                            if (userInput) userInput.focus();
+                            return;
+                        }
+
+                        const enterprise = document.getElementById('enterprise').value.trim();
+                        const remark = document.getElementById('remark').value.trim();
+                        const enabled = document.getElementById('isEnabled').value.trim();
+
+                        const newRow = page.addTableRow({
+                            cells: [
+                                userCode,
+                                userName,
+                                enterprise,
+                                remark,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+
+                        if (newRow) {
+                            const addRoleBtn = newRow.querySelector('.add-role-btn');
+                            if (addRoleBtn) {
+                                addRoleBtn.remove();
+                            }
+                        }
+
+                        showToast('用户-机构信息已保存', 'success');
+                    }
+                },
+                editModal: {
+                    modalId: 'editUserEnterpriseModal',
+                    saveBtnId: 'editSaveUserEnterpriseBtn',
+                    cancelBtnId: 'editCancelUserEnterpriseBtn',
+                    validations: [
+                        { id: 'editEnterprise', message: '请选择机构', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        page.updateTableRow(page.currentEditRow, {
+                            3: document.getElementById('editEnterprise').value.trim(),
+                            4: document.getElementById('editRemark').value.trim(),
+                            5: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            6: page.getCurrentTimeStr(),
+                            7: '当前用户'
+                        });
+                        showToast('用户-机构信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editUserCode: `${cells[1].textContent}-${cells[2].textContent}`,
+                            editEnterprise: cells[3].textContent,
+                            editRemark: cells[4].textContent,
+                            editIsEnabled: cells[5].querySelector('.status').textContent
+                        };
+                    }
+                },
+                deleteModal: {}
+            });
+
+            page.init();
+
+            const addModalTitle = document.querySelector('#addUserEnterpriseModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '用户-机构-详情';
+            }
+            const editModalTitle = document.querySelector('#editUserEnterpriseModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '用户-机构-详情';
+            }
+
+            function setEditModalReadOnly(isReadOnly) {
+                const editModal = document.getElementById('editUserEnterpriseModal');
+                if (!editModal) return;
+
+                editModal.querySelectorAll('input, textarea, select').forEach((el) => {
+                    if (!el.dataset.originDisabled) {
+                        el.dataset.originDisabled = el.disabled ? '1' : '0';
+                    }
+                    el.disabled = isReadOnly ? true : el.dataset.originDisabled === '1';
+                });
+
+                editModal.querySelectorAll('.custom-select').forEach((el) => {
+                    if (!el.dataset.originPointerEvents) {
+                        el.dataset.originPointerEvents = el.style.pointerEvents || '';
+                    }
+                    el.style.pointerEvents = isReadOnly ? 'none' : el.dataset.originPointerEvents;
+                    el.classList.toggle('is-disabled', isReadOnly);
+                });
+
+                const saveBtn = document.getElementById('editSaveUserEnterpriseBtn');
+                const cancelBtn = document.getElementById('editCancelUserEnterpriseBtn');
+                if (saveBtn) saveBtn.style.display = isReadOnly ? 'none' : '';
+                if (cancelBtn) cancelBtn.textContent = isReadOnly ? '关闭' : '取消';
+            }
+
+            function setEditUserCodeReadOnly() {
+                const editUserCodeInput = document.getElementById('editUserCode');
+                if (!editUserCodeInput) return;
+                editUserCodeInput.disabled = true;
+                editUserCodeInput.readOnly = true;
+
+                const selectWrapper = editUserCodeInput.closest('.custom-select');
+                if (selectWrapper) {
+                    selectWrapper.classList.add('is-disabled');
+                    selectWrapper.style.pointerEvents = 'none';
+                }
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    const cell = e.target.closest('td');
+                    const row = e.target.closest('tr');
+                    if (!cell || !row) return;
+                    const colIndex = Array.from(row.children).indexOf(cell);
+                    if (colIndex !== 1) return;
+                    if (page.config.editModal && page.config.editModal.mapRowToForm) {
+                        const data = page.config.editModal.mapRowToForm(row);
+                        page.openModal('edit', { data, reset: false });
+                        setEditModalReadOnly(true);
+                    }
+                });
+
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => {
+                        setEditModalReadOnly(false);
+                        setEditUserCodeReadOnly();
+                    }, 0);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
