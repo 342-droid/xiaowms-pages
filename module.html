@@ -87,6 +87,7 @@
                         <span class="select-arrow">▼</span>
                         <span class="clear-btn">×</span>
                         <div class="select-dropdown" id="validateTypeDropdown">
+                            <div class="select-option" data-value="none">无校验</div>
                             <div class="select-option" data-value="warehouse">仓库</div>
                             <div class="select-option" data-value="organization">机构</div>
                         </div>
@@ -222,6 +223,7 @@
         let currentParentNode = null;
         let currentEditNode = null;
         let isEditMode = false;
+        const DEFAULT_VALIDATE_TYPE = '无校验';
 
         function openModuleModal(isEdit, nodeId = null) {
             isEditMode = isEdit;
@@ -235,7 +237,7 @@
                     document.getElementById('moduleName').value = currentEditNode.name || '';
                     document.getElementById('parentModuleCode').value = parent ? parent.code : '';
                     document.getElementById('moduleType').value = currentEditNode.moduleType || '';
-                    document.getElementById('validateType').value = currentEditNode.validateType || '';
+                    document.getElementById('validateType').value = currentEditNode.validateType || DEFAULT_VALIDATE_TYPE;
                     document.getElementById('sortOrder').value = currentEditNode.sortOrder || '';
                     document.getElementById('moduleUrl').value = currentEditNode.moduleUrl || '';
                     document.getElementById('remark').value = currentEditNode.remark || '';
@@ -248,7 +250,7 @@
                 document.getElementById('moduleName').value = '';
                 document.getElementById('parentModuleCode').value = currentParentNode ? currentParentNode.code : '';
                 document.getElementById('moduleType').value = '';
-                document.getElementById('validateType').value = '';
+                document.getElementById('validateType').value = DEFAULT_VALIDATE_TYPE;
                 document.getElementById('sortOrder').value = '';
                 document.getElementById('moduleUrl').value = '';
                 document.getElementById('remark').value = '';
