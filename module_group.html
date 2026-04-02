@@ -53,6 +53,15 @@
             
             <section class="search-section">
                 <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>租户:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTenant" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTenantDropdown"></div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>功能角色编码:</label>
                         <div class="input-wrapper">
@@ -252,10 +261,32 @@
             const page = new PageManager({
                 entityName: '系统功能角色',
                 statusColumnIndex: 4,
+                customSelects: [
+                    { inputId: 'searchTenant', dropdownId: 'searchTenantDropdown' }
+                ],
                 
                 fields: [
+                    {
+                        id: 'tenant',
+                        label: '租户',
+                        type: 'select',
+                        required: true,
+                        editDisabled: true,
+                        options: []
+                    },
                     { id: 'moduleGroupCode', label: '功能角色编码', type: 'text', required: true, editDisabled: true },
                     { id: 'moduleGroupName', label: '功能角色名称', type: 'text', required: true },
+                    {
+                        type: 'raw',
+                        editHtml: `
+                            <div class="modal-form-group">
+                                <label>功能角色:</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="editModuleGroupDisplay" placeholder="功能角色" disabled>
+                                </div>
+                            </div>
+                        `
+                    },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true,
                       optionSet: 'enabledStatus'
                     },
@@ -282,10 +313,19 @@
                     triggerBtnId: 'addBtn',
                     defaults: { isEnabled: '启用' },
                     validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
                         { id: 'moduleGroupCode', message: '请输入功能角色编码', required: true },
                         { id: 'moduleGroupName', message: '请输入功能角色名称', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
+                    onOpen: () => {
+                        const tenantEl = document.getElementById('tenant');
+                        const currentTenant = getCurrentTenantDisplay();
+                        if (tenantEl && currentTenant) {
+                            tenantEl.value = currentTenant;
+                            tenantEl.dataset.value = currentTenant;
+                        }
+                    },
                     onSave: () => {
                         const moduleGroupCode = document.getElementById('moduleGroupCode').value.trim();
                         const moduleGroupName = document.getElementById('moduleGroupName').value.trim();
@@ -308,6 +348,7 @@
                             // 新增模式：插入新行
                             const newRow = page.addTableRow({
                                 cells: [
+                                    // 当前表格暂无租户列，租户仅用于详情表单校验与上下文展示
                                     moduleGroupCode, moduleGroupName, remark,
                                     { value: isEnabled, isStatus: true },
                                     page.getCurrentTimeStr(), '当前用户'
@@ -335,15 +376,9 @@
                     title: '模块授权',
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
-                    validations: [
-                        { id: 'editModuleGroupCode', message: '请输入功能角色编码', required: true },
-                        { id: 'editModuleGroupName', message: '请输入功能角色名称', required: true }
-                    ],
+                    validations: [],
                     onSave: () => {
                         if (!page.currentEditRow) return;
-                        
-                        const moduleGroupCode = document.getElementById('editModuleGroupCode').value.trim();
-                        const moduleGroupName = document.getElementById('editModuleGroupName').value.trim();
                         
                         // 获取选中的模块
                         if (moduleTree) {
@@ -352,8 +387,6 @@
                         }
                         
                         page.updateTableRow(page.currentEditRow, {
-                            1: moduleGroupCode,
-                            2: moduleGroupName,
                             5: page.getCurrentTimeStr(),
                             6: '当前用户'
                         });
@@ -370,8 +403,8 @@
                         }, 100);
                         
                         return {
-                            editModuleGroupCode: cells[1].textContent,
-                            editModuleGroupName: cells[2].textContent
+                            editTenant: getCurrentTenantDisplay(),
+                            editModuleGroupDisplay: `${cells[1].textContent.trim()}-${cells[2].textContent.trim()}`
                         };
                     }
                 },
@@ -381,6 +414,58 @@
             
             page.init();
 
+            function getCurrentTenantDisplay() {
+                if (typeof getStoredTenant === 'function') {
+                    const stored = getStoredTenant();
+                    if (stored && stored.code && stored.name) {
+                        return `${stored.code}-${stored.name}`;
+                    }
+                }
+                const tenantInput = document.getElementById('tenantSelectInput');
+                if (tenantInput && tenantInput.value.trim()) {
+                    return tenantInput.value.trim();
+                }
+                return '';
+            }
+
+            const tenantOptions = Array.isArray(window.WMSConfig?.tenants)
+                ? window.WMSConfig.tenants
+                : [];
+            const mockTenantOptions = [
+                { code: 'T004', name: '华中租户' },
+                { code: 'T005', name: '西南租户' },
+                { code: 'T006', name: '东北租户' },
+                { code: 'T007', name: '测试租户A' },
+                { code: 'T008', name: '测试租户B' }
+            ];
+            const tenantDisplayOptions = [...tenantOptions, ...mockTenantOptions].map(item => ({
+                value: `${item.code}-${item.name}`,
+                text: `${item.code}-${item.name}`
+            }));
+
+            page.renderDropdownOptions('searchTenantDropdown', tenantDisplayOptions, true);
+            page.renderDropdownOptions('tenantDropdown', tenantDisplayOptions, true);
+            page.renderDropdownOptions('editTenantDropdown', tenantDisplayOptions, true);
+
+            const currentTenantDisplay = getCurrentTenantDisplay();
+            const searchTenantInput = document.getElementById('searchTenant');
+            if (searchTenantInput && currentTenantDisplay) {
+                searchTenantInput.value = currentTenantDisplay;
+                searchTenantInput.dataset.value = currentTenantDisplay;
+            }
+
+            const queryBtn = document.querySelector('.search-form .form-actions .btn.btn-primary');
+            if (queryBtn) {
+                queryBtn.addEventListener('click', (e) => {
+                    const tenantKeyword = searchTenantInput?.value.trim();
+                    if (tenantKeyword) return;
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    showToast('请选择租户');
+                    searchTenantInput?.focus();
+                }, true);
+            }
+
             // 模块授权弹窗不展示“是否启用、备注”
             const editIsEnabledGroup = document.getElementById('editIsEnabled')?.closest('.modal-form-group');
             if (editIsEnabledGroup) {
@@ -389,6 +474,14 @@
             const editRemarkGroup = document.getElementById('editRemark')?.closest('.modal-form-group');
             if (editRemarkGroup) {
                 editRemarkGroup.remove();
+            }
+            const editModuleGroupCodeGroup = document.getElementById('editModuleGroupCode')?.closest('.modal-form-group');
+            if (editModuleGroupCodeGroup) {
+                editModuleGroupCodeGroup.remove();
+            }
+            const editModuleGroupNameGroup = document.getElementById('editModuleGroupName')?.closest('.modal-form-group');
+            if (editModuleGroupNameGroup) {
+                editModuleGroupNameGroup.remove();
             }
 
             // 当前正在编辑详情的行（null 表示新增模式）
@@ -404,10 +497,17 @@
                 if (!modal) return;
 
                 const codeEl = document.getElementById('moduleGroupCode');
+                const tenantEl = document.getElementById('tenant');
                 const nameEl = document.getElementById('moduleGroupName');
                 const isEnabledEl = document.getElementById('isEnabled');
                 const remarkEl = document.getElementById('remark');
 
+                if (tenantEl) {
+                    const currentTenant = getCurrentTenantDisplay();
+                    tenantEl.value = currentTenant;
+                    tenantEl.dataset.value = currentTenant;
+                    tenantEl.disabled = true;
+                }
                 if (codeEl) {
                     codeEl.disabled = true;
                     codeEl.value = cells[1].textContent.trim();
@@ -427,7 +527,9 @@
             function onDetailModalClose() {
                 currentDetailEditRow = null;
                 const codeEl = document.getElementById('moduleGroupCode');
+                const tenantEl = document.getElementById('tenant');
                 if (codeEl) codeEl.disabled = false;
+                if (tenantEl) tenantEl.disabled = false;
             }
 
             // 监听详情编辑按钮（事件委托）
@@ -445,7 +547,14 @@
             document.getElementById('addBtn').addEventListener('click', () => {
                 currentDetailEditRow = null;
                 const codeEl = document.getElementById('moduleGroupCode');
+                const tenantEl = document.getElementById('tenant');
                 if (codeEl) codeEl.disabled = false;
+                if (tenantEl) {
+                    tenantEl.disabled = false;
+                    const currentTenant = getCurrentTenantDisplay();
+                    tenantEl.value = currentTenant;
+                    tenantEl.dataset.value = currentTenant;
+                }
             });
             
             // 详情弹窗关闭/取消/遮罩 → 清理编辑状态

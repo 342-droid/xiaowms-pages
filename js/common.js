@@ -25,12 +25,31 @@ const WMSConfig = {
         { code: 'W005', name: '广州仓' },
         { code: 'W006', name: '深圳仓' }
     ],
+
+    // 机构数据
+    enterprises: [
+        { code: 'E001', name: '南京机构' },
+        { code: 'E002', name: '嘉兴机构' },
+        { code: 'E003', name: '上海机构' },
+        { code: 'E004', name: '北京机构' }
+    ],
+
+    // 租户数据
+    tenants: [
+        { code: 'T001', name: '华东租户' },
+        { code: 'T002', name: '华北租户' },
+        { code: 'T003', name: '华南租户' }
+    ],
     
     // Toast显示时长
     toastDuration: 3000
 };
 
 const SELECTED_WAREHOUSE_KEY = 'selectedWarehouse';
+const SELECTED_TENANT_KEY = 'selectedTenant';
+const SELECTED_ENTERPRISE_KEY = 'selectedEnterprise';
+const ENTERPRISE_CLEARED_KEY = 'enterpriseSelectionCleared';
+const WAREHOUSE_CLEARED_KEY = 'warehouseSelectionCleared';
 
 /**
  * 持久化保存选中的仓库
@@ -44,6 +63,8 @@ function saveSelectedWarehouse(warehouse) {
     localStorage.setItem(SELECTED_WAREHOUSE_KEY, value);
     // 兼容历史逻辑，保留 sessionStorage 写入
     sessionStorage.setItem(SELECTED_WAREHOUSE_KEY, value);
+    localStorage.removeItem(WAREHOUSE_CLEARED_KEY);
+    sessionStorage.removeItem(WAREHOUSE_CLEARED_KEY);
 }
 
 /**
@@ -56,6 +77,74 @@ function getStoredWarehouse() {
         const warehouse = JSON.parse(warehouseStr);
         if (!warehouse || !warehouse.code || !warehouse.name) return null;
         return warehouse;
+    } catch (e) {
+        return null;
+    }
+}
+
+function isWarehouseSelectionCleared() {
+    return localStorage.getItem(WAREHOUSE_CLEARED_KEY) === 'true' || sessionStorage.getItem(WAREHOUSE_CLEARED_KEY) === 'true';
+}
+
+/**
+ * 持久化保存选中的机构
+ */
+function saveSelectedEnterprise(enterprise) {
+    if (!enterprise || !enterprise.code || !enterprise.name) return;
+    const value = JSON.stringify({
+        code: enterprise.code,
+        name: enterprise.name
+    });
+    localStorage.setItem(SELECTED_ENTERPRISE_KEY, value);
+    // 兼容历史逻辑，保留 sessionStorage 写入
+    sessionStorage.setItem(SELECTED_ENTERPRISE_KEY, value);
+    localStorage.removeItem(ENTERPRISE_CLEARED_KEY);
+    sessionStorage.removeItem(ENTERPRISE_CLEARED_KEY);
+}
+
+/**
+ * 读取持久化机构（优先 localStorage，兼容 sessionStorage）
+ */
+function getStoredEnterprise() {
+    const enterpriseStr = localStorage.getItem(SELECTED_ENTERPRISE_KEY) || sessionStorage.getItem(SELECTED_ENTERPRISE_KEY);
+    if (!enterpriseStr) return null;
+    try {
+        const enterprise = JSON.parse(enterpriseStr);
+        if (!enterprise || !enterprise.code || !enterprise.name) return null;
+        return enterprise;
+    } catch (e) {
+        return null;
+    }
+}
+
+function isEnterpriseSelectionCleared() {
+    return localStorage.getItem(ENTERPRISE_CLEARED_KEY) === 'true' || sessionStorage.getItem(ENTERPRISE_CLEARED_KEY) === 'true';
+}
+
+/**
+ * 持久化保存选中的租户
+ */
+function saveSelectedTenant(tenant) {
+    if (!tenant || !tenant.code || !tenant.name) return;
+    const value = JSON.stringify({
+        code: tenant.code,
+        name: tenant.name
+    });
+    localStorage.setItem(SELECTED_TENANT_KEY, value);
+    // 兼容历史逻辑，保留 sessionStorage 写入
+    sessionStorage.setItem(SELECTED_TENANT_KEY, value);
+}
+
+/**
+ * 读取持久化租户（优先 localStorage，兼容 sessionStorage）
+ */
+function getStoredTenant() {
+    const tenantStr = localStorage.getItem(SELECTED_TENANT_KEY) || sessionStorage.getItem(SELECTED_TENANT_KEY);
+    if (!tenantStr) return null;
+    try {
+        const tenant = JSON.parse(tenantStr);
+        if (!tenant || !tenant.code || !tenant.name) return null;
+        return tenant;
     } catch (e) {
         return null;
     }
@@ -74,15 +163,14 @@ function loadHeader() {
                     <img src="侧边收起.svg" alt="收起侧边栏" style="height: 20px; vertical-align: middle;">
                 </button>
                 
-                <nav class="nav-tabs">
-                    <a href="#">OMS</a>
-                    <a href="#" class="active">WMS</a>
-                    <a href="#">TMS</a>
-                    <a href="#">BMS</a>
-                    <a href="#">全部</a>
-                </nav>
-                
                 <div class="header-right">
+                    <div class="tenant-selector custom-select-wrapper">
+                        <div class="custom-select">
+                            <input type="text" id="tenantSelectInput" placeholder="请选择租户" autocomplete="off">
+                            <span class="select-arrow">▼</span>
+                            <div class="select-dropdown" id="tenantSelectDropdown"></div>
+                        </div>
+                    </div>
                     <div class="user-menu" id="userMenu">
                         <div class="user-menu-trigger" id="userMenuTrigger">
                             <img src="头像.png" alt="头像">
@@ -286,18 +374,112 @@ function initClearButtons() {
 }
 
 // 仓库选择模态框
+function initEnterpriseSelector() {
+    const enterpriseSelectBtn = document.getElementById('enterpriseSelectBtn');
+    const enterpriseSelectModal = document.getElementById('enterpriseSelectModal');
+    const enterpriseSelectCancelBtn = document.getElementById('enterpriseSelectCancelBtn');
+    const enterpriseSelectClearBtn = document.getElementById('enterpriseSelectClearBtn');
+    const enterpriseList = document.getElementById('enterpriseList');
+
+    if (!enterpriseSelectBtn || !enterpriseSelectModal) return;
+
+    // 页面切换后恢复机构选择；未选择时默认第一个
+    const storedEnterprise = getStoredEnterprise();
+    const defaultEnterprise = WMSConfig.enterprises[0];
+    const matchedEnterprise = storedEnterprise
+        ? WMSConfig.enterprises.find((ent) => ent.code === storedEnterprise.code)
+        : null;
+    const initialEnterprise = matchedEnterprise || (!isEnterpriseSelectionCleared() ? defaultEnterprise : null);
+    if (initialEnterprise) {
+        enterpriseSelectBtn.textContent = `${initialEnterprise.code}-${initialEnterprise.name}`;
+        saveSelectedEnterprise(initialEnterprise);
+    }
+
+    // 渲染机构列表
+    function renderEnterpriseList() {
+        if (!enterpriseList) return;
+        const currentEnterprise = getStoredEnterprise();
+
+        enterpriseList.innerHTML = WMSConfig.enterprises.map(ent => `
+            <div class="warehouse-item ${currentEnterprise && currentEnterprise.code === ent.code ? 'selected' : ''}" data-code="${ent.code}" data-name="${ent.name}">
+                <span class="warehouse-item-code">${ent.code}</span>
+                <span class="warehouse-item-name">${ent.name}</span>
+            </div>
+        `).join('');
+
+        enterpriseList.querySelectorAll('.warehouse-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const code = item.dataset.code;
+                const name = item.dataset.name;
+
+                enterpriseSelectBtn.textContent = `${code}-${name}`;
+                enterpriseSelectModal.style.display = 'none';
+                saveSelectedEnterprise({ code, name });
+
+                enterpriseList.querySelectorAll('.warehouse-item').forEach(i => {
+                    i.classList.remove('selected');
+                });
+                item.classList.add('selected');
+
+                document.dispatchEvent(new CustomEvent('enterpriseChange', {
+                    detail: { code, name }
+                }));
+            });
+        });
+    }
+
+    enterpriseSelectBtn.addEventListener('click', () => {
+        renderEnterpriseList();
+        enterpriseSelectModal.style.display = 'block';
+    });
+
+    if (enterpriseSelectCancelBtn) {
+        enterpriseSelectCancelBtn.addEventListener('click', () => {
+            enterpriseSelectModal.style.display = 'none';
+        });
+    }
+
+    if (enterpriseSelectClearBtn) {
+        enterpriseSelectClearBtn.addEventListener('click', () => {
+            enterpriseSelectBtn.textContent = '请选择机构';
+            enterpriseSelectModal.style.display = 'none';
+            sessionStorage.removeItem(SELECTED_ENTERPRISE_KEY);
+            localStorage.removeItem(SELECTED_ENTERPRISE_KEY);
+            sessionStorage.setItem(ENTERPRISE_CLEARED_KEY, 'true');
+            localStorage.setItem(ENTERPRISE_CLEARED_KEY, 'true');
+            document.dispatchEvent(new CustomEvent('enterpriseChange', {
+                detail: { code: '', name: '' }
+            }));
+        });
+    }
+
+    enterpriseSelectModal.addEventListener('click', (e) => {
+        if (e.target === enterpriseSelectModal) {
+            enterpriseSelectModal.style.display = 'none';
+        }
+    });
+}
+
+// 仓库选择模态框
 function initWarehouseSelector() {
     const warehouseSelectBtn = document.getElementById('warehouseSelectBtn');
     const warehouseSelectModal = document.getElementById('warehouseSelectModal');
     const warehouseSelectCancelBtn = document.getElementById('warehouseSelectCancelBtn');
+    const warehouseSelectClearBtn = document.getElementById('warehouseSelectClearBtn');
     const warehouseList = document.getElementById('warehouseList');
     
     if (!warehouseSelectBtn || !warehouseSelectModal) return;
 
-    // 页面切换后恢复仓库选择
+    // 页面切换后恢复仓库选择；未选择时默认第一个
     const storedWarehouse = getStoredWarehouse();
-    if (storedWarehouse) {
-        warehouseSelectBtn.textContent = `${storedWarehouse.code}-${storedWarehouse.name}`;
+    const defaultWarehouse = WMSConfig.warehouses[0];
+    const matchedWarehouse = storedWarehouse
+        ? WMSConfig.warehouses.find((wh) => wh.code === storedWarehouse.code)
+        : null;
+    const initialWarehouse = matchedWarehouse || (!isWarehouseSelectionCleared() ? defaultWarehouse : null);
+    if (initialWarehouse) {
+        warehouseSelectBtn.textContent = `${initialWarehouse.code}-${initialWarehouse.name}`;
+        saveSelectedWarehouse(initialWarehouse);
     }
     
     // 渲染仓库列表
@@ -346,12 +528,67 @@ function initWarehouseSelector() {
             warehouseSelectModal.style.display = 'none';
         });
     }
+
+    if (warehouseSelectClearBtn) {
+        warehouseSelectClearBtn.addEventListener('click', () => {
+            warehouseSelectBtn.textContent = '请选择仓库';
+            warehouseSelectModal.style.display = 'none';
+            sessionStorage.removeItem(SELECTED_WAREHOUSE_KEY);
+            localStorage.removeItem(SELECTED_WAREHOUSE_KEY);
+            sessionStorage.setItem(WAREHOUSE_CLEARED_KEY, 'true');
+            localStorage.setItem(WAREHOUSE_CLEARED_KEY, 'true');
+            document.dispatchEvent(new CustomEvent('warehouseChange', {
+                detail: { code: '', name: '' }
+            }));
+        });
+    }
     
     // 点击模态框外部关闭
     warehouseSelectModal.addEventListener('click', (e) => {
         if (e.target === warehouseSelectModal) {
             warehouseSelectModal.style.display = 'none';
         }
+    });
+}
+
+/**
+ * 顶部租户选择器
+ */
+function initTenantSelector() {
+    const tenantInput = document.getElementById('tenantSelectInput');
+    const tenantDropdown = document.getElementById('tenantSelectDropdown');
+    if (!tenantInput || !tenantDropdown) return;
+
+    const tenantOptions = WMSConfig.tenants || [];
+    if (tenantOptions.length === 0) return;
+
+    tenantDropdown.innerHTML = tenantOptions
+        .map((tenant) => `<div class="select-option" data-value="${tenant.code}">${tenant.code}-${tenant.name}</div>`)
+        .join('');
+
+    initCustomSelect('tenantSelectInput', 'tenantSelectDropdown');
+
+    const storedTenant = getStoredTenant();
+    const matchedTenant = storedTenant
+        ? tenantOptions.find((tenant) => tenant.code === storedTenant.code)
+        : null;
+    const defaultTenant = matchedTenant || tenantOptions[0];
+    tenantInput.value = `${defaultTenant.code}-${defaultTenant.name}`;
+    tenantInput.dataset.value = defaultTenant.code;
+    saveSelectedTenant(defaultTenant);
+
+    tenantInput.addEventListener('change', () => {
+        const selectedCode = tenantInput.dataset.value;
+        const selectedTenant = tenantOptions.find((tenant) => tenant.code === selectedCode);
+        if (!selectedTenant) return;
+
+        saveSelectedTenant(selectedTenant);
+        document.dispatchEvent(new CustomEvent('tenantChange', {
+            detail: {
+                code: selectedTenant.code,
+                name: selectedTenant.name
+            }
+        }));
     });
 }
 
@@ -367,6 +604,49 @@ function getCurrentWarehouse() {
     const text = btn.textContent;
     const [code, ...nameParts] = text.split('-');
     return { code, name: nameParts.join('-') };
+}
+
+/**
+ * 获取当前选中的机构
+ */
+function getCurrentEnterprise() {
+    const btn = document.getElementById('enterpriseSelectBtn');
+    if (!btn || btn.textContent === '请选择机构') {
+        return getStoredEnterprise();
+    }
+
+    const text = btn.textContent;
+    const [code, ...nameParts] = text.split('-');
+    return { code, name: nameParts.join('-') };
+}
+
+/**
+ * 菜单访问拦截：未选择机构/仓库时阻止跳转
+ */
+function initMenuAccessGuard() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    sidebar.addEventListener('click', (e) => {
+        const link = e.target.closest('.submenu a');
+        if (!link) return;
+
+        const href = (link.getAttribute('href') || '').trim();
+        if (!href || href === '#' || href.startsWith('javascript:')) return;
+
+        const currentEnterprise = getCurrentEnterprise();
+        if (!currentEnterprise || !currentEnterprise.code) {
+            e.preventDefault();
+            showToast('请选择登录机构');
+            return;
+        }
+
+        const currentWarehouse = getCurrentWarehouse();
+        if (!currentWarehouse || !currentWarehouse.code) {
+            e.preventDefault();
+            showToast('请选择登录仓库');
+        }
+    });
 }
 
 // [已废弃] initPagination() 已被 pagination.js 的 createTablePagination 替代，不再需要
@@ -386,6 +666,11 @@ document.addEventListener('keydown', (e) => {
         const warehouseModal = document.getElementById('warehouseSelectModal');
         if (warehouseModal) {
             warehouseModal.style.display = 'none';
+        }
+        // 关闭机构选择模态框
+        const enterpriseModal = document.getElementById('enterpriseSelectModal');
+        if (enterpriseModal) {
+            enterpriseModal.style.display = 'none';
         }
     }
 });
@@ -561,67 +846,18 @@ function logout() {
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('showWarehouseSelector');
     sessionStorage.removeItem(SELECTED_WAREHOUSE_KEY);
+    sessionStorage.removeItem(SELECTED_TENANT_KEY);
+    sessionStorage.removeItem(SELECTED_ENTERPRISE_KEY);
+    sessionStorage.removeItem(ENTERPRISE_CLEARED_KEY);
+    sessionStorage.removeItem(WAREHOUSE_CLEARED_KEY);
     localStorage.removeItem(SELECTED_WAREHOUSE_KEY);
+    localStorage.removeItem(SELECTED_TENANT_KEY);
+    localStorage.removeItem(SELECTED_ENTERPRISE_KEY);
+    localStorage.removeItem(ENTERPRISE_CLEARED_KEY);
+    localStorage.removeItem(WAREHOUSE_CLEARED_KEY);
     window.location.href = 'login.html';
 }
 
-/**
- * 登录后自动显示仓库选择器
- */
-function showWarehouseSelectorAfterLogin() {
-    const shouldShow = sessionStorage.getItem('showWarehouseSelector');
-    if (shouldShow === 'true') {
-        sessionStorage.removeItem('showWarehouseSelector');
-        
-        // 延迟显示，确保页面加载完成
-        setTimeout(() => {
-            const warehouseSelectModal = document.getElementById('warehouseSelectModal');
-            const warehouseList = document.getElementById('warehouseList');
-            
-            if (warehouseSelectModal && warehouseList) {
-                // 渲染仓库列表
-                warehouseList.innerHTML = WMSConfig.warehouses.map(wh => `
-                    <div class="warehouse-item" data-code="${wh.code}" data-name="${wh.name}">
-                        <span class="warehouse-item-code">${wh.code}</span>
-                        <span class="warehouse-item-name">${wh.name}</span>
-                    </div>
-                `).join('');
-                
-                // 绑定点击事件
-                warehouseList.querySelectorAll('.warehouse-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        const code = item.dataset.code;
-                        const name = item.dataset.name;
-                        const warehouseSelectBtn = document.getElementById('warehouseSelectBtn');
-                        
-                        if (warehouseSelectBtn) {
-                            warehouseSelectBtn.textContent = `${code}-${name}`;
-                        }
-                        warehouseSelectModal.style.display = 'none';
-                        
-                        // 更新选中状态
-                        warehouseList.querySelectorAll('.warehouse-item').forEach(i => {
-                            i.classList.remove('selected');
-                        });
-                        item.classList.add('selected');
-                        
-                        // 保存选中的仓库
-                        saveSelectedWarehouse({ code, name });
-                        
-                        // 触发仓库变更事件
-                        document.dispatchEvent(new CustomEvent('warehouseChange', {
-                            detail: { code, name }
-                        }));
-                        
-                        showToast(`已切换到 ${name}`, 'success');
-                    });
-                });
-                
-                warehouseSelectModal.style.display = 'block';
-            }
-        }, 300);
-    }
-}
 
 /**
  * 更新页面上的用户名显示
@@ -680,6 +916,22 @@ function initUserMenu() {
  * 自动注入共享HTML组件（仓库选择模态框、Toast容器）
  */
 function injectSharedComponents() {
+    // 注入机构选择模态框（如果页面上不存在）
+    if (!document.getElementById('enterpriseSelectModal')) {
+        const enterpriseModalHtml = `
+            <div id="enterpriseSelectModal" class="warehouse-select-modal">
+                <div class="warehouse-select-modal-content">
+                    <div class="warehouse-select-modal-title">选择机构</div>
+                    <div class="warehouse-list" id="enterpriseList"></div>
+                    <div class="warehouse-select-modal-footer">
+                        <button type="button" class="btn btn-secondary" id="enterpriseSelectClearBtn">清空</button>
+                        <button type="button" class="btn btn-secondary" id="enterpriseSelectCancelBtn">取消</button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.insertAdjacentHTML('beforeend', enterpriseModalHtml);
+    }
+
     // 注入仓库选择模态框（如果页面上不存在）
     if (!document.getElementById('warehouseSelectModal')) {
         const warehouseModalHtml = `
@@ -688,6 +940,7 @@ function injectSharedComponents() {
                     <div class="warehouse-select-modal-title">选择仓库</div>
                     <div class="warehouse-list" id="warehouseList"></div>
                     <div class="warehouse-select-modal-footer">
+                        <button type="button" class="btn btn-secondary" id="warehouseSelectClearBtn">清空</button>
                         <button type="button" class="btn btn-secondary" id="warehouseSelectCancelBtn">取消</button>
                     </div>
                 </div>
@@ -900,13 +1153,15 @@ function initPage() {
     
     // 初始化其他功能
     initClearButtons();
+    initEnterpriseSelector();
     initWarehouseSelector();
+    initTenantSelector();
     initUserMenu();
+    initMenuAccessGuard();
     updateUserDisplay();
     initTableSearch();
     
-    // 登录后显示仓库选择器
-    showWarehouseSelectorAfterLogin();
+    // 登录后不再自动弹出仓库选择器，改为侧边栏手动选择
 }
 
 // 确保初始化函数在DOM加载完成后执行

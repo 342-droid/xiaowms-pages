@@ -368,6 +368,8 @@
             addRoleModalController = window.WMSUI.createModalController({
                 modalId: 'addRoleModal'
             });
+            initCustomSelect('roleTenantKeyword', 'roleTenantKeywordDropdown');
+            initRoleTenantOptions();
             
         });
 
@@ -441,6 +443,37 @@
             showToast('保存成功', 'success');
         }
 
+        function queryUserRoles() {
+            const tenantInput = document.getElementById('roleTenantKeyword');
+            const tenantValue = tenantInput?.value.trim();
+            if (!tenantValue) {
+                showToast('请选择租户');
+                tenantInput?.focus();
+                return;
+            }
+            showToast('查询成功', 'success');
+        }
+
+        function initRoleTenantOptions() {
+            const dropdown = document.getElementById('roleTenantKeywordDropdown');
+            if (!dropdown) return;
+
+            const tenantOptions = Array.isArray(window.WMSConfig?.tenants)
+                ? window.WMSConfig.tenants
+                : [];
+            const fallbackOptions = [
+                { code: 'T001', name: '默认租户' },
+                { code: 'T002', name: '电商租户' },
+                { code: 'T003', name: '零售租户' }
+            ];
+            const displayOptions = (tenantOptions.length ? tenantOptions : fallbackOptions)
+                .map(item => `${item.code}-${item.name}`);
+
+            dropdown.innerHTML = displayOptions.map(value =>
+                `<div class="select-option" data-value="${value}">${value}</div>`
+            ).join('');
+        }
+
         function saveUserRoles() {
             const assignedList = document.getElementById('assignedRolesList');
             const roles = Array.from(assignedList.querySelectorAll('.role-item')).map(item => ({
@@ -463,14 +496,21 @@
                 <span style="margin-right: 30px;"><strong>用户编码：</strong><span id="addRoleUserCode"></span></span>
                 <span><strong>用户姓名：</strong><span id="addRoleUserName"></span></span>
             </div>
-            <div class="form-group" style="max-width: 460px; margin-bottom: 16px;">
-                <label>功能角色名称:</label>
+            <div class="form-group" style="max-width: 920px; margin-bottom: 16px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="width: 72px; flex-shrink: 0;">租户:<span style="color: red;">*</span></label>
+                    <div class="custom-select" style="width: 240px;">
+                        <input type="text" id="roleTenantKeyword" placeholder="请选择">
+                        <span class="select-arrow">▼</span>
+                        <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="roleTenantKeywordDropdown"></div>
+                    </div>
+                    <label style="width: 98px; flex-shrink: 0; margin-left: 12px;">功能角色名称:</label>
                     <div class="input-wrapper" style="flex: 1;">
                         <input type="text" id="roleNameKeyword" placeholder="请输入">
                         <span class="clear-btn">×</span>
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="showToast('查询成功', 'success')">查询</button>
+                    <button type="button" class="btn btn-primary" onclick="queryUserRoles()">查询</button>
                 </div>
             </div>
             <div class="role-selector-container">

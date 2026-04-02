@@ -17,7 +17,7 @@
             text-decoration: underline;
         }
 
-        /* 查询仓库锁定为当前登录仓库时的灰态样式 */
+        /* 自定义下拉禁用态样式 */
         .custom-select.is-disabled {
             background-color: #f5f5f5;
             cursor: not-allowed;
@@ -56,7 +56,7 @@
                     <div class="form-group custom-select-wrapper">
                         <label>仓库:</label>
                         <div class="custom-select">
-                            <input type="text" id="searchWarehouse" placeholder="请选择">
+                            <input type="text" id="searchWarehouse" placeholder="请选择" required>
                             <span class="select-arrow">▼</span>
                             <span class="clear-btn">×</span>
                             <div class="select-dropdown" id="searchWarehouseDropdown">
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
+                        <button type="button" class="btn btn-primary" id="searchBtn">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
                     </div>
                 </form>
@@ -190,6 +190,7 @@
                 
                 fields: [
                     { id: 'userCode', label: '用户编码', type: 'select', required: true, editDisabled: true, placeholder: '请选择', options: userOptions },
+                    { id: 'warehouse', label: '仓库', type: 'select', required: true, options: CommonOptions.warehouse },
                     { id: 'profile', label: '作业档案', type: 'select', required: true, options: CommonOptions.profile },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' }
@@ -203,6 +204,7 @@
                     defaults: { isEnabled: '启用' },
                     validations: [
                         { id: 'userCode', message: '请选择用户编码', required: true },
+                        { id: 'warehouse', message: '请选择仓库', required: true },
                         { id: 'profile', message: '请选择作业档案', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
@@ -219,12 +221,9 @@
                             if (userInput) userInput.focus();
                             return;
                         }
+                        const warehouse = document.getElementById('warehouse').value.trim();
                         const profile = document.getElementById('profile').value.trim();
                         const enabled = document.getElementById('isEnabled').value.trim();
-                        const currentWarehouse = getCurrentWarehouse();
-                        const warehouse = currentWarehouse
-                            ? `${currentWarehouse.code}-${currentWarehouse.name}`
-                            : (document.getElementById('searchWarehouse')?.value.trim() || '');
                         
                         page.addTableRow({
                             cells: [
@@ -246,12 +245,14 @@
                     saveBtnId: 'editSaveUserProfileBtn',
                     cancelBtnId: 'editCancelUserProfileBtn',
                     validations: [
+                        { id: 'editWarehouse', message: '请选择仓库', required: true },
                         { id: 'editProfile', message: '请选择作业档案', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
+                            4: document.getElementById('editWarehouse').value.trim(),
                             3: document.getElementById('editProfile').value.trim(),
                             5: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
                             6: page.getCurrentTimeStr(),
@@ -266,6 +267,7 @@
                         return {
                             editUserCode: `${cells[1].textContent}-${cells[2].textContent}`,
                             editProfile: cells[3].textContent,
+                            editWarehouse: cells[4].textContent,
                             editIsEnabled: cells[5].querySelector('.status').textContent
                         };
                     }
@@ -333,7 +335,7 @@
                 });
             }
 
-            // 查询条件：仓库默认取当前登录仓库，置灰且不可编辑
+            // 查询条件：仓库默认取当前登录仓库，但允许修改
             const searchWarehouseInput = document.getElementById('searchWarehouse');
             if (searchWarehouseInput) {
                 const currentWarehouse = getCurrentWarehouse();
@@ -341,15 +343,20 @@
                     searchWarehouseInput.value = `${currentWarehouse.code}-${currentWarehouse.name}`;
                     searchWarehouseInput.dataset.value = currentWarehouse.code;
                 }
+            }
 
-                searchWarehouseInput.disabled = true;
-                searchWarehouseInput.readOnly = true;
-
-                const searchWarehouseSelect = searchWarehouseInput.closest('.custom-select');
-                if (searchWarehouseSelect) {
-                    searchWarehouseSelect.classList.add('is-disabled');
-                    searchWarehouseSelect.style.pointerEvents = 'none';
-                }
+            // 查询条件：仓库改为必填
+            const searchBtn = document.getElementById('searchBtn');
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => {
+                    const warehouse = searchWarehouseInput ? searchWarehouseInput.value.trim() : '';
+                    if (!warehouse) {
+                        showToast('请选择仓库');
+                        if (searchWarehouseInput) searchWarehouseInput.focus();
+                        return;
+                    }
+                    location.reload();
+                });
             }
 
         });

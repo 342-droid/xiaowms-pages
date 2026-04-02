@@ -115,6 +115,9 @@
             '<span>WMS</span>' +
             '</div>' +
             '<div class="warehouse-selector">' +
+            '<button id="enterpriseSelectBtn">请选择机构</button>' +
+            '</div>' +
+            '<div class="warehouse-selector">' +
             '<button id="warehouseSelectBtn">请选择仓库</button>' +
             '</div>' +
             '<ul class="sidebar-menu">' +
