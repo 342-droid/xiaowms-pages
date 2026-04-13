@@ -27,6 +27,18 @@
             
             <section class="search-section">
                 <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>租户:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTenant" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTenantDropdown">
+                                <div class="select-option" data-value="XX集团">XX集团</div>
+                                <div class="select-option" data-value="测试租户">测试租户</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>仓库编码:</label>
                         <div class="input-wrapper">
@@ -107,8 +119,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr>
@@ -125,8 +137,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>W003</td><td>上海仓</td><td>仓库</td><td>XX集团</td><td>华东区</td><td><span class="status active">启用</span></td><td>上海市浦东新区...</td><td>王五</td><td>18612341235</td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="delete-btn">删除</a></td></tr>
@@ -183,15 +195,17 @@
                 
                 // 搜索区域下拉框
                 customSelects: [
+                    { inputId: 'searchTenant', dropdownId: 'searchTenantDropdown' },
                     { inputId: 'searchWarehouseType', dropdownId: 'searchWarehouseTypeDropdown' },
                     { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
                 ],
                 
                 // 字段定义 - 自动生成新增/编辑模态框
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, disabled: true, editDisabled: true,
+                    { id: 'tenant', label: '租户', type: 'select', required: true,
                       options: [{ value: 'XX集团', text: 'XX集团' }, { value: '测试租户', text: '测试租户' }] },
-                    { id: 'organization', label: '机构', type: 'text', required: true, editDisabled: true },
+                    { id: 'organization', label: '机构', type: 'select', required: true,
+                      options: [{ value: '华东区', text: '华东区' }, { value: '华北区', text: '华北区' }, { value: '华南区', text: '华南区' }, { value: '西南区', text: '西南区' }, { value: '华中区', text: '华中区' }, { value: '西北区', text: '西北区' }, { value: '东北区', text: '东北区' }] },
                     { id: 'warehouseCode', label: '仓库编码', type: 'text', required: true, editDisabled: true },
                     { id: 'warehouseName', label: '仓库名称', type: 'text', required: true, editDisabled: true },
                     { id: 'warehouseType', label: '仓库类型', type: 'select', required: true, editDisabled: true,
@@ -211,10 +225,10 @@
                     cancelBtnId: 'cancelBtn',
                     saveBtnId: 'saveBtn',
                     triggerBtnId: 'addBtn',
-                    defaults: { isEnabled: '启用', tenant: 'XX集团', organization: '华东区' },
+                    defaults: { isEnabled: '启用', tenant: 'XX集团' },
                     validations: [
                         { id: 'tenant', message: '请选择租户', required: true },
-                        { id: 'organization', message: '请输入机构', required: true },
+                        { id: 'organization', message: '请选择机构', required: true },
                         { id: 'warehouseCode', message: '请输入仓库编码', required: true },
                         { id: 'warehouseName', message: '请输入仓库名称', required: true },
                         { id: 'warehouseType', message: '请选择仓库类型', required: true },
@@ -250,7 +264,7 @@
                     saveBtnId: 'editSaveBtn',
                     validations: [
                         { id: 'editTenant', message: '请选择租户', required: true },
-                        { id: 'editOrganization', message: '请输入机构', required: true },
+                        { id: 'editOrganization', message: '请选择机构', required: true },
                         { id: 'editWarehouseName', message: '请输入仓库名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
@@ -291,10 +305,107 @@
                     closeBtnId: 'confirmDeleteCloseBtn',
                     cancelBtnId: 'cancelDeleteBtn',
                     confirmBtnId: 'confirmDeleteBtn'
+                },
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: {
+                            editTenant: cells[4].textContent,
+                            editOrganization: cells[5].textContent,
+                            editWarehouseCode: cells[1].textContent,
+                            editWarehouseName: cells[2].textContent,
+                            editWarehouseType: cells[3].textContent,
+                            editAddress: cells[7].textContent === '-' ? '' : cells[7].textContent,
+                            editContactPerson: cells[8].textContent === '-' ? '' : cells[8].textContent,
+                            editPhone: cells[9].textContent === '-' ? '' : cells[9].textContent,
+                            editIsEnabled: cells[6].querySelector('.status').textContent
+                        },
+                        reset: false
+                    });
+                    
+                    // 延迟执行，确保模态框已完全打开
+                    setTimeout(() => {
+                        // 禁用所有输入字段
+                        const modal = document.getElementById('warehouseEditModal');
+                        if (modal) {
+                            // 禁用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = true;
+                            });
+                            
+                            // 禁用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.add('is-disabled');
+                                select.style.pointerEvents = 'none';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = true;
+                                }
+                            });
+                            
+                            // 禁用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = 'none';
+                            if (cancelBtn) cancelBtn.textContent = '关闭';
+                        }
+                    }, 100);
                 }
             });
             
             page.init();
+
+            const addModalTitle = document.querySelector('#warehouseModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '仓库-详情';
+            }
+            const editModalTitle = document.querySelector('#warehouseEditModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '仓库-详情';
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => {
+                        // 启用所有输入字段
+                        const modal = document.getElementById('warehouseEditModal');
+                        if (modal) {
+                            // 启用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = false;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = false;
+                            });
+                            
+                            // 启用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.remove('is-disabled');
+                                select.style.pointerEvents = '';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = false;
+                                }
+                            });
+                            
+                            // 启用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = '';
+                            if (cancelBtn) cancelBtn.textContent = '取消';
+                        }
+                    }, 100);
+                });
+            }
             
             // 绑定编辑模态框关闭按钮
         });

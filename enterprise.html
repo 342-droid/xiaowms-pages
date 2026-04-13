@@ -24,6 +24,18 @@
             
             <section class="search-section">
                 <form class="search-form">
+                    <div class="form-group custom-select-wrapper">
+                        <label>租户:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchTenant" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchTenantDropdown">
+                                <div class="select-option" data-value="XX科技">XX科技</div>
+                                <div class="select-option" data-value="测试租户">测试租户</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>机构编码:</label>
                         <div class="input-wrapper">
@@ -88,8 +100,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr>
@@ -104,8 +116,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>赵六</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -129,6 +141,7 @@
                 statusColumnIndex: 7,
                 
                 customSelects: [
+                    { inputId: 'searchTenant', dropdownId: 'searchTenantDropdown' },
                     { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
                 ],
                 
@@ -221,10 +234,105 @@
                     closeBtnId: 'confirmDeleteCloseBtn',
                     cancelBtnId: 'cancelDeleteBtn',
                     confirmBtnId: 'confirmDeleteBtn'
+                },
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: {
+                            editTenant: cells[3].textContent,
+                            editEnterpriseCode: cells[1].textContent,
+                            editEnterpriseName: cells[2].textContent,
+                            editAddress: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editContactPerson: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editPhone: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
+                        },
+                        reset: false
+                    });
+                    
+                    // 延迟执行，确保模态框已完全打开
+                    setTimeout(() => {
+                        // 禁用所有输入字段
+                        const modal = document.getElementById('enterpriseEditModal');
+                        if (modal) {
+                            // 禁用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = true;
+                            });
+                            
+                            // 禁用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.add('is-disabled');
+                                select.style.pointerEvents = 'none';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = true;
+                                }
+                            });
+                            
+                            // 禁用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = 'none';
+                            if (cancelBtn) cancelBtn.textContent = '关闭';
+                        }
+                    }, 100);
                 }
             });
             
             page.init();
+
+            const addModalTitle = document.querySelector('#enterpriseModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '机构-详情';
+            }
+            const editModalTitle = document.querySelector('#enterpriseEditModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '机构-详情';
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => {
+                        // 启用所有输入字段
+                        const modal = document.getElementById('enterpriseEditModal');
+                        if (modal) {
+                            // 启用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = false;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = false;
+                            });
+                            
+                            // 启用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.remove('is-disabled');
+                                select.style.pointerEvents = '';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = false;
+                                }
+                            });
+                            
+                            // 启用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = '';
+                            if (cancelBtn) cancelBtn.textContent = '取消';
+                        }
+                    }, 100);
+                });
+            }
             
         });
     </script>

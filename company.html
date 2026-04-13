@@ -65,7 +65,6 @@
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
                                 <th>委托方编码</th>
                                 <th>委托方名称</th>
-                                <th>租户</th>
                                 <th>公司名称</th>
                                 <th>地址</th>
                                 <th>联系人</th>
@@ -81,7 +80,6 @@
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
                                 <td>C001</td>
                                 <td>南京委托方</td>
-                                <td>XX科技</td>
                                 <td>南京委托方有限公司</td>
                                 <td>江苏省南京市江陵区...</td>
                                 <td>张三</td>
@@ -90,15 +88,14 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
                                 <td>C002</td>
                                 <td>嘉兴委托方</td>
-                                <td>测试租户</td>
                                 <td>嘉兴委托方有限公司</td>
                                 <td>江苏省南京市江陵区...</td>
                                 <td>王五</td>
@@ -107,8 +104,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>赵六</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -136,8 +133,6 @@
                 ],
                 
                 fields: [
-                    { id: 'tenant', label: '租户', type: 'select', required: true, editDisabled: true,
-                      options: [{ value: 'XX科技', text: 'XX科技' }, { value: '测试租户', text: '测试租户' }] },
                     { id: 'companyCode', label: '委托方编码', type: 'text', required: true, editDisabled: true },
                     { id: 'companyName', label: '委托方名称', type: 'text', required: true, editDisabled: true },
                     { id: 'fullCompanyName', label: '公司名称', type: 'text' },
@@ -162,7 +157,6 @@
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
-                        const tenant = document.getElementById('tenant').value.trim();
                         const code = document.getElementById('companyCode').value.trim();
                         const name = document.getElementById('companyName').value.trim();
                         const fullCompanyName = document.getElementById('fullCompanyName').value.trim() || '-';
@@ -173,7 +167,7 @@
                         
                         page.addTableRow({
                             cells: [
-                                code, name, tenant, fullCompanyName, address, contact, phone,
+                                code, name, fullCompanyName, address, contact, phone,
                                 { value: enabled, isStatus: true },
                                 page.getCurrentTimeStr(), '当前用户'
                             ]
@@ -187,22 +181,20 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
-                        { id: 'editTenant', message: '请选择租户', required: true },
                         { id: 'editCompanyName', message: '请输入委托方名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
-                            2: document.getElementById('editTenant').value.trim(),
-                            3: document.getElementById('editCompanyName').value.trim(),
-                            4: document.getElementById('editFullCompanyName').value.trim() || '-',
-                            5: document.getElementById('editAddress').value.trim() || '-',
-                            6: document.getElementById('editContactPerson').value.trim() || '-',
-                            7: document.getElementById('editPhone').value.trim() || '-',
-                            8: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
-                            9: page.getCurrentTimeStr(),
-                            10: '当前用户'
+                            2: document.getElementById('editCompanyName').value.trim(),
+                            3: document.getElementById('editFullCompanyName').value.trim() || '-',
+                            4: document.getElementById('editAddress').value.trim() || '-',
+                            5: document.getElementById('editContactPerson').value.trim() || '-',
+                            6: document.getElementById('editPhone').value.trim() || '-',
+                            7: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            8: page.getCurrentTimeStr(),
+                            9: '当前用户'
                         });
                         showToast('委托方信息已更新', 'success');
                         page.currentEditRow = null;
@@ -213,12 +205,11 @@
                         return {
                             editCompanyCode: cells[1].textContent,
                             editCompanyName: cells[2].textContent,
-                            editTenant: cells[3].textContent,
-                            editFullCompanyName: cells[4].textContent === '-' ? '' : cells[4].textContent,
-                            editAddress: cells[5].textContent === '-' ? '' : cells[5].textContent,
-                            editContactPerson: cells[6].textContent === '-' ? '' : cells[6].textContent,
-                            editPhone: cells[7].textContent === '-' ? '' : cells[7].textContent,
-                            editIsEnabled: cells[8].querySelector('.status').textContent
+                            editFullCompanyName: cells[3].textContent === '-' ? '' : cells[3].textContent,
+                            editAddress: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editContactPerson: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editPhone: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
                         };
                     }
                 },
@@ -228,10 +219,105 @@
                     closeBtnId: 'confirmDeleteCloseBtn',
                     cancelBtnId: 'cancelDeleteBtn',
                     confirmBtnId: 'confirmDeleteBtn'
+                },
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: {
+                            editCompanyCode: cells[1].textContent,
+                            editCompanyName: cells[2].textContent,
+                            editFullCompanyName: cells[3].textContent === '-' ? '' : cells[3].textContent,
+                            editAddress: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editContactPerson: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editPhone: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
+                        },
+                        reset: false
+                    });
+                    
+                    // 延迟执行，确保模态框已完全打开
+                    setTimeout(() => {
+                        // 禁用所有输入字段
+                        const modal = document.getElementById('companyEditModal');
+                        if (modal) {
+                            // 禁用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = true;
+                            });
+                            
+                            // 禁用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.add('is-disabled');
+                                select.style.pointerEvents = 'none';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = true;
+                                }
+                            });
+                            
+                            // 禁用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = 'none';
+                            if (cancelBtn) cancelBtn.textContent = '关闭';
+                        }
+                    }, 100);
                 }
             });
             
             page.init();
+
+            const addModalTitle = document.querySelector('#companyModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '委托方-详情';
+            }
+            const editModalTitle = document.querySelector('#companyEditModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '委托方-详情';
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => {
+                        // 启用所有输入字段
+                        const modal = document.getElementById('companyEditModal');
+                        if (modal) {
+                            // 启用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = false;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = false;
+                            });
+                            
+                            // 启用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.remove('is-disabled');
+                                select.style.pointerEvents = '';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = false;
+                                }
+                            });
+                            
+                            // 启用按钮
+                            const saveBtn = document.getElementById('editSaveBtn');
+                            const cancelBtn = document.getElementById('editCancelBtn');
+                            if (saveBtn) saveBtn.style.display = '';
+                            if (cancelBtn) cancelBtn.textContent = '取消';
+                        }
+                    }, 100);
+                });
+            }
         });
     </script>
 </body>

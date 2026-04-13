@@ -73,10 +73,7 @@
             font-size: 14px;
         }
 
-        .user-code-link {
-            color: #1677ff;
-            text-decoration: underline;
-        }
+
     </style>
 </head>
 <body>
@@ -104,7 +101,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>用户姓名:</label>
+                        <label>用户名称:</label>
                         <div class="input-wrapper">
                             <input type="text" placeholder="请输入">
                             <span class="clear-btn">×</span>
@@ -132,6 +129,7 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                        <button type="button" class="btn btn-secondary" id="roleAuthBtn">角色授权</button>
                     </div>
                 </form>
             </section>
@@ -143,7 +141,7 @@
                             <tr>
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
                                 <th>用户编码</th>
-                                <th>用户姓名</th>
+                                <th>用户名称</th>
                                 <th>身份证号</th>
                                 <th>手机号</th>
                                 <th>邮箱</th>
@@ -157,7 +155,7 @@
                         <tbody id="tableBody">
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td><a href="#" class="user-code-link user-detail-link">U001</a></td>
+                                <td>U001</td>
                                 <td>张三</td>
                                 <td>320101199001011234</td>
                                 <td>13812345678</td>
@@ -167,14 +165,13 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="add-role-btn">角色授权</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td><a href="#" class="user-code-link user-detail-link">U002</a></td>
+                                <td>U002</td>
                                 <td>李四</td>
                                 <td>320101199102025678</td>
                                 <td>13987654321</td>
@@ -184,12 +181,11 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>王五</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="add-role-btn">角色授权</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
-                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td><a href="#" class="user-code-link user-detail-link">U003</a></td><td>王五</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="edit-btn">编辑</a><a href="#" class="add-role-btn">角色授权</a><a href="#" class="delete-btn">删除</a></td></tr>
+                            <tr><td><input type="checkbox" class="table-checkbox checkbox-row"></td><td>U003</td><td>王五</td><td>320101199203039012</td><td>13712349876</td><td>wangwu@example.com</td><td>入库管理员</td><td><span class="status active">启用</span></td><td>2025-01-05 12:31:43</td><td>赵六</td><td class="action-links"><a href="#" class="view-btn">查看</a><a href="#" class="edit-btn">编辑</a></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -216,7 +212,7 @@
                 
                 fields: [
                     { id: 'userCode', label: '用户编码', type: 'text', required: true, editDisabled: true },
-                    { id: 'userName', label: '用户姓名', type: 'text', required: true },
+                    { id: 'userName', label: '用户名称', type: 'text', required: true },
                     { id: 'password', label: '密码', type: 'text', required: true },
                     { id: 'idCard', label: '身份证号', type: 'text' },
                     { id: 'phone', label: '手机号', type: 'text' },
@@ -236,7 +232,7 @@
                     defaults: { isEnabled: '启用' },
                     validations: [
                         { id: 'userCode', message: '请输入用户编码', required: true },
-                        { id: 'userName', message: '请输入用户姓名', required: true },
+                        { id: 'userName', message: '请输入用户名称', required: true },
                         { id: 'password', message: '请输入密码', required: true },
                         { id: 'isEnabled', message: '请选择是否启用', required: true }
                     ],
@@ -251,7 +247,7 @@
                         
                         page.addTableRow({
                             cells: [
-                                `<a href="#" class="user-code-link user-detail-link">${code}</a>`, name,
+                                `${code}`, name,
                                 idCard, phone, email,
                                 remark,
                                 { value: enabled, isStatus: true },
@@ -269,12 +265,14 @@
                     saveBtnId: 'editSaveBtn',
                     onOpen: () => setEditModalReadonly(false),
                     validations: [
-                        { id: 'editUserName', message: '请输入用户姓名', required: true },
+                        { id: 'editUserCode', message: '请输入用户编码', required: true },
+                        { id: 'editUserName', message: '请输入用户名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
+                            1: document.getElementById('editUserCode').value.trim(),
                             3: document.getElementById('editIdCard').value.trim() || '-',
                             4: document.getElementById('editPhone').value.trim() || '-',
                             5: document.getElementById('editEmail').value.trim() || '-',
@@ -301,12 +299,7 @@
                     }
                 },
                 
-                deleteModal: {
-                    modalId: 'confirmDeleteModal',
-                    closeBtnId: 'confirmDeleteCloseBtn',
-                    cancelBtnId: 'cancelDeleteBtn',
-                    confirmBtnId: 'confirmDeleteBtn'
-                },
+
                 
                 onAddRole: (btn) => {
                     const row = btn.closest('tr');
@@ -314,10 +307,51 @@
                     const userCode = cells[1].textContent;
                     const userName = cells[2].textContent;
                     openAddRoleModal(userCode, userName);
+                },
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: page.config.editModal.mapRowToForm(row),
+                        reset: false
+                    });
+                    
+                    // 设置为只读模式
+                    setEditModalReadonly(true);
                 }
             });
             
             page.init();
+
+            // 为角色授权按钮添加点击事件
+            const roleAuthBtn = document.getElementById('roleAuthBtn');
+            if (roleAuthBtn) {
+                roleAuthBtn.addEventListener('click', () => {
+                    // 获取所有选中的复选框
+                    const checkedCheckboxes = document.querySelectorAll('.table-checkbox:checked');
+                    
+                    // 过滤掉全选复选框
+                    const selectedRows = Array.from(checkedCheckboxes).filter(checkbox => !checkbox.classList.contains('checkbox-all'));
+                    
+                    if (selectedRows.length === 1) {
+                        // 选中了一行，获取用户信息并打开模态框
+                        const row = selectedRows[0].closest('tr');
+                        const cells = row.querySelectorAll('td');
+                        const userCode = cells[1].textContent;
+                        const userName = cells[2].textContent;
+                        openAddRoleModal(userCode, userName);
+                    } else if (selectedRows.length > 1) {
+                        // 选中了多行，提示
+                        showToast('只能选择一行记录进行角色授权', 'warning');
+                    } else {
+                        // 没有选中，提示
+                        showToast('请选择一行记录进行角色授权', 'warning');
+                    }
+                });
+            }
 
             const setEditModalReadonly = (readonly) => {
                 const modal = document.getElementById('userEditModal');
@@ -329,11 +363,8 @@
                         return;
                     }
 
-                    if (el.id === 'editUserCode') {
-                        el.setAttribute('disabled', 'disabled');
-                    } else {
-                        el.removeAttribute('disabled');
-                    }
+                    // 所有字段都变为可编辑，包括用户编码
+                    el.removeAttribute('disabled');
                 });
 
                 modal.querySelectorAll('.clear-btn, .select-arrow').forEach((el) => {
@@ -347,22 +378,7 @@
                 if (cancelBtn) cancelBtn.textContent = readonly ? '关闭' : '取消';
             };
 
-            const tableBody = document.getElementById('tableBody');
-            if (tableBody) {
-                tableBody.addEventListener('click', (e) => {
-                    const detailLink = e.target.closest('.user-detail-link');
-                    if (!detailLink) return;
-
-                    e.preventDefault();
-                    const row = detailLink.closest('tr');
-                    if (!row) return;
-
-                    page.currentEditRow = row;
-                    const data = page.config.editModal.mapRowToForm(row);
-                    page.openModal('edit', { data, reset: false });
-                    setEditModalReadonly(true);
-                });
-            }
+            // 移除了用户编码超链接的点击事件监听器，因为超链接已被去除
 
             // 等DOM完全就绪后再初始化“添加角色”弹窗控制器
             addRoleModalController = window.WMSUI.createModalController({
@@ -494,7 +510,7 @@
             </div>
             <div style="margin-bottom: 20px;">
                 <span style="margin-right: 30px;"><strong>用户编码：</strong><span id="addRoleUserCode"></span></span>
-                <span><strong>用户姓名：</strong><span id="addRoleUserName"></span></span>
+                <span><strong>用户名称：</strong><span id="addRoleUserName"></span></span>
             </div>
             <div class="form-group" style="max-width: 920px; margin-bottom: 16px;">
                 <div style="display: flex; align-items: center; gap: 8px;">

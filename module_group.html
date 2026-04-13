@@ -54,7 +54,7 @@
             <section class="search-section">
                 <form class="search-form">
                     <div class="form-group custom-select-wrapper">
-                        <label>租户:</label>
+                        <label>租户: <span style="color: red; font-size: 14px;">*</span></label>
                         <div class="custom-select">
                             <input type="text" id="searchTenant" placeholder="请选择">
                             <span class="select-arrow">▼</span>
@@ -86,6 +86,7 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn-primary" onclick="location.reload()">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                        <button type="button" class="btn btn-secondary" id="moduleAuthBtn">模块授权</button>
                     </div>
                 </form>
             </section>
@@ -115,8 +116,8 @@
                                 <td>2025-01-07 10:30:00</td>
                                 <td>张三</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="detail-edit-btn">编辑</a>
-                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -129,8 +130,8 @@
                                 <td>2025-01-07 09:15:00</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="detail-edit-btn">编辑</a>
-                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -143,8 +144,8 @@
                                 <td>2025-01-06 14:20:00</td>
                                 <td>王五</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="detail-edit-btn">编辑</a>
-                                    <a href="#" class="edit-btn">模块授权</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
@@ -211,6 +212,30 @@
                                 lazyLoaded: true,
                                 expanded: false,
                                 children: []
+                            },
+                            {
+                                id: 'node-1-1-3',
+                                code: 'M001-01-03',
+                                name: '仓库编辑',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-1-4',
+                                code: 'M001-01-04',
+                                name: '仓库删除',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
                             }
                         ]
                     },
@@ -221,10 +246,84 @@
                         level: '二级',
                         remark: '',
                         isEnabled: '启用',
-                        hasChildren: false,
+                        hasChildren: true,
                         lazyLoaded: true,
                         expanded: false,
-                        children: []
+                        children: [
+                            {
+                                id: 'node-1-2-1',
+                                code: 'M001-02-01',
+                                name: '商品查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-2-2',
+                                code: 'M001-02-02',
+                                name: '商品新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-2-3',
+                                code: 'M001-02-03',
+                                name: '商品编辑',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-1-3',
+                        code: 'M001-03',
+                        name: '供应商管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-1-3-1',
+                                code: 'M001-03-01',
+                                name: '供应商查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-1-3-2',
+                                code: 'M001-03-02',
+                                name: '供应商新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
                     }
                 ]
             },
@@ -243,6 +342,253 @@
                         id: 'node-2-1',
                         code: 'M002-01',
                         name: '用户管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-2-1-1',
+                                code: 'M002-01-01',
+                                name: '用户查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-2-1-2',
+                                code: 'M002-01-02',
+                                name: '用户新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-2-1-3',
+                                code: 'M002-01-03',
+                                name: '用户编辑',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-2-2',
+                        code: 'M002-02',
+                        name: '角色管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-2-2-1',
+                                code: 'M002-02-01',
+                                name: '角色查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-2-2-2',
+                                code: 'M002-02-02',
+                                name: '角色新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-2-3',
+                        code: 'M002-03',
+                        name: '模块管理',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-2-3-1',
+                                code: 'M002-03-01',
+                                name: '模块查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-2-3-2',
+                                code: 'M002-03-02',
+                                name: '模块新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'node-3',
+                code: 'M003',
+                name: '入库管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-3-1',
+                        code: 'M003-01',
+                        name: '采购入库',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: true,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: [
+                            {
+                                id: 'node-3-1-1',
+                                code: 'M003-01-01',
+                                name: '入库单查询',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            },
+                            {
+                                id: 'node-3-1-2',
+                                code: 'M003-01-02',
+                                name: '入库单新增',
+                                level: '三级',
+                                remark: '',
+                                isEnabled: '启用',
+                                hasChildren: false,
+                                lazyLoaded: true,
+                                expanded: false,
+                                children: []
+                            }
+                        ]
+                    },
+                    {
+                        id: 'node-3-2',
+                        code: 'M003-02',
+                        name: '退货入库',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 'node-4',
+                code: 'M004',
+                name: '出库管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-4-1',
+                        code: 'M004-01',
+                        name: '销售出库',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    },
+                    {
+                        id: 'node-4-2',
+                        code: 'M004-02',
+                        name: '调拨出库',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 'node-5',
+                code: 'M005',
+                name: '库存管理',
+                level: '一级',
+                remark: '',
+                isEnabled: '启用',
+                hasChildren: true,
+                lazyLoaded: true,
+                expanded: false,
+                children: [
+                    {
+                        id: 'node-5-1',
+                        code: 'M005-01',
+                        name: '库存查询',
+                        level: '二级',
+                        remark: '',
+                        isEnabled: '启用',
+                        hasChildren: false,
+                        lazyLoaded: true,
+                        expanded: false,
+                        children: []
+                    },
+                    {
+                        id: 'node-5-2',
+                        code: 'M005-02',
+                        name: '库存盘点',
                         level: '二级',
                         remark: '',
                         isEnabled: '启用',
@@ -406,7 +752,27 @@
                             editTenant: getCurrentTenantDisplay(),
                             editModuleGroupDisplay: `${cells[1].textContent.trim()}-${cells[2].textContent.trim()}`
                         };
-                    }
+                    },
+                    fields: [
+                        {
+                            type: 'raw',
+                            editHtml: `
+                                <div class="modal-form-group">
+                                    <label>功能角色:</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="editModuleGroupDisplay" placeholder="功能角色" disabled>
+                                    </div>
+                                </div>
+                                <div class="modal-divider"></div>
+                                <div class="modal-form-group" style="width: 100%;">
+                                    <label style="width: 80px; font-weight: bold; visibility: hidden;">功能模块</label>
+                                    <div style="flex: 1; width: 100%;">
+                                        <div class="tree-container" id="moduleGroupModuleTree" style="max-height: 300px; min-height: 150px; border: 1px solid #e0e0e0; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+                            `
+                        }
+                    ]
                 },
                 
                 deleteModal: {}
@@ -457,12 +823,7 @@
             const queryBtn = document.querySelector('.search-form .form-actions .btn.btn-primary');
             if (queryBtn) {
                 queryBtn.addEventListener('click', (e) => {
-                    const tenantKeyword = searchTenantInput?.value.trim();
-                    if (tenantKeyword) return;
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    showToast('请选择租户');
-                    searchTenantInput?.focus();
+                    // 移除租户必填验证，允许为空查询
                 }, true);
             }
 
@@ -487,8 +848,8 @@
             // 当前正在编辑详情的行（null 表示新增模式）
             let currentDetailEditRow = null;
 
-            // 打开系统功能角色-详情弹窗（编辑模式）
-            function openDetailModal(row) {
+            // 打开系统功能角色-详情弹窗（编辑/查看模式）
+            function openDetailModal(row, isViewMode = false) {
                 currentDetailEditRow = row;
                 const cells = row.querySelectorAll('td');
 
@@ -501,15 +862,15 @@
                 const nameEl = document.getElementById('moduleGroupName');
                 const isEnabledEl = document.getElementById('isEnabled');
                 const remarkEl = document.getElementById('remark');
+                const saveBtn = document.getElementById('saveBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
 
                 if (tenantEl) {
                     const currentTenant = getCurrentTenantDisplay();
                     tenantEl.value = currentTenant;
                     tenantEl.dataset.value = currentTenant;
-                    tenantEl.disabled = true;
                 }
                 if (codeEl) {
-                    codeEl.disabled = true;
                     codeEl.value = cells[1].textContent.trim();
                 }
                 if (nameEl) nameEl.value = cells[2].textContent.trim();
@@ -520,6 +881,24 @@
                 }
                 if (remarkEl) remarkEl.value = cells[3].textContent.trim();
 
+                // 如果是查看模式，禁用所有输入字段并隐藏保存按钮
+                if (isViewMode) {
+                    if (tenantEl) tenantEl.disabled = true;
+                    if (codeEl) codeEl.disabled = true;
+                    if (nameEl) nameEl.disabled = true;
+                    if (isEnabledEl) isEnabledEl.disabled = true;
+                    if (remarkEl) remarkEl.disabled = true;
+                    if (saveBtn) saveBtn.style.display = 'none';
+                } else {
+                    // 编辑模式，启用所有输入字段并显示保存按钮
+                    if (tenantEl) tenantEl.disabled = false;
+                    if (codeEl) codeEl.disabled = false;
+                    if (nameEl) nameEl.disabled = false;
+                    if (isEnabledEl) isEnabledEl.disabled = false;
+                    if (remarkEl) remarkEl.disabled = false;
+                    if (saveBtn) saveBtn.style.display = 'inline-block';
+                }
+
                 modal.style.display = 'block';
             }
 
@@ -528,18 +907,29 @@
                 currentDetailEditRow = null;
                 const codeEl = document.getElementById('moduleGroupCode');
                 const tenantEl = document.getElementById('tenant');
+                const saveBtn = document.getElementById('saveBtn');
                 if (codeEl) codeEl.disabled = false;
                 if (tenantEl) tenantEl.disabled = false;
+                if (saveBtn) saveBtn.style.display = 'inline-block';
             }
 
-            // 监听详情编辑按钮（事件委托）
+            // 监听详情编辑按钮和查看按钮（事件委托）
             const tableBody = document.getElementById('tableBody');
             if (tableBody) {
                 tableBody.addEventListener('click', (e) => {
                     const detailBtn = e.target.closest('.detail-edit-btn');
-                    if (!detailBtn) return;
-                    e.preventDefault();
-                    openDetailModal(detailBtn.closest('tr'));
+                    if (detailBtn) {
+                        e.preventDefault();
+                        openDetailModal(detailBtn.closest('tr'));
+                        return;
+                    }
+                    
+                    const viewBtn = e.target.closest('.view-btn');
+                    if (viewBtn) {
+                        e.preventDefault();
+                        openDetailModal(viewBtn.closest('tr'), true);
+                        return;
+                    }
                 });
             }
 
@@ -554,6 +944,25 @@
                     const currentTenant = getCurrentTenantDisplay();
                     tenantEl.value = currentTenant;
                     tenantEl.dataset.value = currentTenant;
+                }
+            });
+            
+            // 模块授权按钮点击事件
+            document.getElementById('moduleAuthBtn').addEventListener('click', () => {
+                // 获取表格中选中的行
+                const checkedRows = document.querySelectorAll('.table-checkbox:checked:not(.checkbox-all)');
+                if (checkedRows.length === 0) {
+                    showToast('请选择要授权的功能角色');
+                    return;
+                }
+                
+                // 打开模块授权弹窗
+                const firstCheckedRow = checkedRows[0].closest('tr');
+                if (page.config.editModal && page.config.editModal.mapRowToForm) {
+                    const data = page.config.editModal.mapRowToForm(firstCheckedRow);
+                    page.openModal('edit', { data, reset: false });
+                } else {
+                    page.openModal('edit', firstCheckedRow);
                 }
             });
             
@@ -600,11 +1009,17 @@
 
         // 初始化树状组件
         function initModuleTree() {
+            console.log('开始初始化模块树');
             destroyModuleTree();
             
             const container = document.getElementById('moduleGroupModuleTree');
-            if (!container) return;
+            console.log('模块树容器:', container);
+            if (!container) {
+                console.log('模块树容器不存在');
+                return;
+            }
             
+            console.log('模块数据:', moduleData);
             moduleTree = new TreeComponent({
                 container: container,
                 columns: [
@@ -621,7 +1036,9 @@
             moduleTree.expandedNodes.clear();
             moduleTree.saveState = function() {};
             moduleTree.setData(moduleData);
+            console.log('模块数据已设置');
             moduleTree.expandAll();
+            console.log('模块树已展开');
         }
 
         // 销毁树状组件

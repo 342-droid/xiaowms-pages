@@ -333,8 +333,10 @@ class TreeComponent {
             }
             
             actionLinks += `<a href="#" data-action="edit">编辑</a>`;
-            actionLinks += ' ';
-            actionLinks += `<a href="#" data-action="delete">删除</a>`;
+            if (this.onDelete) {
+                actionLinks += ' ';
+                actionLinks += `<a href="#" data-action="delete">删除</a>`;
+            }
             
             actionCell.innerHTML = `
                 <div class="action-links">

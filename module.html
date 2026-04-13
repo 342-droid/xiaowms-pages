@@ -60,11 +60,15 @@
                         <span class="clear-btn">×</span>
                     </div>
                 </div>
-                <div class="modal-form-group">
+                <div class="modal-form-group custom-select-wrapper">
                     <label>父模块</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="parentModuleCode" placeholder="请输入" disabled>
+                    <div class="custom-select">
+                        <input type="text" id="parentModuleCode" placeholder="请选择" disabled>
+                        <span class="select-arrow">▼</span>
                         <span class="clear-btn">×</span>
+                        <div class="select-dropdown" id="parentModuleDropdown">
+                            <div class="select-option" data-value="">无</div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-form-group custom-select-wrapper">
@@ -225,9 +229,32 @@
         let isEditMode = false;
         const DEFAULT_VALIDATE_TYPE = '无校验';
 
+        function populateParentModuleDropdown() {
+            const dropdown = document.getElementById('parentModuleDropdown');
+            dropdown.innerHTML = '<div class="select-option" data-value="">无</div>';
+            
+            function addNodes(nodes, level = 0) {
+                nodes.forEach(node => {
+                    const option = document.createElement('div');
+                    option.className = 'select-option';
+                    option.dataset.value = node.code;
+                    option.textContent = ' '.repeat(level * 2) + node.name + ' (' + node.code + ')';
+                    dropdown.appendChild(option);
+                    
+                    if (node.children && node.children.length > 0) {
+                        addNodes(node.children, level + 1);
+                    }
+                });
+            }
+            
+            addNodes(moduleData);
+        }
+
         function openModuleModal(isEdit, nodeId = null) {
             isEditMode = isEdit;
             document.getElementById('moduleModalTitle').textContent = '系统模块-详情';
+            
+            populateParentModuleDropdown();
             
             if (isEdit && nodeId) {
                 currentEditNode = treeDataService.findNodeById(nodeId);
@@ -241,8 +268,8 @@
                     document.getElementById('sortOrder').value = currentEditNode.sortOrder || '';
                     document.getElementById('moduleUrl').value = currentEditNode.moduleUrl || '';
                     document.getElementById('remark').value = currentEditNode.remark || '';
-                    document.getElementById('moduleCode').disabled = true;
-                    document.getElementById('parentModuleCode').disabled = true;
+                    document.getElementById('moduleCode').disabled = false;
+                    document.getElementById('parentModuleCode').disabled = false;
                 }
             } else {
                 currentEditNode = null;
@@ -400,9 +427,6 @@
                 onEdit: (nodeId) => {
                     currentParentNode = null;
                     openModuleModal(true, nodeId);
-                },
-                onDelete: (nodeId) => {
-                    deleteModule(nodeId);
                 }
             });
             moduleTree.expandedNodes.clear();
@@ -417,6 +441,7 @@
             document.getElementById('moduleSaveBtn').addEventListener('click', saveModule);
             initCustomSelect('moduleType', 'moduleTypeDropdown');
             initCustomSelect('validateType', 'validateTypeDropdown');
+            initCustomSelect('parentModuleCode', 'parentModuleDropdown');
 
         });
     </script>
