@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WMS - 作业档案</title>
+    <title>WMS - 系统枚举</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/components.css">
     <style>
-        /* 页面特定样式 - 作业档案模态框label宽度 */
+        /* 页面特定样式 */
         .modal-form-group label {
             width: 110px;
         }
 
-        .profile-code-link {
+        .enum-code-link {
             color: #1677ff;
             text-decoration: none;
             cursor: pointer;
         }
 
-        .profile-code-link:hover {
+        .enum-code-link:hover {
             text-decoration: underline;
         }
     </style>
@@ -31,39 +31,27 @@
     <div class="container">
         <main class="main-content">
             <div class="content-tabs">
-                <button class="active">作业档案</button>
+                <button class="active">系统枚举</button>
             </div>
             
             <hr class="content-divider">
             
-            <div class="content-title">基础信息 / 作业档案</div>
+            <div class="content-title">系统管理 / 系统枚举</div>
             
             <section class="search-section">
                 <form class="search-form">
                     <div class="form-group">
-                        <label>作业档案编码:</label>
+                        <label>枚举编码:</label>
                         <div class="input-wrapper">
                             <input type="text" placeholder="请输入">
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>作业档案名称:</label>
+                        <label>枚举名称:</label>
                         <div class="input-wrapper">
                             <input type="text" placeholder="请输入">
                             <span class="clear-btn">×</span>
-                        </div>
-                    </div>
-                    <div class="form-group custom-select-wrapper">
-                        <label>是否启用:</label>
-                        <div class="custom-select">
-                            <input type="text" id="searchIsEnabled" placeholder="请选择">
-                            <span class="select-arrow">▼</span>
-                            <span class="clear-btn">×</span>
-                            <div class="select-dropdown" id="searchIsEnabledDropdown">
-                                <div class="select-option" data-value="yes">启用</div>
-                                <div class="select-option" data-value="no">禁用</div>
-                            </div>
                         </div>
                     </div>
                     <div class="form-actions">
@@ -79,9 +67,9 @@
                         <thead>
                             <tr>
                                 <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
-                                <th>作业档案编码</th>
-                                <th>作业档案名称</th>
-                                <th>是否启用</th>
+                                <th>枚举编码</th>
+                                <th>枚举名称</th>
+                                <th>备注</th>
                                 <th>更新时间</th>
                                 <th>更新人</th>
                                 <th>操作</th>
@@ -90,11 +78,11 @@
                         <tbody id="tableBody">
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>P001</td>
-                                <td>标准作业档案</td>
-                                <td><span class="status active">启用</span></td>
+                                <td>ENUM001</td>
+                                <td>性别</td>
+                                <td>人员性别枚举</td>
                                 <td>2025-01-05 12:31:43</td>
-                                <td>李四</td>
+                                <td>管理员</td>
                                 <td class="action-links">
                                     <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
@@ -103,11 +91,11 @@
                             </tr>
                             <tr>
                                 <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
-                                <td>P002</td>
-                                <td>冷链作业档案</td>
-                                <td><span class="status inactive">禁用</span></td>
+                                <td>ENUM002</td>
+                                <td>订单状态</td>
+                                <td>订单状态枚举</td>
                                 <td>2025-01-05 12:31:43</td>
-                                <td>李四</td>
+                                <td>管理员</td>
                                 <td class="action-links">
                                     <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
@@ -124,38 +112,33 @@
         </main>
     </div>
 
-    <!-- 添加明细模态框 -->
+    <!-- 系统枚举明细模态框 -->
     <div id="detailModal" class="modal" style="display: none; align-items: flex-start; padding-top: 7%; z-index: 3001;">
-        <div class="modal-content" style="width: 620px; max-height: 88vh; min-height: 520px; margin: 0 auto; display: flex; flex-direction: column;">
+        <div class="modal-content" style="width: 620px; max-height: 88vh; min-height: 400px; margin: 0 auto; display: flex; flex-direction: column;">
             <div class="modal-header" style="margin-bottom: 15px;">
-                <h2 class="modal-title">添加明细</h2>
+                <h2 class="modal-title">系统枚举明细-详情</h2>
                 <span class="close" id="detailCloseBtn">&times;</span>
             </div>
-            <form class="modal-form" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: flex-start; justify-content: flex-start; gap: 8px; flex: 1;">
-                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
-                    <label>作业区域 <span style="color: red;">*</span></label>
-                    <div class="custom-select">
-                        <input type="text" id="detailArea" placeholder="请选择">
-                        <span class="select-arrow">▼</span>
+            <form class="modal-form" style="display: flex; flex-direction: column; flex-wrap: nowrap; align-content: flex-start; justify-content: flex-start; gap: 15px; flex: 1;">
+                <div class="modal-form-group" style="width: 100%;">
+                    <label>枚举值编码 <span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="detailCode" placeholder="请输入">
                         <span class="clear-btn">×</span>
-                        <div class="select-dropdown" id="detailAreaDropdown">
-                            <div class="select-option" data-value="A001" data-name="南京仓-A区">A001-南京仓-A区</div>
-                            <div class="select-option" data-value="B001" data-name="南京仓-B区">B001-南京仓-B区</div>
-                        </div>
                     </div>
                 </div>
-                <div class="modal-form-group custom-select-wrapper" style="width: 100%;">
-                    <label>作业类型 <span style="color: red;">*</span></label>
-                    <div class="custom-select">
-                        <input type="text" id="detailWorkType" placeholder="请选择">
-                        <span class="select-arrow">▼</span>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label>枚举值名称 <span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="text" id="detailName" placeholder="请输入">
                         <span class="clear-btn">×</span>
-                        <div class="select-dropdown" id="detailWorkTypeDropdown">
-                            <div class="select-option" data-value="质检">质检</div>
-                            <div class="select-option" data-value="上架">上架</div>
-                            <div class="select-option" data-value="拣货">拣货</div>
-                            <div class="select-option" data-value="盘点">盘点</div>
-                        </div>
+                    </div>
+                </div>
+                <div class="modal-form-group" style="width: 100%;">
+                    <label>排序 <span style="color: red;">*</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="detailSort" placeholder="请输入">
+                        <span class="clear-btn">×</span>
                     </div>
                 </div>
             </form>
@@ -176,17 +159,11 @@
         // 使用PageManager简化页面逻辑
         document.addEventListener('DOMContentLoaded', () => {
             const page = new PageManager({
-                entityName: '作业档案',
-                statusColumnIndex: 3,
-                
-                customSelects: [
-                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
-                ],
+                entityName: '系统枚举',
                 
                 fields: [
-                    { id: 'profileCode', label: '作业档案编码', type: 'text', required: true, editDisabled: false },
-                    { id: 'profileName', label: '作业档案名称', type: 'text', required: true, editDisabled: false },
-                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
+                    { id: 'enumCode', label: '枚举编码', type: 'text', required: true, editDisabled: false },
+                    { id: 'enumName', label: '枚举名称', type: 'text', required: true, editDisabled: false },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' },
                     { 
                         type: 'raw', 
@@ -195,73 +172,36 @@
                                 <div style="display: flex; justify-content: flex-end; align-items: center; width: 100%;">
                                     <div style="display: flex; gap: 10px;">
                                         <button type="button" class="btn btn-primary" id="editAddDetailBtn">添加明细</button>
-                                        <button type="button" class="btn btn-primary" id="editSaveProfileBtn">保存</button>
-                                        <button type="button" class="btn btn-secondary" id="editCancelProfileBtn">取消</button>
+                                        <button type="button" class="btn btn-primary" id="editSaveEnumBtn">保存</button>
+                                        <button type="button" class="btn btn-secondary" id="editCancelEnumBtn">取消</button>
                                     </div>
                                 </div>
                                 <div class="table-scroll-container" style="width: 100%; max-height: 200px; overflow-y: auto;">
                                     <table class="table" id="editDetailTable">
                                         <thead>
                                             <tr>
-                                                <th>作业区域编码</th>
-                                                <th>作业区域名称</th>
-                                                <th>作业类型</th>
+                                                <th>枚举值编码</th>
+                                                <th>枚举值名称</th>
+                                                <th>排序</th>
                                                 <th>更新时间</th>
                                                 <th>更新人</th>
                                                 <th>操作</th>
                                             </tr>
                                         </thead>
                                         <tbody id="editDetailTableBody">
-                                            <tr>
-                                                <td>A001</td>
-                                                <td>南京仓-A区</td>
-                                                <td>质检</td>
-                                                <td>2025-01-05 12:31:43</td>
-                                                <td>李四</td>
-                                                <td class="action-links">
-                                                    <a href="#" class="detail-edit-btn">编辑</a>
-                                                    <a href="#" class="detail-delete-btn delete-btn">删除</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>A001</td>
-                                                <td>南京仓-A区</td>
-                                                <td>上架</td>
-                                                <td>2025-01-05 12:31:43</td>
-                                                <td>李四</td>
-                                                <td class="action-links">
-                                                    <a href="#" class="detail-edit-btn">编辑</a>
-                                                    <a href="#" class="detail-delete-btn delete-btn">删除</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>B001</td>
-                                                <td>南京仓-B区</td>
-                                                <td>拣货</td>
-                                                <td>2025-01-05 12:31:43</td>
-                                                <td>李四</td>
-                                                <td class="action-links">
-                                                    <a href="#" class="detail-edit-btn">编辑</a>
-                                                    <a href="#" class="detail-delete-btn delete-btn">删除</a>
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                             <style>
-                                #editProfileModal .modal-footer {
+                                #editEnumModal .modal-footer {
                                     display: none !important;
                                 }
                                 .modal-form input:disabled,
-                                .modal-form textarea:disabled,
-                                .modal-form .custom-select input:disabled {
+                                .modal-form textarea:disabled {
                                     background-color: #f5f5f5;
                                     color: #999;
                                     cursor: not-allowed;
-                                }
-                                .modal-form .custom-select input:disabled + .select-arrow {
-                                    color: #999;
                                 }
                                 .modal-form button:disabled {
                                     background-color: #f5f5f5;
@@ -275,43 +215,42 @@
                 ],
                 
                 editModal: {
-                    modalId: 'editProfileModal',
-                    title: '作业档案-详情',
-                    saveBtnId: 'editSaveProfileBtn',
-                    cancelBtnId: 'editCancelProfileBtn',
+                    modalId: 'editEnumModal',
+                    title: '系统枚举-详情',
+                    saveBtnId: 'editSaveEnumBtn',
+                    cancelBtnId: 'editCancelEnumBtn',
                     validations: [
-                        { id: 'editProfileCode', message: '请输入作业档案编码', required: true },
-                        { id: 'editProfileName', message: '请输入作业档案名称', required: true },
-                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                        { id: 'editEnumCode', message: '请输入枚举编码', required: true },
+                        { id: 'editEnumName', message: '请输入枚举名称', required: true }
                     ],
                     onSave: () => {
                         if (page.currentEditRow) {
                             // 更新现有行
                             page.updateTableRow(page.currentEditRow, {
-                                1: document.getElementById('editProfileCode').value.trim(),
-                                2: document.getElementById('editProfileName').value.trim(),
-                                3: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                                1: document.getElementById('editEnumCode').value.trim(),
+                                2: document.getElementById('editEnumName').value.trim(),
+                                3: document.getElementById('editRemark').value.trim() || '-',
                                 4: page.getCurrentTimeStr(),
                                 5: '当前用户'
                             });
-                            showToast('作业档案信息已更新', 'success');
+                            showToast('系统枚举信息已更新', 'success');
                             page.currentEditRow = null;
                         } else {
                             // 新增行
-                            const code = document.getElementById('editProfileCode').value.trim();
-                            const name = document.getElementById('editProfileName').value.trim();
-                            const enabled = document.getElementById('editIsEnabled').value.trim();
+                            const code = document.getElementById('editEnumCode').value.trim();
+                            const name = document.getElementById('editEnumName').value.trim();
+                            const remark = document.getElementById('editRemark').value.trim() || '-';
                             
                             page.addTableRow({
                                 cells: [
                                     code,
                                     name,
-                                    { value: enabled, isStatus: true },
+                                    remark,
                                     page.getCurrentTimeStr(),
                                     '当前用户'
                                 ]
                             });
-                            showToast('作业档案信息已保存', 'success');
+                            showToast('系统枚举信息已保存', 'success');
                         }
                     },
                     mapRowToForm: (row) => {
@@ -325,11 +264,20 @@
                             editDetailTableBody.innerHTML = '';
                             
                             // 添加默认明细数据
-                            const defaultDetails = [
-                                { areaCode: 'A001', areaName: '南京仓-A区', workType: '质检' },
-                                { areaCode: 'A001', areaName: '南京仓-A区', workType: '上架' },
-                                { areaCode: 'B001', areaName: '南京仓-B区', workType: '拣货' }
-                            ];
+                            let defaultDetails = [];
+                            if (cells[1].textContent === 'ENUM001') {
+                                defaultDetails = [
+                                    { code: 'M', name: '男', sort: 1 },
+                                    { code: 'F', name: '女', sort: 2 }
+                                ];
+                            } else if (cells[1].textContent === 'ENUM002') {
+                                defaultDetails = [
+                                    { code: 'PENDING', name: '待处理', sort: 1 },
+                                    { code: 'PROCESSING', name: '处理中', sort: 2 },
+                                    { code: 'COMPLETED', name: '已完成', sort: 3 },
+                                    { code: 'CANCELLED', name: '已取消', sort: 4 }
+                                ];
+                            }
                             
                             const now = new Date();
                             const timeStr = now.getFullYear() + '-' + 
@@ -342,9 +290,9 @@
                             defaultDetails.forEach(detail => {
                                 const newRow = `
                                     <tr>
-                                        <td>${detail.areaCode}</td>
-                                        <td>${detail.areaName}</td>
-                                        <td>${detail.workType}</td>
+                                        <td>${detail.code}</td>
+                                        <td>${detail.name}</td>
+                                        <td>${detail.sort}</td>
                                         <td>${timeStr}</td>
                                         <td>当前用户</td>
                                         <td class="action-links">
@@ -360,19 +308,16 @@
                         // 延迟执行，确保模态框已完全打开
                         setTimeout(() => {
                             // 启用所有输入字段
-                            const modal = document.getElementById('editProfileModal');
+                            const modal = document.getElementById('editEnumModal');
                             if (modal) {
                                 // 启用输入框和文本域
-                                modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                modal.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
                                     input.disabled = false;
-                                });
-                                modal.querySelectorAll('textarea').forEach(textarea => {
-                                    textarea.disabled = false;
                                 });
                                 
                                 // 启用按钮
                                 document.getElementById('editAddDetailBtn').disabled = false;
-                                document.getElementById('editSaveProfileBtn').disabled = false;
+                                document.getElementById('editSaveEnumBtn').disabled = false;
                                 
                                 // 显示明细表格中的操作按钮
                                 modal.querySelectorAll('.detail-edit-btn, .detail-delete-btn').forEach(btn => {
@@ -382,9 +327,9 @@
                         }, 100);
                         
                         return {
-                            editProfileCode: cells[1].textContent,
-                            editProfileName: cells[2].textContent,
-                            editIsEnabled: cells[3].querySelector('.status').textContent
+                            editEnumCode: cells[1].textContent,
+                            editEnumName: cells[2].textContent,
+                            editRemark: cells[3].textContent === '-' ? '' : cells[3].textContent
                         };
                     }
                 },
@@ -402,11 +347,20 @@
                         editDetailTableBody.innerHTML = '';
                         
                         // 添加默认明细数据
-                        const defaultDetails = [
-                            { areaCode: 'A001', areaName: '南京仓-A区', workType: '质检' },
-                            { areaCode: 'A001', areaName: '南京仓-A区', workType: '上架' },
-                            { areaCode: 'B001', areaName: '南京仓-B区', workType: '拣货' }
-                        ];
+                        let defaultDetails = [];
+                        if (cells[1].textContent === 'ENUM001') {
+                            defaultDetails = [
+                                { code: 'M', name: '男', sort: 1 },
+                                { code: 'F', name: '女', sort: 2 }
+                            ];
+                        } else if (cells[1].textContent === 'ENUM002') {
+                            defaultDetails = [
+                                { code: 'PENDING', name: '待处理', sort: 1 },
+                                { code: 'PROCESSING', name: '处理中', sort: 2 },
+                                { code: 'COMPLETED', name: '已完成', sort: 3 },
+                                { code: 'CANCELLED', name: '已取消', sort: 4 }
+                            ];
+                        }
                         
                         const now = new Date();
                         const timeStr = now.getFullYear() + '-' + 
@@ -419,9 +373,9 @@
                         defaultDetails.forEach(detail => {
                             const newRow = `
                                 <tr>
-                                    <td>${detail.areaCode}</td>
-                                    <td>${detail.areaName}</td>
-                                    <td>${detail.workType}</td>
+                                    <td>${detail.code}</td>
+                                    <td>${detail.name}</td>
+                                    <td>${detail.sort}</td>
                                     <td>${timeStr}</td>
                                     <td>当前用户</td>
                                     <td class="action-links">
@@ -437,9 +391,9 @@
                     // 打开模态框
                     page.openModal('edit', { 
                         data: {
-                            editProfileCode: cells[1].textContent,
-                            editProfileName: cells[2].textContent,
-                            editIsEnabled: cells[3].querySelector('.status').textContent
+                            editEnumCode: cells[1].textContent,
+                            editEnumName: cells[2].textContent,
+                            editRemark: cells[3].textContent === '-' ? '' : cells[3].textContent
                         },
                         reset: false
                     });
@@ -447,19 +401,16 @@
                     // 延迟执行，确保模态框已完全打开
                     setTimeout(() => {
                         // 禁用所有输入字段
-                        const modal = document.getElementById('editProfileModal');
+                        const modal = document.getElementById('editEnumModal');
                         if (modal) {
                             // 禁用输入框和文本域
-                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                            modal.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
                                 input.disabled = true;
-                            });
-                            modal.querySelectorAll('textarea').forEach(textarea => {
-                                textarea.disabled = true;
                             });
                             
                             // 禁用按钮
                             document.getElementById('editAddDetailBtn').disabled = true;
-                            document.getElementById('editSaveProfileBtn').disabled = true;
+                            document.getElementById('editSaveEnumBtn').disabled = true;
                             
                             // 禁用明细表格中的操作按钮
                             modal.querySelectorAll('.detail-edit-btn, .detail-delete-btn').forEach(btn => {
@@ -474,19 +425,39 @@
             
             page.init();
 
-            // 初始化明细模态框的下拉框
-            if (typeof initCustomSelect === 'function') {
-                initCustomSelect('detailArea', 'detailAreaDropdown');
-                initCustomSelect('detailWorkType', 'detailWorkTypeDropdown');
-            }
-            
             // 明细模态框逻辑
             const detailSaveBtn = document.getElementById('detailSaveBtn');
             const detailModalTitle = document.querySelector('#detailModal .modal-title');
-            const detailModalController = window.WMSUI.createModalController({
-                modalId: 'detailModal',
-                closeButtonIds: ['detailCloseBtn', 'detailCancelBtn']
-            });
+            let detailModalController;
+            
+            // 确保WMSUI对象已定义
+            if (window.WMSUI) {
+                detailModalController = window.WMSUI.createModalController({
+                    modalId: 'detailModal',
+                    closeButtonIds: ['detailCloseBtn', 'detailCancelBtn']
+                });
+            } else {
+                // 如果WMSUI未定义，创建一个简单的模态框控制器
+                detailModalController = {
+                    open: function() {
+                        document.getElementById('detailModal').style.display = 'block';
+                    },
+                    close: function() {
+                        document.getElementById('detailModal').style.display = 'none';
+                    }
+                };
+                
+                // 绑定关闭按钮事件
+                document.getElementById('detailCloseBtn').addEventListener('click', detailModalController.close);
+                document.getElementById('detailCancelBtn').addEventListener('click', detailModalController.close);
+                
+                // 点击遮罩关闭
+                document.getElementById('detailModal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        detailModalController.close();
+                    }
+                });
+            }
             
             let currentDetailTarget = null; // 'add' | 'edit'
             let currentEditingDetailRow = null;
@@ -496,31 +467,27 @@
                 currentDetailTarget = target;
                 currentEditingDetailRow = row;
                 detailModalController.open();
-                const areaInput = document.getElementById('detailArea');
-                const workTypeInput = document.getElementById('detailWorkType');
-                if (!areaInput || !workTypeInput) return;
+                const codeInput = document.getElementById('detailCode');
+                const nameInput = document.getElementById('detailName');
+                const sortInput = document.getElementById('detailSort');
+                if (!codeInput || !nameInput || !sortInput) return;
 
                 // 清空表单
-                areaInput.value = '';
-                areaInput.dataset.value = '';
-                workTypeInput.value = '';
-                workTypeInput.dataset.value = '';
+                codeInput.value = '';
+                nameInput.value = '';
+                sortInput.value = '';
 
                 if (target === 'edit' && row) {
                     const cells = row.querySelectorAll('td');
                     if (cells.length >= 3) {
-                        const areaCode = cells[0].textContent.trim();
-                        const areaName = cells[1].textContent.trim();
-                        const workType = cells[2].textContent.trim();
-                        areaInput.value = `${areaCode}-${areaName}`;
-                        areaInput.dataset.value = areaCode;
-                        workTypeInput.value = workType;
-                        workTypeInput.dataset.value = workType;
+                        codeInput.value = cells[0].textContent.trim();
+                        nameInput.value = cells[1].textContent.trim();
+                        sortInput.value = cells[2].textContent.trim();
                     }
-                    if (detailModalTitle) detailModalTitle.textContent = '作业档案明细-详情';
+                    if (detailModalTitle) detailModalTitle.textContent = '系统枚举明细-详情';
                     if (detailSaveBtn) detailSaveBtn.textContent = '保存';
                 } else {
-                    if (detailModalTitle) detailModalTitle.textContent = '作业档案明细-详情';
+                    if (detailModalTitle) detailModalTitle.textContent = '系统枚举明细-详情';
                     if (detailSaveBtn) detailSaveBtn.textContent = '保存';
                 }
             }
@@ -543,26 +510,22 @@
                         editDetailTableBody.innerHTML = '';
                     }
                     page.openModal('edit', { 
-                        reset: true,
-                        data: { editIsEnabled: '启用' }
+                        reset: true
                     });
                     
                     // 延迟执行，确保模态框已完全打开
                     setTimeout(() => {
                         // 启用所有输入字段
-                        const modal = document.getElementById('editProfileModal');
+                        const modal = document.getElementById('editEnumModal');
                         if (modal) {
                             // 启用输入框和文本域
-                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                            modal.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
                                 input.disabled = false;
-                            });
-                            modal.querySelectorAll('textarea').forEach(textarea => {
-                                textarea.disabled = false;
                             });
                             
                             // 启用按钮
                             document.getElementById('editAddDetailBtn').disabled = false;
-                            document.getElementById('editSaveProfileBtn').disabled = false;
+                            document.getElementById('editSaveEnumBtn').disabled = false;
                             
                             // 启用明细表格中的操作按钮
                             modal.querySelectorAll('.detail-edit-btn, .detail-delete-btn').forEach(btn => {
@@ -590,19 +553,16 @@
                     // 延迟执行，确保模态框已完全打开
                     setTimeout(() => {
                         // 启用所有输入字段
-                        const modal = document.getElementById('editProfileModal');
+                        const modal = document.getElementById('editEnumModal');
                         if (modal) {
                             // 启用输入框和文本域
-                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                            modal.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(input => {
                                 input.disabled = false;
-                            });
-                            modal.querySelectorAll('textarea').forEach(textarea => {
-                                textarea.disabled = false;
                             });
                             
                             // 启用按钮
                             document.getElementById('editAddDetailBtn').disabled = false;
-                            document.getElementById('editSaveProfileBtn').disabled = false;
+                            document.getElementById('editSaveEnumBtn').disabled = false;
                             
                             // 启用明细表格中的操作按钮
                             modal.querySelectorAll('.detail-edit-btn, .detail-delete-btn').forEach(btn => {
@@ -618,44 +578,42 @@
             // 保存明细
             if (detailSaveBtn) {
                 detailSaveBtn.addEventListener('click', () => {
-                    const areaInput = document.getElementById('detailArea');
-                    const workTypeInput = document.getElementById('detailWorkType');
-                    if (!areaInput || !workTypeInput) return;
+                    const codeInput = document.getElementById('detailCode');
+                    const nameInput = document.getElementById('detailName');
+                    const sortInput = document.getElementById('detailSort');
+                    if (!codeInput || !nameInput || !sortInput) return;
                     
-                    const areaCode = areaInput.dataset.value || '';
-                    const areaText = areaInput.value.trim();
-                    const selectedWorkType = workTypeInput.dataset.value || workTypeInput.value.trim();
+                    const code = codeInput.value.trim();
+                    const name = nameInput.value.trim();
+                    const sort = sortInput.value.trim();
                     
-                    if (!areaCode) {
-                        showToast('请选择作业区域', 'error');
+                    if (!code) {
+                        showToast('请输入枚举值编码', 'error');
                         return;
                     }
-                    if (!selectedWorkType) {
-                        showToast('请选择作业类型', 'error');
+                    if (!name) {
+                        showToast('请输入枚举值名称', 'error');
+                        return;
+                    }
+                    if (!sort) {
+                        showToast('请输入排序', 'error');
                         return;
                     }
                     
-                    // 从选中的文本中提取区域名称（格式：A001-南京仓-A区）
-                    const areaName = areaText.substring(areaText.indexOf('-') + 1);
-
                     // 检查重复数据
                     const existingRows = document.querySelectorAll('#editDetailTableBody tr');
-                    const existingData = [];
+                    const existingCodes = [];
                     existingRows.forEach(row => {
                         if (currentDetailTarget === 'edit' && row === currentEditingDetailRow) return;
                         const cells = row.querySelectorAll('td');
-                        if (cells.length >= 3) {
-                            existingData.push({
-                                areaCode: cells[0].textContent,
-                                workType: cells[2].textContent
-                            });
+                        if (cells.length >= 1) {
+                            existingCodes.push(cells[0].textContent);
                         }
                     });
                     
-                    // 检查是否有重复
-                    const isDuplicate = existingData.some(item => item.areaCode === areaCode && item.workType === selectedWorkType);
-                    if (isDuplicate) {
-                        showToast('已存在重复内容，请检查！', 'error');
+                    // 检查是否有重复编码
+                    if (existingCodes.includes(code)) {
+                        showToast('枚举值编码已存在，请检查！', 'error');
                         return;
                     }
                     
@@ -670,9 +628,9 @@
                     if (currentDetailTarget === 'edit' && currentEditingDetailRow) {
                         const editCells = currentEditingDetailRow.querySelectorAll('td');
                         if (editCells.length >= 5) {
-                            editCells[0].textContent = areaCode;
-                            editCells[1].textContent = areaName;
-                            editCells[2].textContent = selectedWorkType;
+                            editCells[0].textContent = code;
+                            editCells[1].textContent = name;
+                            editCells[2].textContent = sort;
                             editCells[3].textContent = timeStr;
                             editCells[4].textContent = '当前用户';
                         }
@@ -683,9 +641,9 @@
                     
                     const newRow = `
                         <tr>
-                            <td>${areaCode}</td>
-                            <td>${areaName}</td>
-                            <td>${selectedWorkType}</td>
+                            <td>${code}</td>
+                            <td>${name}</td>
+                            <td>${sort}</td>
                             <td>${timeStr}</td>
                             <td>当前用户</td>
                             <td class="action-links">

@@ -178,7 +178,7 @@ function loadHeader() {
                             <span class="user-menu-arrow">▼</span>
                         </div>
                         <div class="user-menu-dropdown" id="userMenuDropdown">
-                            <a href="user_profile.html" class="user-menu-item">
+                            <a href="user_warehouse.html" class="user-menu-item">
                                 <span class="user-menu-icon">👤</span>
                                 <span>个人中心</span>
                             </a>

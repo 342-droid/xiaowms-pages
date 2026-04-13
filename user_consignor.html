@@ -10,11 +10,7 @@
         .modal-form-group label {
             width: 110px;
         }
-        #tableBody tr td:nth-child(2) {
-            color: #1677ff;
-            cursor: pointer;
-            text-decoration: underline;
-        }
+
         #editUserCompanyModal.detail-readonly .custom-select,
         #editUserCompanyModal.detail-readonly .clear-btn {
             pointer-events: none;
@@ -45,20 +41,11 @@
                             <span class="clear-btn">×</span>
                         </div>
                     </div>
-                    <div class="form-group custom-select-wrapper">
-                        <label>委托方:</label>
-                        <div class="custom-select">
-                            <input type="text" id="searchCompany" placeholder="请选择">
-                            <span class="select-arrow">▼</span>
+                    <div class="form-group">
+                        <label>委托方编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchCompany" placeholder="请输入">
                             <span class="clear-btn">×</span>
-                            <div class="select-dropdown" id="searchCompanyDropdown">
-                                <div class="select-option" data-value="Y001">Y001-南京委托方</div>
-                                <div class="select-option" data-value="Y002">Y002-北京委托方</div>
-                                <div class="select-option" data-value="Y003">Y003-上海委托方</div>
-                                <div class="select-option" data-value="Y004">Y004-广州委托方</div>
-                                <div class="select-option" data-value="Y005">Y005-深圳委托方</div>
-                                <div class="select-option" data-value="Y006">Y006-杭州委托方</div>
-                            </div>
                         </div>
                     </div>
                     <div class="form-group custom-select-wrapper">
@@ -105,6 +92,7 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
@@ -118,6 +106,7 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
                                     <a href="#" class="delete-btn">删除</a>
                                 </td>
@@ -152,12 +141,11 @@
                 statusColumnIndex: 4,
                 
                 customSelects: [
-                    { inputId: 'searchCompany', dropdownId: 'searchCompanyDropdown' },
                     { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
                 ],
                 
                 fields: [
-                    { id: 'userCode', label: '用户编码', type: 'select', required: true, editDisabled: true, placeholder: '请选择', options: userOptions },
+                    { id: 'userCode', label: '用户编码', type: 'select', required: true, placeholder: '请选择', options: userOptions },
                     { id: 'company', label: '委托方', type: 'select', required: true, options: CommonOptions.company },
                     { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
                     { id: 'remark', label: '备注', type: 'textarea', labelWidth: '110px' }
@@ -211,12 +199,27 @@
                     saveBtnId: 'editSaveUserCompanyBtn',
                     cancelBtnId: 'editCancelUserCompanyBtn',
                     validations: [
+                        { id: 'editUserCode', message: '请选择用户编码', required: true },
                         { id: 'editCompany', message: '请选择委托方', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
+                        const userCodeInput = document.getElementById('editUserCode');
+                        const userCodeText = userCodeInput ? userCodeInput.value.trim() : '';
+                        const userCodeValue = userCodeInput ? (userCodeInput.dataset.value || '').trim() : '';
+                        const matchedUser = userOptions.find(item => item.value === userCodeValue || item.text === userCodeText);
+                        const userDisplay = matchedUser ? matchedUser.text : userCodeText;
+                        const [userCode, ...nameParts] = userDisplay.split('-');
+                        const userName = nameParts.join('-');
+                        if (!userCode || !userName) {
+                            showToast('请选择有效的用户编码');
+                            if (userCodeInput) userCodeInput.focus();
+                            return;
+                        }
                         page.updateTableRow(page.currentEditRow, {
+                            1: userCode,
+                            2: userName,
                             3: document.getElementById('editCompany').value.trim(),
                             4: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
                             5: page.getCurrentTimeStr(),
@@ -236,7 +239,14 @@
                     }
                 },
                 
-                deleteModal: {}
+                deleteModal: {},
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const data = page.config.editModal.mapRowToForm(row);
+                    page.openModal('edit', { data, reset: false });
+                    toggleDetailReadOnly(true);
+                }
             });
             
             page.init();
@@ -269,23 +279,18 @@
 
             if (tableBody) {
                 tableBody.addEventListener('click', (e) => {
+                    const viewBtn = e.target.closest('.view-btn');
+                    if (viewBtn) {
+                        e.preventDefault();
+                        page.config.onView(viewBtn);
+                        return;
+                    }
+
                     const editBtn = e.target.closest('.edit-btn');
                     if (editBtn) {
                         setTimeout(() => toggleDetailReadOnly(false), 0);
                         return;
                     }
-
-                    const cell = e.target.closest('td');
-                    const row = e.target.closest('tr');
-                    if (!cell || !row) return;
-
-                    const colIndex = Array.from(row.children).indexOf(cell);
-                    if (colIndex !== 1) return;
-
-                    e.preventDefault();
-                    const data = page.config.editModal.mapRowToForm(row);
-                    page.openModal('edit', { data, reset: false });
-                    toggleDetailReadOnly(true);
                 });
             }
         });

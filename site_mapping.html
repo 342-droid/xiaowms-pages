@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WMS - 地点映射</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .modal-form-group label {
+            width: 110px;
+        }
+
+
+        .custom-select.is-disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled input {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .custom-select.is-disabled .select-arrow,
+        .custom-select.is-disabled .clear-btn {
+            color: #bbb;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <script src="js/sidebar.js"></script>
+    <div id="header-container"></div>
+
+    <div class="container">
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="active">地点映射</button>
+            </div>
+
+            <hr class="content-divider">
+
+            <div class="content-title">系统管理 / 地点映射</div>
+
+            <section class="search-section">
+                <form class="search-form">
+                    <div class="form-group">
+                        <label>租户编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchTenantCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>委托方编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchConsignorCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>货主编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchOwnerCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>机构编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchEnterpriseCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>仓库编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchWarehouseCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>仓间编码:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchRoomCode" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>来源地点:</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="searchSourceSite" placeholder="请输入">
+                            <span class="clear-btn">×</span>
+                        </div>
+                    </div>
+                    <div class="form-group custom-select-wrapper">
+                        <label>是否启用:</label>
+                        <div class="custom-select">
+                            <input type="text" id="searchIsEnabled" placeholder="请选择">
+                            <span class="select-arrow">▼</span>
+                            <span class="clear-btn">×</span>
+                            <div class="select-dropdown" id="searchIsEnabledDropdown">
+                                <div class="select-option" data-value="yes">启用</div>
+                                <div class="select-option" data-value="no">禁用</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary">查询</button>
+                        <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <div class="table-scroll-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="table-checkbox checkbox-all"></th>
+                                <th>租户</th>
+                                <th>委托方</th>
+                                <th>货主</th>
+                                <th>机构</th>
+                                <th>仓库</th>
+                                <th>仓间</th>
+                                <th>来源地点</th>
+                                <th>备注</th>
+                                <th>是否启用</th>
+                                <th>更新时间</th>
+                                <th>更新人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>T001-华东租户</td>
+                                <td>C001-华东委托方</td>
+                                <td>O001-华东货主</td>
+                                <td>E001-华东机构</td>
+                                <td>W001-华东仓库</td>
+                                <td>R001-华东仓间</td>
+                                <td>Source001</td>
+                                <td>测试地点映射</td>
+                                <td><span class="status active">启用</span></td>
+                                <td>2026-03-20 10:15:28</td>
+                                <td>李四</td>
+                                <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="table-checkbox checkbox-row"></td>
+                                <td>T002-华北租户</td>
+                                <td>C002-华北委托方</td>
+                                <td>O002-华北货主</td>
+                                <td>E002-华北机构</td>
+                                <td>W002-华北仓库</td>
+                                <td>R002-华北仓间</td>
+                                <td>Source002</td>
+                                <td>临时停用</td>
+                                <td><span class="status inactive">禁用</span></td>
+                                <td>2026-03-18 16:42:09</td>
+                                <td>王五</td>
+                                <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
+                                    <a href="#" class="edit-btn">编辑</a>
+                                    <a href="#" class="delete-btn">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pagination-container"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/pagination.js"></script>
+    <script src="js/form-utils.js"></script>
+    <script src="js/modal-manager.js"></script>
+    <script src="js/page-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tenantOptions = [
+                { value: 'T001', text: 'T001-华东租户' },
+                { value: 'T002', text: 'T002-华北租户' },
+                { value: 'T003', text: 'T003-华南租户' }
+            ];
+
+            const consignorOptions = [
+                { value: 'C001', text: 'C001-华东委托方' },
+                { value: 'C002', text: 'C002-华北委托方' }
+            ];
+
+            const ownerOptions = [
+                { value: 'O001', text: 'O001-华东货主' },
+                { value: 'O002', text: 'O002-华北货主' }
+            ];
+
+            const enterpriseOptions = [
+                { value: 'E001', text: 'E001-华东机构' },
+                { value: 'E002', text: 'E002-华北机构' }
+            ];
+
+            const warehouseOptions = [
+                { value: 'W001', text: 'W001-华东仓库' },
+                { value: 'W002', text: 'W002-华北仓库' }
+            ];
+
+            const roomOptions = [
+                { value: 'R001', text: 'R001-华东仓间' },
+                { value: 'R002', text: 'R002-华北仓间' }
+            ];
+
+            const page = new PageManager({
+                entityName: '地点映射',
+                statusColumnIndex: 9,
+                customSelects: [
+                    { inputId: 'searchIsEnabled', dropdownId: 'searchIsEnabledDropdown' }
+                ],
+                fields: [
+                    { id: 'tenant', label: '租户', type: 'select', required: true, options: tenantOptions, placeholder: '请选择' },
+                    { id: 'consignor', label: '委托方', type: 'select', options: consignorOptions, placeholder: '请选择' },
+                    { id: 'owner', label: '货主', type: 'select', options: ownerOptions, placeholder: '请选择' },
+                    { id: 'enterprise', label: '机构', type: 'select', options: enterpriseOptions, placeholder: '请选择' },
+                    { id: 'warehouse', label: '仓库', type: 'select', options: warehouseOptions, placeholder: '请选择' },
+                    { id: 'room', label: '仓间', type: 'select', options: roomOptions, placeholder: '请选择' },
+                    { id: 'sourceSite', label: '来源地点', type: 'text' },
+                    { id: 'sourceSystem', label: '来源系统', type: 'text' },
+                    { id: 'sourceAddress', label: '来源地址', type: 'text' },
+                    { id: 'sourceField1', label: '来源字段名1', type: 'text' },
+                    { id: 'sourceField2', label: '来源字段名2', type: 'text' },
+                    { id: 'sourceField3', label: '来源字段名3', type: 'text' },
+                    { id: 'sourceField4', label: '来源字段名4', type: 'text' },
+                    { id: 'sourceField5', label: '来源字段名5', type: 'text' },
+                    { id: 'sourceValue1', label: '来源字段值1', type: 'text' },
+                    { id: 'sourceValue2', label: '来源字段值2', type: 'text' },
+                    { id: 'sourceValue3', label: '来源字段值3', type: 'text' },
+                    { id: 'sourceValue4', label: '来源字段值4', type: 'text' },
+                    { id: 'sourceValue5', label: '来源字段值5', type: 'text' },
+                    { id: 'isEnabled', label: '是否启用', type: 'select', required: true, options: CommonOptions.isEnabled },
+                    { id: 'remark', label: '备注', type: 'text' }
+                ],
+                addModal: {
+                    modalId: 'addSiteMappingModal',
+                    saveBtnId: 'saveSiteMappingBtn',
+                    cancelBtnId: 'cancelSiteMappingBtn',
+                    triggerBtnId: 'addBtn',
+                    defaults: { isEnabled: '启用' },
+                    validations: [
+                        { id: 'tenant', message: '请选择租户', required: true },
+                        { id: 'isEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        const tenantInput = document.getElementById('tenant');
+                        const tenantText = tenantInput ? tenantInput.value.trim() : '';
+                        const tenantDataValue = tenantInput ? (tenantInput.dataset.value || '').trim() : '';
+                        const matchedTenant = tenantOptions.find(item => item.value === tenantDataValue || item.text === tenantText);
+                        const tenantDisplay = matchedTenant ? matchedTenant.text : tenantText;
+
+                        const consignorInput = document.getElementById('consignor');
+                        const consignorText = consignorInput ? consignorInput.value.trim() : '';
+                        const consignorDataValue = consignorInput ? (consignorInput.dataset.value || '').trim() : '';
+                        const matchedConsignor = consignorOptions.find(item => item.value === consignorDataValue || item.text === consignorText);
+                        const consignorDisplay = matchedConsignor ? matchedConsignor.text : consignorText;
+
+                        const ownerInput = document.getElementById('owner');
+                        const ownerText = ownerInput ? ownerInput.value.trim() : '';
+                        const ownerDataValue = ownerInput ? (ownerInput.dataset.value || '').trim() : '';
+                        const matchedOwner = ownerOptions.find(item => item.value === ownerDataValue || item.text === ownerText);
+                        const ownerDisplay = matchedOwner ? matchedOwner.text : ownerText;
+
+                        const enterpriseInput = document.getElementById('enterprise');
+                        const enterpriseText = enterpriseInput ? enterpriseInput.value.trim() : '';
+                        const enterpriseDataValue = enterpriseInput ? (enterpriseInput.dataset.value || '').trim() : '';
+                        const matchedEnterprise = enterpriseOptions.find(item => item.value === enterpriseDataValue || item.text === enterpriseText);
+                        const enterpriseDisplay = matchedEnterprise ? matchedEnterprise.text : enterpriseText;
+
+                        const warehouseInput = document.getElementById('warehouse');
+                        const warehouseText = warehouseInput ? warehouseInput.value.trim() : '';
+                        const warehouseDataValue = warehouseInput ? (warehouseInput.dataset.value || '').trim() : '';
+                        const matchedWarehouse = warehouseOptions.find(item => item.value === warehouseDataValue || item.text === warehouseText);
+                        const warehouseDisplay = matchedWarehouse ? matchedWarehouse.text : warehouseText;
+
+                        const roomInput = document.getElementById('room');
+                        const roomText = roomInput ? roomInput.value.trim() : '';
+                        const roomDataValue = roomInput ? (roomInput.dataset.value || '').trim() : '';
+                        const matchedRoom = roomOptions.find(item => item.value === roomDataValue || item.text === roomText);
+                        const roomDisplay = matchedRoom ? matchedRoom.text : roomText;
+
+                        const sourceSite = document.getElementById('sourceSite').value.trim();
+                        const remark = document.getElementById('remark').value.trim();
+                        const enabled = document.getElementById('isEnabled').value.trim();
+
+                        const newRow = page.addTableRow({
+                            cells: [
+                                tenantDisplay,
+                                consignorDisplay,
+                                ownerDisplay,
+                                enterpriseDisplay,
+                                warehouseDisplay,
+                                roomDisplay,
+                                sourceSite,
+                                remark,
+                                { value: enabled, isStatus: true },
+                                page.getCurrentTimeStr(),
+                                '当前用户'
+                            ]
+                        });
+
+                        if (newRow) {
+                            const addRoleBtn = newRow.querySelector('.add-role-btn');
+                            if (addRoleBtn) {
+                                addRoleBtn.remove();
+                            }
+                        }
+                        showToast('地点映射信息已保存', 'success');
+                    }
+                },
+                editModal: {
+                    modalId: 'editSiteMappingModal',
+                    saveBtnId: 'editSaveSiteMappingBtn',
+                    cancelBtnId: 'editCancelSiteMappingBtn',
+                    validations: [
+                        { id: 'editTenant', message: '请选择租户', required: true },
+                        { id: 'editIsEnabled', message: '请选择是否启用', required: true }
+                    ],
+                    onSave: () => {
+                        if (!page.currentEditRow) return;
+                        
+                        const tenantInput = document.getElementById('editTenant');
+                        const tenantText = tenantInput ? tenantInput.value.trim() : '';
+                        const tenantDataValue = tenantInput ? (tenantInput.dataset.value || '').trim() : '';
+                        const matchedTenant = tenantOptions.find(item => item.value === tenantDataValue || item.text === tenantText);
+                        const tenantDisplay = matchedTenant ? matchedTenant.text : tenantText;
+
+                        const consignorInput = document.getElementById('editConsignor');
+                        const consignorText = consignorInput ? consignorInput.value.trim() : '';
+                        const consignorDataValue = consignorInput ? (consignorInput.dataset.value || '').trim() : '';
+                        const matchedConsignor = consignorOptions.find(item => item.value === consignorDataValue || item.text === consignorText);
+                        const consignorDisplay = matchedConsignor ? matchedConsignor.text : consignorText;
+
+                        const ownerInput = document.getElementById('editOwner');
+                        const ownerText = ownerInput ? ownerInput.value.trim() : '';
+                        const ownerDataValue = ownerInput ? (ownerInput.dataset.value || '').trim() : '';
+                        const matchedOwner = ownerOptions.find(item => item.value === ownerDataValue || item.text === ownerText);
+                        const ownerDisplay = matchedOwner ? matchedOwner.text : ownerText;
+
+                        const enterpriseInput = document.getElementById('editEnterprise');
+                        const enterpriseText = enterpriseInput ? enterpriseInput.value.trim() : '';
+                        const enterpriseDataValue = enterpriseInput ? (enterpriseInput.dataset.value || '').trim() : '';
+                        const matchedEnterprise = enterpriseOptions.find(item => item.value === enterpriseDataValue || item.text === enterpriseText);
+                        const enterpriseDisplay = matchedEnterprise ? matchedEnterprise.text : enterpriseText;
+
+                        const warehouseInput = document.getElementById('editWarehouse');
+                        const warehouseText = warehouseInput ? warehouseInput.value.trim() : '';
+                        const warehouseDataValue = warehouseInput ? (warehouseInput.dataset.value || '').trim() : '';
+                        const matchedWarehouse = warehouseOptions.find(item => item.value === warehouseDataValue || item.text === warehouseText);
+                        const warehouseDisplay = matchedWarehouse ? matchedWarehouse.text : warehouseText;
+
+                        const roomInput = document.getElementById('editRoom');
+                        const roomText = roomInput ? roomInput.value.trim() : '';
+                        const roomDataValue = roomInput ? (roomInput.dataset.value || '').trim() : '';
+                        const matchedRoom = roomOptions.find(item => item.value === roomDataValue || item.text === roomText);
+                        const roomDisplay = matchedRoom ? matchedRoom.text : roomText;
+
+                        page.updateTableRow(page.currentEditRow, {
+                            1: tenantDisplay,
+                            2: consignorDisplay,
+                            3: ownerDisplay,
+                            4: enterpriseDisplay,
+                            5: warehouseDisplay,
+                            6: roomDisplay,
+                            7: document.getElementById('editSourceSite').value.trim(),
+                            8: document.getElementById('editRemark').value.trim(),
+                            9: { value: document.getElementById('editIsEnabled').value.trim(), isStatus: true },
+                            10: page.getCurrentTimeStr(),
+                            11: '当前用户'
+                        });
+                        showToast('地点映射信息已更新', 'success');
+                        page.currentEditRow = null;
+                    },
+                    mapRowToForm: (row) => {
+                        page.currentEditRow = row;
+                        const cells = row.querySelectorAll('td');
+                        return {
+                            editTenant: cells[1].textContent,
+                            editConsignor: cells[2].textContent,
+                            editOwner: cells[3].textContent,
+                            editEnterprise: cells[4].textContent,
+                            editWarehouse: cells[5].textContent,
+                            editRoom: cells[6].textContent,
+                            editSourceSite: cells[7].textContent,
+                            editRemark: cells[8].textContent,
+                            editIsEnabled: cells[9].querySelector('.status').textContent
+                        };
+                    }
+                },
+                deleteModal: {},
+                
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: {
+                            editTenant: cells[1].textContent,
+                            editConsignor: cells[2].textContent,
+                            editOwner: cells[3].textContent,
+                            editEnterprise: cells[4].textContent,
+                            editWarehouse: cells[5].textContent,
+                            editRoom: cells[6].textContent,
+                            editSourceSite: cells[7].textContent,
+                            editRemark: cells[8].textContent,
+                            editIsEnabled: cells[9].querySelector('.status').textContent
+                        },
+                        reset: false
+                    });
+                    
+                    // 延迟执行，确保模态框已完全打开
+                    setTimeout(() => {
+                        // 禁用所有输入字段
+                        const modal = document.getElementById('editSiteMappingModal');
+                        if (modal) {
+                            // 禁用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = true;
+                            });
+                            
+                            // 禁用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.add('is-disabled');
+                                select.style.pointerEvents = 'none';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = true;
+                                }
+                            });
+                            
+                            // 禁用按钮
+                            const saveBtn = document.getElementById('editSaveSiteMappingBtn');
+                            const cancelBtn = document.getElementById('editCancelSiteMappingBtn');
+                            if (saveBtn) saveBtn.style.display = 'none';
+                            if (cancelBtn) cancelBtn.textContent = '关闭';
+                        }
+                    }, 100);
+                }
+            });
+
+            page.init();
+
+            const addModalTitle = document.querySelector('#addSiteMappingModal .modal-title');
+            if (addModalTitle) {
+                addModalTitle.textContent = '地点映射-详情';
+            }
+            const editModalTitle = document.querySelector('#editSiteMappingModal .modal-title');
+            if (editModalTitle) {
+                editModalTitle.textContent = '地点映射-详情';
+            }
+
+            function setEditModalReadOnly(isReadOnly) {
+                const editModal = document.getElementById('editSiteMappingModal');
+                if (!editModal) return;
+
+                editModal.querySelectorAll('input, textarea, select').forEach((el) => {
+                    if (!el.dataset.originDisabled) {
+                        el.dataset.originDisabled = el.disabled ? '1' : '0';
+                    }
+                    el.disabled = isReadOnly ? true : el.dataset.originDisabled === '1';
+                });
+
+                editModal.querySelectorAll('.custom-select').forEach((el) => {
+                    if (!el.dataset.originPointerEvents) {
+                        el.dataset.originPointerEvents = el.style.pointerEvents || '';
+                    }
+                    el.style.pointerEvents = isReadOnly ? 'none' : el.dataset.originPointerEvents;
+                    el.classList.toggle('is-disabled', isReadOnly);
+                });
+
+                const saveBtn = document.getElementById('editSaveSiteMappingBtn');
+                const cancelBtn = document.getElementById('editCancelSiteMappingBtn');
+                if (saveBtn) saveBtn.style.display = isReadOnly ? 'none' : '';
+                if (cancelBtn) cancelBtn.textContent = isReadOnly ? '关闭' : '取消';
+            }
+
+            function setEditTenantReadOnly() {
+                // 移除租户字段的只读设置，使用户字段在编辑模式下可编辑
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            if (tableBody) {
+                tableBody.addEventListener('click', (e) => {
+                    if (!e.target.closest('.edit-btn')) return;
+                    setTimeout(() => {
+                        // 启用所有输入字段
+                        const modal = document.getElementById('editSiteMappingModal');
+                        if (modal) {
+                            // 启用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = false;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = false;
+                            });
+                            
+                            // 启用自定义选择器
+                            modal.querySelectorAll('.custom-select').forEach(select => {
+                                select.classList.remove('is-disabled');
+                                select.style.pointerEvents = '';
+                                const input = select.querySelector('input');
+                                if (input) {
+                                    input.disabled = false;
+                                }
+                            });
+                            
+                            // 启用按钮
+                            const saveBtn = document.getElementById('editSaveSiteMappingBtn');
+                            const cancelBtn = document.getElementById('editCancelSiteMappingBtn');
+                            if (saveBtn) saveBtn.style.display = '';
+                            if (cancelBtn) cancelBtn.textContent = '取消';
+                        }
+                    }, 100);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

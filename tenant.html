@@ -81,6 +81,7 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn-primary" id="searchBtn">查询</button>
                         <button type="button" class="btn btn-secondary" id="addBtn">新增</button>
+                        <button type="button" class="btn btn-secondary" id="moduleAuthBtn">模块授权</button>
                     </div>
                 </form>
             </section>
@@ -116,9 +117,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>李四</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="module-auth-btn">模块授权</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                             <tr>
@@ -133,9 +133,8 @@
                                 <td>2025-01-05 12:31:43</td>
                                 <td>赵六</td>
                                 <td class="action-links">
+                                    <a href="#" class="view-btn">查看</a>
                                     <a href="#" class="edit-btn">编辑</a>
-                                    <a href="#" class="module-auth-btn">模块授权</a>
-                                    <a href="#" class="delete-btn">删除</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -256,8 +255,8 @@
                 ],
                 
                 fields: [
-                    { id: 'tenantCode', label: '租户编码', type: 'text', required: true, editDisabled: true },
-                    { id: 'tenantName', label: '租户名称', type: 'text', required: true, editDisabled: true },
+                    { id: 'tenantCode', label: '租户编码', type: 'text', required: true },
+                    { id: 'tenantName', label: '租户名称', type: 'text', required: true },
                     { id: 'companyName', label: '公司名称', type: 'text' },
                     { id: 'address', label: '地址', type: 'text' },
                     { id: 'contactPerson', label: '联系人', type: 'text' },
@@ -305,12 +304,14 @@
                     cancelBtnId: 'editCancelBtn',
                     saveBtnId: 'editSaveBtn',
                     validations: [
+                        { id: 'editTenantCode', message: '请输入租户编码', required: true },
                         { id: 'editTenantName', message: '请输入租户名称', required: true },
                         { id: 'editIsEnabled', message: '请选择是否启用', required: true }
                     ],
                     onSave: () => {
                         if (!page.currentEditRow) return;
                         page.updateTableRow(page.currentEditRow, {
+                            1: document.getElementById('editTenantCode').value.trim(),
                             2: document.getElementById('editTenantName').value.trim(),
                             3: document.getElementById('editCompanyName').value.trim() || '-',
                             4: document.getElementById('editAddress').value.trim() || '-',
@@ -338,29 +339,49 @@
                     }
                 },
                 
-                deleteModal: {
-                    modalId: 'confirmDeleteModal',
-                    closeBtnId: 'confirmDeleteCloseBtn',
-                    cancelBtnId: 'cancelDeleteBtn',
-                    confirmBtnId: 'confirmDeleteBtn'
-                }
-            });
+                onView: (element) => {
+                    const row = element.closest('tr');
+                    const cells = row.querySelectorAll('td');
+                    
+                    // 打开模态框
+                    page.openModal('edit', { 
+                        data: {
+                            editTenantCode: cells[1].textContent,
+                            editTenantName: cells[2].textContent,
+                            editCompanyName: cells[3].textContent === '-' ? '' : cells[3].textContent,
+                            editAddress: cells[4].textContent === '-' ? '' : cells[4].textContent,
+                            editContactPerson: cells[5].textContent === '-' ? '' : cells[5].textContent,
+                            editPhone: cells[6].textContent === '-' ? '' : cells[6].textContent,
+                            editIsEnabled: cells[7].querySelector('.status').textContent
+                        },
+                        reset: false
+                    });
+                    
+                    // 延迟执行，确保模态框已完全打开
+                    setTimeout(() => {
+                        // 禁用所有输入字段
+                        const modal = document.getElementById('tenantEditModal');
+                        if (modal) {
+                            // 禁用输入框和文本域
+                            modal.querySelectorAll('input[type="text"]').forEach(input => {
+                                input.disabled = true;
+                            });
+                            modal.querySelectorAll('textarea').forEach(textarea => {
+                                textarea.disabled = true;
+                            });
+                            modal.querySelectorAll('.custom-select input').forEach(input => {
+                                input.disabled = true;
+                            });
+                            
+                            // 禁用按钮
+                            document.getElementById('editSaveBtn').disabled = true;
+                            document.getElementById('editCancelBtn').disabled = true;
+                        }
+                    }, 100);
+                },
+                
 
-            const ensureModuleAuthButtons = () => {
-                document.querySelectorAll('#tableBody .action-links').forEach((cell) => {
-                    if (cell.querySelector('.module-auth-btn')) return;
-                    const moduleAuthBtn = document.createElement('a');
-                    moduleAuthBtn.href = '#';
-                    moduleAuthBtn.className = 'module-auth-btn';
-                    moduleAuthBtn.textContent = '模块授权';
-                    const deleteBtn = cell.querySelector('.delete-btn');
-                    if (deleteBtn) {
-                        cell.insertBefore(moduleAuthBtn, deleteBtn);
-                    } else {
-                        cell.appendChild(moduleAuthBtn);
-                    }
-                });
-            };
+            });
 
             const ensureModuleAuthModal = () => {
                 if (document.getElementById('tenantModuleAuthModal')) return;
@@ -445,16 +466,22 @@
             };
             
             page.init();
-            ensureModuleAuthButtons();
             ensureModuleAuthModal();
 
-            const tableBody = document.getElementById('tableBody');
-            if (tableBody) {
-                tableBody.addEventListener('click', (e) => {
-                    const moduleAuthBtn = e.target.closest('.module-auth-btn');
-                    if (!moduleAuthBtn) return;
-                    e.preventDefault();
-                    openModuleAuthModal(moduleAuthBtn.closest('tr'));
+            const moduleAuthBtn = document.getElementById('moduleAuthBtn');
+            if (moduleAuthBtn) {
+                moduleAuthBtn.addEventListener('click', () => {
+                    const selectedCheckboxes = document.querySelectorAll('#tableBody .checkbox-row:checked');
+                    if (selectedCheckboxes.length === 0) {
+                        showToast('请先选择一个租户', 'warning');
+                        return;
+                    }
+                    if (selectedCheckboxes.length > 1) {
+                        showToast('只能选择一个租户进行模块授权', 'warning');
+                        return;
+                    }
+                    const selectedRow = selectedCheckboxes[0].closest('tr');
+                    openModuleAuthModal(selectedRow);
                 });
             }
 

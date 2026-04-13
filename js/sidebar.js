@@ -27,8 +27,8 @@
     const permissionMenuItems = [
         { href: 'profile.html', text: '作业档案' },
         { href: 'user_tenant.html', text: '用户-租户' },
-        { href: 'user_profile.html', text: '用户-仓库' },
-        { href: 'user_company.html', text: '用户-委托方' },
+        { href: 'user_warehouse.html', text: '用户-仓库' },
+        { href: 'user_consignor.html', text: '用户-委托方' },
         { href: 'user_enterprise.html', text: '用户-机构' },
         { href: 'user.html', text: '用户管理' },
         { href: 'module.html', text: '系统模块' },
@@ -69,6 +69,12 @@
     // 出库管理菜单项
     const outboundMenuItems = [];
     
+    // 系统管理菜单项
+    const systemMenuItems = [
+        { href: 'sys_enum.html', text: '系统枚举' },
+        { href: 'site_mapping.html', text: '地点映射' }
+    ];
+    
     // 判断当前页面属于哪个菜单
     const isBasicPage = basicMenuItems.some(item => item.href === currentPage);
     const isPermissionPage = permissionMenuItems.some(item => item.href === currentPage);
@@ -77,6 +83,7 @@
     const isInventoryPage = inventoryMenuItems.some(item => item.href === currentPage);
     const isInboundPage = inboundMenuItems.some(item => item.href === currentPage);
     const isOutboundPage = outboundMenuItems.some(item => item.href === currentPage);
+    const isSystemPage = systemMenuItems.some(item => item.href === currentPage);
     
     const basicMenuHtml = basicMenuItems.map(item => 
         '<li><a href="' + item.href + '"' + (item.href === currentPage ? ' class="active"' : '') + '>' + item.text + '</a></li>'
@@ -103,6 +110,10 @@
     ).join('');
     
     const outboundMenuHtml = outboundMenuItems.map(item => 
+        '<li><a href="' + item.href + '"' + (item.href === currentPage ? ' class="active"' : '') + '>' + item.text + '</a></li>'
+    ).join('');
+    
+    const systemMenuHtml = systemMenuItems.map(item => 
         '<li><a href="' + item.href + '"' + (item.href === currentPage ? ' class="active"' : '') + '>' + item.text + '</a></li>'
     ).join('');
     
@@ -176,6 +187,14 @@
             '<button class="menu-toggle">▼</button>' +
             '</a>' +
             '<ul class="submenu' + (isInventoryPage ? ' expanded' : '') + '">' + inventoryMenuHtml + '</ul>' +
+            '</li>' +
+            '<li class="menu-item">' +
+            '<a href="#" class="menu-link' + (isSystemPage ? ' active' : '') + '" onclick="toggleSubmenu(this)">' +
+            '<img src="系统管理.svg" alt="系统管理" style="height: 20px; margin-right: 10px; vertical-align: middle;">' +
+            '<span>系统管理</span>' +
+            '<button class="menu-toggle">▼</button>' +
+            '</a>' +
+            '<ul class="submenu' + (isSystemPage ? ' expanded' : '') + '">' + systemMenuHtml + '</ul>' +
             '</li>' +
             '</ul>' +
             '</aside>';
